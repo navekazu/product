@@ -36,6 +36,8 @@ public class EntityTest {
                 .user("d")
                 .password("e")
                 .build();
+
+        // eを基にbuilderを作って、必要な箇所だけ更新
         ConnectEntity e2 = ConnectEntity.copyBuilder(e)
                 .user("f")
                 .build();
