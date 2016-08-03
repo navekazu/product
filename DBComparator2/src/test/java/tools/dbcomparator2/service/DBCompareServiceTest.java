@@ -37,6 +37,7 @@ public class DBCompareServiceTest {
                 .url("jdbc:h2:file:./testdb1/testdb")
                 .user("sa")
                 .password(null)
+                .schema("PUBLIC")
                 .build();
         ConnectEntity connectEntity2 = ConnectEntity.builder()
                 .library("h2-1.3.176.jar")
@@ -44,6 +45,7 @@ public class DBCompareServiceTest {
                 .url("jdbc:h2:file:./testdb2/testdb")
                 .user("sa")
                 .password(null)
+                .schema("PUBLIC")
                 .build();
 
         DBCompareService service = new DBCompareService();

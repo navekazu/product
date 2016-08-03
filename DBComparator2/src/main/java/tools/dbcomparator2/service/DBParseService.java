@@ -22,7 +22,7 @@ public class DBParseService {
 
         try {
             Connection connection = createConnection(dbCompareEntity.getConnectEntity());
-            List<String> tableList = getTables(connection);
+            List<String> tableList = getTables(dbCompareEntity.getConnectEntity(), connection);
 
             Map<String, List<PrimaryKeyValue>> tableValues = new HashMap<>();
 
@@ -61,11 +61,11 @@ public class DBParseService {
         return driver.connect(connectEntity.getUrl(), info);
     }
 
-    private List<String> getTables(Connection connection) throws SQLException {
+    private List<String> getTables(ConnectEntity connectEntity, Connection connection) throws SQLException {
         List<String> tableList = new ArrayList<>();
         DatabaseMetaData dmd = connection.getMetaData();
 
-        try (ResultSet resultSet = dmd.getTables(null, null, "%", new String[]{"TABLE"})) {
+        try (ResultSet resultSet = dmd.getTables(null, connectEntity.getSchema(), "%", new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 tableList.add(resultSet.getString("TABLE_NAME"));
             }

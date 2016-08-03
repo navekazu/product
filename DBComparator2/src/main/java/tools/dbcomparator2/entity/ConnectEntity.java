@@ -12,6 +12,7 @@ public class ConnectEntity {
     public final String url;
     public final String user;
     public final String password;
+    public final String schema;
 
     public static ConnectEntityBuilder copyBuilder(ConnectEntity entity) {
         return ConnectEntity.builder()
@@ -19,7 +20,8 @@ public class ConnectEntity {
                 .driver(entity.driver)
                 .url(entity.url)
                 .user(entity.user)
-                .password(entity.password);
+                .password(entity.password)
+                .schema(entity.schema);
     }
 
 }
