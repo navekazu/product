@@ -1,6 +1,7 @@
 package tools.dbcomparator2.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 import tools.dbcomparator2.util.StringUtil;
 
@@ -9,8 +10,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
-@Builder
 public class PrimaryKeyValue {
     private Map<String, String> primaryKeyValue = new HashMap<>();
     private String primaryKeyHash;

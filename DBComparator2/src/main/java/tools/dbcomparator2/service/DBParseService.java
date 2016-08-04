@@ -24,7 +24,17 @@ public class DBParseService {
             Connection connection = createConnection(dbCompareEntity.getConnectEntity());
             List<String> tableList = getTables(dbCompareEntity.getConnectEntity(), connection);
 
+            // テーブル毎にPrimaryKeyValueを作成
             Map<String, List<PrimaryKeyValue>> tableValues = new HashMap<>();
+            tableList.parallelStream()
+                    .forEach(table -> {
+                        try {
+                            tableValues.put(table, createPrimaryKeyValue(connection, table, getPrimaryKeyColumns(connection, table, dbCompareEntity.getConnectEntity())));
+                        } catch(SQLException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
 
             connection.close();
 
@@ -73,4 +83,47 @@ public class DBParseService {
 
         return tableList;
     }
+
+    private List<String> getPrimaryKeyColumns(Connection connection, String table, ConnectEntity connectEntity) throws SQLException {
+        List<String> primaryKeyColumnList = new ArrayList<>();
+        DatabaseMetaData dmd = connection.getMetaData();
+
+        try (ResultSet resultSet = dmd.getPrimaryKeys(null, connectEntity.getSchema(), table)) {
+            while (resultSet.next()) {
+                primaryKeyColumnList.add(resultSet.getString("COLUMN_NAME"));
+            }
+        }
+
+        return primaryKeyColumnList;
+    }
+
+    private List<PrimaryKeyValue> createPrimaryKeyValue(Connection connection, String table, List<String> primaryKeyColumns) throws SQLException {
+        List<PrimaryKeyValue> primaryKeyValueList = new ArrayList<>();
+
+        try (Statement statement = connection.createStatement()) {
+            try (ResultSet resultSet = statement.executeQuery("select * from "+table)) {
+                while (resultSet.next()) {
+                    PrimaryKeyValue primaryKeyValue = new PrimaryKeyValue();
+
+                    // ラムダの例外ハンドリング問題・・・
+                    try {
+                        primaryKeyColumns.stream().forEach(col -> {
+                            try {
+                                primaryKeyValue.addPrimaryKeyValue(col, resultSet.getString(col));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                    } catch(RuntimeException e) {
+                        throw (SQLException)e.getCause();
+                    }
+
+                    primaryKeyValueList.add(primaryKeyValue);
+                }
+            }
+        }
+
+        return primaryKeyValueList;
+    }
+
 }
