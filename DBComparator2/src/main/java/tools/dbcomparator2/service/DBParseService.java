@@ -18,18 +18,23 @@ public class DBParseService {
     Logger logger = LoggerFactory.getLogger(DBParseService.class);
 
     public void startParse(DBCompareEntity dbCompareEntity) {
-        logger.info("DB parse start: url={} user={}", dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser());
+        logger.info("DB parse start: [url={} user={}]", dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser());
 
         try {
             Connection connection = createConnection(dbCompareEntity.getConnectEntity());
+            logger.info("Table parse start: [url={} user={}]", dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser());
             List<String> tableList = getTables(dbCompareEntity.getConnectEntity(), connection);
+            logger.info("Table parse end: {} tables [url={} user={}]", tableList.size(), dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser());
 
             // テーブル毎にPrimaryKeyValueを作成
             Map<String, List<PrimaryKeyValue>> tableValues = new HashMap<>();
             tableList.parallelStream()
                     .forEach(table -> {
                         try {
-                            tableValues.put(table, createPrimaryKeyValue(connection, table, getPrimaryKeyColumns(connection, table, dbCompareEntity.getConnectEntity())));
+                            logger.info("Primary key parse start: [url={} user={} table={}]", dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser(), table);
+                            List<PrimaryKeyValue> primaryKeyValueList = createPrimaryKeyValue(connection, table, getPrimaryKeyColumns(connection, table, dbCompareEntity.getConnectEntity()));
+                            tableValues.put(table, primaryKeyValueList);
+                            logger.info("Primary key parse end: {} primary keys [url={} user={} table={}]", primaryKeyValueList.size(), dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser(), table);
                         } catch(SQLException e) {
                             e.printStackTrace();
                         }
