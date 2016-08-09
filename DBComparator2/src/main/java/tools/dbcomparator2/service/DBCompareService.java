@@ -53,6 +53,11 @@ public class DBCompareService {
         // DB解析開始
         dbCompareEntityList.parallelStream().forEach(dbParseService::startParse);
 
+        // 比較対象が1つなら終了
+        if (dbCompareEntityList.size()<=1) {
+            return ;
+        }
+
         // 全部解析終了まで待機
         waitForStatus(DBCompareStatus.SCAN_FINISHED);
         logger.info("DB scan finished.");

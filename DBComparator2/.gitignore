@@ -3,3 +3,7 @@
 
 # batch
 *.bat
+
+# JDBC jar
+*.jar
+
