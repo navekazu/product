@@ -6,6 +6,7 @@ import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.DBCompareEntity;
 import tools.dbcomparator2.entity.PrimaryKeyValue;
 import tools.dbcomparator2.enums.DBCompareStatus;
+import tools.dbcomparator2.enums.DBParseStatus;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -15,17 +16,44 @@ import java.sql.*;
 import java.util.*;
 
 public class DBParseService {
-    Logger logger = LoggerFactory.getLogger(DBParseService.class);
+    private Logger logger = LoggerFactory.getLogger(DBParseService.class);
+
+    private DBParseStatus status;
+    private Connection connection;
+    private List<String> tableList;
+
+    public DBParseService() {
+        status = DBParseStatus.OK;
+    }
+
+    public DBParseStatus getStatus() {
+        return status;
+    }
+
+    public void prepare(DBCompareEntity dbCompareEntity) {
+        try {
+            connection = createConnection(dbCompareEntity.getConnectEntity());
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = DBParseStatus.FAILED;
+        }
+    }
+
+    public void parseTables(DBCompareEntity dbCompareEntity) {
+        try {
+            logger.info("Table parse start: [url={} user={}]", dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser());
+            tableList = getTables(dbCompareEntity.getConnectEntity(), connection);
+            logger.info("Table parse end: {} tables [url={} user={}]", tableList.size(), dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser());
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = DBParseStatus.FAILED;
+        }
+    }
 
     public void startParse(DBCompareEntity dbCompareEntity) {
         logger.info("DB parse start: [url={} user={}]", dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser());
 
         try {
-            Connection connection = createConnection(dbCompareEntity.getConnectEntity());
-            logger.info("Table parse start: [url={} user={}]", dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser());
-            List<String> tableList = getTables(dbCompareEntity.getConnectEntity(), connection);
-            logger.info("Table parse end: {} tables [url={} user={}]", tableList.size(), dbCompareEntity.getConnectEntity().getUrl(), dbCompareEntity.getConnectEntity().getUser());
-
             // テーブル毎にPrimaryKeyValueを作成
             Map<String, List<PrimaryKeyValue>> tableValues = new HashMap<>();
             tableList.parallelStream()

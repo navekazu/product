@@ -50,6 +50,9 @@ public class DBCompareService {
     }
 
     private void startCompare() {
+        // 事前準備
+        dbCompareEntityList.parallelStream().forEach(dbParseService::prepare);
+
         // DB解析開始
         dbCompareEntityList.parallelStream().forEach(dbParseService::startParse);
 
