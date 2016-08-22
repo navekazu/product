@@ -46,7 +46,7 @@ public class DBCompareServiceTest {
                 .schema("PUBLIC")
                 .build();
 
-        __DBCompareService service = new __DBCompareService();
+        DBCompareService service = new DBCompareService();
         service.startCompare(connectEntity1, connectEntity2);
         assertEquals(true, true);
     }

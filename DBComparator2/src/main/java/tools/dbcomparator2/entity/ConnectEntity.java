@@ -24,4 +24,8 @@ public class ConnectEntity {
                 .schema(entity.schema);
     }
 
+    public String getConnectionName() {
+        return String.format("[URL:%s user:%s schema:%s]", url, user, schema);
+    }
+
 }
