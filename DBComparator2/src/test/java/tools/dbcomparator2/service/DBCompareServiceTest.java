@@ -6,8 +6,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import tools.dbcomparator2.entity.ConnectEntity;
-import tools.dbcomparator2.entity.DBCompareEntity;
-import tools.dbcomparator2.enums.DBCompareStatus;
 
 import static org.junit.Assert.assertEquals;
 
@@ -48,7 +46,7 @@ public class DBCompareServiceTest {
                 .schema("PUBLIC")
                 .build();
 
-        DBCompareService service = new DBCompareService();
+        __DBCompareService service = new __DBCompareService();
         service.startCompare(connectEntity1, connectEntity2);
         assertEquals(true, true);
     }

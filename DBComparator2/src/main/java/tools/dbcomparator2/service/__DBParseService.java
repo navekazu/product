@@ -15,14 +15,14 @@ import java.net.URLClassLoader;
 import java.sql.*;
 import java.util.*;
 
-public class DBParseService {
-    private Logger logger = LoggerFactory.getLogger(DBParseService.class);
+public class __DBParseService {
+    private Logger logger = LoggerFactory.getLogger(__DBParseService.class);
 
     private DBParseStatus status;
     private Connection connection;
     private List<String> tableList;
 
-    public DBParseService() {
+    public __DBParseService() {
         status = DBParseStatus.OK;
     }
 

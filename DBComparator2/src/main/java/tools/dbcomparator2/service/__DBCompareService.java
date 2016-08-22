@@ -8,18 +8,17 @@ import tools.dbcomparator2.enums.DBCompareStatus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 
-public class DBCompareService {
-    Logger logger = LoggerFactory.getLogger(DBCompareService.class);
+public class __DBCompareService {
+    Logger logger = LoggerFactory.getLogger(__DBCompareService.class);
 
     private static final int MAX_COMPARE_COUNT = 2;
     private List<DBCompareEntity> dbCompareEntityList;
-    private DBParseService dbParseService;
+    private __DBParseService dbParseService;
 
-    public DBCompareService() {
+    public __DBCompareService() {
         dbCompareEntityList = new ArrayList<>();
-        dbParseService = new DBParseService();
+        dbParseService = new __DBParseService();
     }
 
     public void startCompare(ConnectEntity connectEntity) {

@@ -44,7 +44,7 @@ public class DBParseServiceTest {
                 )
                 .build();
 
-        DBParseService service = new DBParseService();
+        __DBParseService service = new __DBParseService();
         service.startParse(dbCompareEntity);
         assertEquals(true, true);
     }
