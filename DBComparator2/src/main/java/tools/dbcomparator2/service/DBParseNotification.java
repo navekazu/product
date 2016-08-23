@@ -11,7 +11,7 @@ import java.util.List;
 public interface DBParseNotification {
     public void parsedTableList(ConnectEntity connectEntity, List<String> tableList);
     public void countedTableRecord(ConnectEntity connectEntity, String tableName, int recordCount);
-    public void parsedPrimaryKey(ConnectEntity connectEntity, String tableName, List<String> primaryKeyList);
+    public void parsedPrimaryKey(ConnectEntity connectEntity, String tableName, List<String> primaryKeyColumnList);
     public void parsedTableRecord(ConnectEntity connectEntity, String tableName, RecordHashEntity tableRecordEntity);
 
     public void fatal(ConnectEntity connectEntity, Exception exception);

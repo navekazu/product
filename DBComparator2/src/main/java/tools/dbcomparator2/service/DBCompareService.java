@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.DBCompareEntity;
 import tools.dbcomparator2.entity.RecordHashEntity;
+import tools.dbcomparator2.entity.TableCompareEntity;
+import tools.dbcomparator2.enums.DBCompareStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,72 +22,98 @@ public class DBCompareService implements DBParseNotification {
 
     public void startCompare(ConnectEntity connectEntity) {
         dbCompareEntityList.clear();
-        dbCompareEntityList.add(DBCompareEntity.builder().connectEntity(connectEntity).build());
+        addDbCompareEntityList(connectEntity);
+        startCompare();
+    }
+
+    public void restartCompare(ConnectEntity connectEntity) {
+        addDbCompareEntityList(connectEntity);
         startCompare();
     }
 
     public void startCompare(ConnectEntity firstConnectEntity, ConnectEntity secondConnectEntity) {
         dbCompareEntityList.clear();
-        dbCompareEntityList.add(DBCompareEntity.builder().connectEntity(firstConnectEntity).build());
-        dbCompareEntityList.add(DBCompareEntity.builder().connectEntity(secondConnectEntity).build());
+        addDbCompareEntityList(firstConnectEntity);
+        addDbCompareEntityList(secondConnectEntity);
         startCompare();
+    }
+
+    private void addDbCompareEntityList(ConnectEntity connectEntity) {
+        dbCompareEntityList.add(DBCompareEntity.builder()
+                .connectEntity(connectEntity)
+                .status(DBCompareStatus.READY)
+                .build());
     }
 
     private void startCompare() {
         // DBParseServiceの初期化・登録
-        dbCompareEntityList.stream().forEach(entity -> entity.setDbParseService(new DBParseService(this, entity.getConnectEntity())));
+        dbCompareEntityList.stream()
+                .filter(entity -> entity.getStatus()!=DBCompareStatus.SCAN_FINISHED)
+                .forEach(entity -> entity.setDbParseService(new DBParseService(this, entity)));
 
         // DB接続
-        dbCompareEntityList.parallelStream().forEach(entity -> entity.getDbParseService().connect());
+        dbCompareEntityList.parallelStream()
+                .filter(entity -> entity.getStatus() != DBCompareStatus.SCAN_FINISHED)
+                .forEach(entity -> entity.getDbParseService().connect());
 
         // テーブル一覧取得
-        dbCompareEntityList.parallelStream().forEach(entity -> entity.getDbParseService().parseTableList());
+        dbCompareEntityList.parallelStream()
+                .filter(entity -> entity.getStatus() != DBCompareStatus.SCAN_FINISHED)
+                .forEach(entity -> entity.getDbParseService().parseTableList());
 
         // 解析開始
-        dbCompareEntityList.parallelStream().forEach(
-                entity -> entity.getTableList().parallelStream().forEach(
-                        table -> entity.getDbParseService().parseTableData(table)
-                )
-        );
+        dbCompareEntityList.parallelStream()
+                .filter(entity -> entity.getStatus() != DBCompareStatus.SCAN_FINISHED)
+                .forEach(
+                        entity -> entity.getTableCompareEntityMap().keySet().parallelStream()
+                                .forEach(
+                                    tableName -> entity.getDbParseService().parseTableData(tableName)
+                                )
+                );
 
         // DB切断
-        dbCompareEntityList.parallelStream().forEach(entity -> entity.getDbParseService().disconnect());
+        dbCompareEntityList.parallelStream()
+                .filter(entity -> entity.getStatus() != DBCompareStatus.SCAN_FINISHED)
+                .forEach(entity -> entity.getDbParseService().disconnect());
+
+        // ステータス更新
+        dbCompareEntityList.stream()
+                .forEach(entity -> entity.setStatus(DBCompareStatus.SCAN_FINISHED));
     }
 
     @Override
     public void parsedTableList(ConnectEntity connectEntity, List<String> tableList) {
-        dbCompareEntityList.stream().forEach(entity -> {
-            if (entity.getConnectEntity()==connectEntity) {
-                entity.setTableList(tableList);
-            }
-        });
+        dbCompareEntityList.stream()
+                .filter(entity -> entity.getConnectEntity() == connectEntity)
+                .forEach(entity ->
+                    tableList.stream().forEach(tableName -> {
+                        TableCompareEntity tableCompareEntity = TableCompareEntity.builder()
+                                .tableName(tableName)
+                                .build();
+                        entity.addTableCompareEntity(tableCompareEntity);
+                    })
+                );
     }
 
     @Override
     public void countedTableRecord(ConnectEntity connectEntity, String tableName, int recordCount) {
-        dbCompareEntityList.stream().forEach(entity -> {
-            if (entity.getConnectEntity()==connectEntity) {
-                entity.putTableRecordCount(tableName, recordCount);
-            }
-        });
+        dbCompareEntityList.stream()
+                .filter(entity -> entity.getConnectEntity() == connectEntity)
+                .forEach(entity -> entity.getTableCompareEntity(tableName).setRecordCount(recordCount));
     }
 
     @Override
-    public void parsedPrimaryKey(ConnectEntity connectEntity, String tableName, List<String> primaryKeyList) {
-        dbCompareEntityList.stream().forEach(entity -> {
-            if (entity.getConnectEntity()==connectEntity) {
-                entity.putPrimaryKeyColumnList(tableName, primaryKeyList);
-            }
-        });
+    public void parsedPrimaryKey(ConnectEntity connectEntity, String tableName, List<String> primaryKeyColumnList) {
+        dbCompareEntityList.stream()
+                .filter(entity -> entity.getConnectEntity() == connectEntity)
+                .forEach(entity -> entity.getTableCompareEntity(tableName).setPrimaryKeyColumnList(primaryKeyColumnList));
     }
 
     @Override
     public void parsedTableRecord(ConnectEntity connectEntity, String tableName, RecordHashEntity tableRecordEntity) {
-        dbCompareEntityList.stream().forEach(entity -> {
-            if (entity.getConnectEntity()==connectEntity) {
-                entity.putTableRecordEntity(tableName, tableRecordEntity);
-            }
-        });
+        dbCompareEntityList.stream()
+                .filter(entity -> entity.getConnectEntity() == connectEntity)
+                .forEach(entity -> entity.getTableCompareEntity(tableName).addRecordHashEntity(tableRecordEntity));
     }
 
     @Override
