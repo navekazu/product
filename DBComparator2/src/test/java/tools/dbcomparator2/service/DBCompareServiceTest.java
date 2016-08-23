@@ -47,43 +47,6 @@ public class DBCompareServiceTest {
                 .schema("PUBLIC")
                 .build();
 
-/*
-        ConnectEntity connectEntity1 = ConnectEntity.builder()
-                .library("ojdbc6.jar")
-                .driver("oracle.jdbc.driver.OracleDriver")
-                .url("jdbc:oracle:thin:@172.16.60.125:1523:mkdb")
-                .user("mkuser")
-                .password("maikin")
-                .schema("MKUSER")
-                .build();
-        ConnectEntity connectEntity2 = ConnectEntity.builder()
-                .library("ojdbc6.jar")
-                .driver("oracle.jdbc.driver.OracleDriver")
-                .url("jdbc:oracle:thin:@172.16.60.125:1523:mkdb")
-                .user("mkuser")
-                .password("maikin")
-                .schema("MKUSER")
-                .build();
-*/
-/*
-        ConnectEntity connectEntity1 = ConnectEntity.builder()
-                .library("sqlite-jdbc-3.8.11.2.jar")
-                .driver("org.sqlite.JDBC")
-                .url("jdbc:sqlite:./gyomu_Data_nopassword1")
-                .user(null)
-                .password(null)
-                .schema(null)
-                .build();
-        ConnectEntity connectEntity2 = ConnectEntity.builder()
-                .library("sqlite-jdbc-3.8.11.2.jar")
-                .driver("org.sqlite.JDBC")
-                .url("jdbc:sqlite:./gyomu_Data_nopassword1")
-                .user(null)
-                .password(null)
-                .schema(null)
-                .build();
-*/
-
         DBCompareService service = new DBCompareService();
         service.startCompare(connectEntity1, connectEntity2);
         assertEquals(true, true);
