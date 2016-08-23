@@ -4,11 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.DBCompareEntity;
-import tools.dbcomparator2.entity.TableRecordEntity;
+import tools.dbcomparator2.entity.RecordHashEntity;
 
-import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class DBCompareService implements DBParseNotification {
@@ -22,14 +20,14 @@ public class DBCompareService implements DBParseNotification {
 
     public void startCompare(ConnectEntity connectEntity) {
         dbCompareEntityList.clear();
-        dbCompareEntityList.add(DBCompareEntity.builder().connectEntity(connectEntity).tableRecordCount(new HashMap<>()).tableRecordEntity(new HashMap<>()).build());
+        dbCompareEntityList.add(DBCompareEntity.builder().connectEntity(connectEntity).build());
         startCompare();
     }
 
     public void startCompare(ConnectEntity firstConnectEntity, ConnectEntity secondConnectEntity) {
         dbCompareEntityList.clear();
-        dbCompareEntityList.add(DBCompareEntity.builder().connectEntity(firstConnectEntity).tableRecordCount(new HashMap<>()).tableRecordEntity(new HashMap<>()).build());
-        dbCompareEntityList.add(DBCompareEntity.builder().connectEntity(secondConnectEntity).tableRecordCount(new HashMap<>()).tableRecordEntity(new HashMap<>()).build());
+        dbCompareEntityList.add(DBCompareEntity.builder().connectEntity(firstConnectEntity).build());
+        dbCompareEntityList.add(DBCompareEntity.builder().connectEntity(secondConnectEntity).build());
         startCompare();
     }
 
@@ -73,7 +71,16 @@ public class DBCompareService implements DBParseNotification {
     }
 
     @Override
-    public void parsedTableRecord(ConnectEntity connectEntity, String tableName, TableRecordEntity tableRecordEntity) {
+    public void parsedPrimaryKey(ConnectEntity connectEntity, String tableName, List<String> primaryKeyList) {
+        dbCompareEntityList.stream().forEach(entity -> {
+            if (entity.getConnectEntity()==connectEntity) {
+                entity.putPrimaryKeyColumnList(tableName, primaryKeyList);
+            }
+        });
+    }
+
+    @Override
+    public void parsedTableRecord(ConnectEntity connectEntity, String tableName, RecordHashEntity tableRecordEntity) {
         dbCompareEntityList.stream().forEach(entity -> {
             if (entity.getConnectEntity()==connectEntity) {
                 entity.putTableRecordEntity(tableName, tableRecordEntity);

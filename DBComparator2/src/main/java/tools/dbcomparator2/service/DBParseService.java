@@ -3,10 +3,9 @@ package tools.dbcomparator2.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.ConnectEntity;
-import tools.dbcomparator2.entity.TableRecordEntity;
+import tools.dbcomparator2.entity.RecordHashEntity;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.*;
@@ -106,12 +105,92 @@ public class DBParseService {
     public void parseTableData(String tableName) {
         logger.info(String.format("Data parse start. [table:%s] %s", tableName, connectEntity.getConnectionName()));
 
-        int recordCount = 0;
-        notification.countedTableRecord(connectEntity, tableName, recordCount);
-        logger.info(String.format("Counted table record. [count:%,d] [table:%s] %s", recordCount, tableName, connectEntity.getConnectionName()));
+        try {
+            // レコード数取得
+            int recordCount = getRecordCount(tableName);
+            notification.countedTableRecord(connectEntity, tableName, recordCount);
+            logger.info(String.format("Counted table record. [count:%,d] [table:%s] %s", recordCount, tableName, connectEntity.getConnectionName()));
 
-        int row = 0;
-        notification.parsedTableRecord(connectEntity, tableName, null);
-        logger.info(String.format("Parsed table record. [row:%,d] [table:%s] %s", row, tableName, connectEntity.getConnectionName()));
+            // PK情報の取得
+            List<String> primaryKeyList = getPrimaryKeyList(tableName);
+            notification.parsedPrimaryKey(connectEntity, tableName, primaryKeyList);
+            logger.info(String.format("PrimaryKey parse end. [column count:%,d] [table:%s] %s", primaryKeyList.size(), tableName, connectEntity.getConnectionName()));
+
+            // データ取得
+            int row = 0;
+            try(Statement statement = connection.createStatement()) {
+                try(ResultSet resultSet = statement.executeQuery(String.format("select * from %s", tableName))) {
+                    int columnCount = resultSet.getMetaData().getColumnCount();
+
+                    // データのハッシュ化
+                    while (resultSet.next()) {
+                        List<String> primaryKeyValueList = new ArrayList<>();
+                        List<String> allColumnValueList = new ArrayList<>();
+
+                        // PKの値一覧
+                        for (String pk: primaryKeyList) {
+                            String value = resultSet.getString(pk);
+                            if (resultSet.wasNull()) {
+                                value = "";
+                            }
+                            primaryKeyValueList.add(value);
+                        }
+
+                        // 全カラムの値一覧
+                        for (int col=1; col<=columnCount; col++) {
+                            String value = resultSet.getString(col);
+                            if (resultSet.wasNull()) {
+                                value = "";
+                            }
+                            allColumnValueList.add(value);
+                        }
+
+                        RecordHashEntity tableRecordEntity = RecordHashEntity.builder()
+                                .primaryKeyHashValue(RecordHashEntity.createHashValue(primaryKeyValueList))
+                                .allColumnHashValue(RecordHashEntity.createHashValue(allColumnValueList))
+                                .build();
+                        notification.parsedTableRecord(connectEntity, tableName, tableRecordEntity);
+
+                        row++;
+                        logger.info(String.format("Parsed table record. [row:%,d] [columns:%,d] [table:%s] %s", row, allColumnValueList.size(), tableName, connectEntity.getConnectionName()));
+                    }
+                }
+            }
+
+
+
+            logger.info(String.format("Data parse end. [table:%s] %s", tableName, connectEntity.getConnectionName()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            notification.fatal(connectEntity, e);
+        }
+    }
+
+    private int getRecordCount(String tableName) throws SQLException {
+        int recordCount = 0;
+
+        try (Statement statement = connection.createStatement()) {
+            try (ResultSet resultSet = statement.executeQuery(String.format("select count(*) as CNT from %s", tableName))) {
+                if (!resultSet.next()) {
+                    throw new RuntimeException();
+                }
+                recordCount = resultSet.getInt(1);
+            }
+        }
+
+        return recordCount;
+    }
+
+    private List<String> getPrimaryKeyList(String tableName) throws SQLException {
+        List<String> primaryKeyList = new ArrayList<>();
+        DatabaseMetaData metaData = connection.getMetaData();
+
+        try (ResultSet resultSet = metaData.getPrimaryKeys(null, connectEntity.getSchema(), tableName)) {
+            while (resultSet.next()) {
+                primaryKeyList.add(resultSet.getString("COLUMN_NAME"));
+            }
+        }
+
+        return primaryKeyList;
     }
 }

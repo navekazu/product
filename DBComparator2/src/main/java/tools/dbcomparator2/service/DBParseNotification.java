@@ -1,9 +1,8 @@
 package tools.dbcomparator2.service;
 
 import tools.dbcomparator2.entity.ConnectEntity;
-import tools.dbcomparator2.entity.TableRecordEntity;
+import tools.dbcomparator2.entity.RecordHashEntity;
 
-import java.sql.Connection;
 import java.util.List;
 
 /**
@@ -12,7 +11,8 @@ import java.util.List;
 public interface DBParseNotification {
     public void parsedTableList(ConnectEntity connectEntity, List<String> tableList);
     public void countedTableRecord(ConnectEntity connectEntity, String tableName, int recordCount);
-    public void parsedTableRecord(ConnectEntity connectEntity, String tableName, TableRecordEntity tableRecordEntity);
+    public void parsedPrimaryKey(ConnectEntity connectEntity, String tableName, List<String> primaryKeyList);
+    public void parsedTableRecord(ConnectEntity connectEntity, String tableName, RecordHashEntity tableRecordEntity);
 
     public void fatal(ConnectEntity connectEntity, Exception exception);
     public void error(ConnectEntity connectEntity, Exception exception);
