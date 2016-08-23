@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 比較対象のテーブル情報
+ */
 @Data
-//@NoArgsConstructor
 @Builder
 public class TableCompareEntity {
     // テーブル名

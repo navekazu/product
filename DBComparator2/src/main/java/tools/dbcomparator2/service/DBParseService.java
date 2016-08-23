@@ -5,14 +5,13 @@ import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.DBCompareEntity;
 import tools.dbcomparator2.entity.RecordHashEntity;
+import tools.dbcomparator2.enums.RecordCompareStatus;
 
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * DB解析を行うクラス
@@ -129,6 +128,7 @@ public class DBParseService {
                     while (resultSet.next()) {
                         List<String> primaryKeyValueList = new ArrayList<>();
                         List<String> allColumnValueList = new ArrayList<>();
+                        Map<String, String> primaryKeyValueMap = new HashMap<>();
 
                         // PKの値一覧
                         for (String pk: primaryKeyList) {
@@ -137,6 +137,7 @@ public class DBParseService {
                                 value = "";
                             }
                             primaryKeyValueList.add(value);
+                            primaryKeyValueMap.put(pk, value);
                         }
 
                         // 全カラムの値一覧
@@ -151,6 +152,8 @@ public class DBParseService {
                         RecordHashEntity tableRecordEntity = RecordHashEntity.builder()
                                 .primaryKeyHashValue(RecordHashEntity.createHashValue(primaryKeyValueList))
                                 .allColumnHashValue(RecordHashEntity.createHashValue(allColumnValueList))
+                                .primaryKeyValueMap(primaryKeyValueMap)
+                                .recordCompareStatus(RecordCompareStatus.READY)
                                 .build();
                         notification.parsedTableRecord(dbCompareEntity.getConnectEntity(), tableName, tableRecordEntity);
 

@@ -7,6 +7,9 @@ import tools.dbcomparator2.service.DBParseService;
 
 import java.util.*;
 
+/**
+ * 比較対象のデータベース情報
+ */
 @Data
 @Builder
 public class DBCompareEntity {

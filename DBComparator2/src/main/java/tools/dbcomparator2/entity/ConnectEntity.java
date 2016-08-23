@@ -4,6 +4,9 @@ package tools.dbcomparator2.entity;
 import lombok.Data;
 import lombok.experimental.Builder;
 
+/**
+ * データベース接続情報
+ */
 @Data
 @Builder
 public class ConnectEntity {
