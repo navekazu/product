@@ -41,7 +41,6 @@ public class DBCompareService implements DBParseNotification {
     private void addDbCompareEntityList(ConnectEntity connectEntity) {
         dbCompareEntityList.add(DBCompareEntity.builder()
                 .connectEntity(connectEntity)
-                .status(DBCompareStatus.READY)
                 .build());
     }
 
