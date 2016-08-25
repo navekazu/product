@@ -24,23 +24,23 @@ public class RecordHashEntity {
     private String allColumnHashValue;
 
     // プライマリーキーのカラム名とその値のマップ
-    private Map<String, String> primaryKeyValueMap;
+    private Map<String, Object> primaryKeyValueMap;
 
     // 比較結果
     private RecordCompareStatus recordCompareStatus;
 
-    public void putPrimaryKeyValueMap(String column, String value) {
+    public void putPrimaryKeyValueMap(String column, Object value) {
         if (primaryKeyValueMap==null) {
             primaryKeyValueMap = new HashMap<>();
         }
         primaryKeyValueMap.put(column, value);
     }
 
-    public static String createHashValue(List<String> list) {
+    public static String createHashValue(List<Object> list) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-            for (String value: list) {
-                messageDigest.update((value == null ? "".getBytes() : value.getBytes()));
+            for (Object value: list) {
+                messageDigest.update((value == null ? "".getBytes() : value.toString().getBytes()));
             }
 
             StringBuilder stringBuilder = new StringBuilder();

@@ -136,7 +136,7 @@ public class DBParseService {
                     while (resultSet.next()) {
                         List<String> primaryKeyValueList = new ArrayList<>();
                         List<String> allColumnValueList = new ArrayList<>();
-                        Map<String, String> primaryKeyValueMap = new HashMap<>();
+                        Map<String, Object> primaryKeyValueMap = new HashMap<>();
 
                         // PKの値一覧
                         for (String pk: primaryKeyList) {
@@ -158,8 +158,8 @@ public class DBParseService {
                         }
 
                         RecordHashEntity tableRecordEntity = RecordHashEntity.builder()
-                                .primaryKeyHashValue(RecordHashEntity.createHashValue(primaryKeyValueList))
-                                .allColumnHashValue(RecordHashEntity.createHashValue(allColumnValueList))
+                                .primaryKeyHashValue(RecordHashEntity.createHashValue((List)primaryKeyValueList))
+                                .allColumnHashValue(RecordHashEntity.createHashValue((List)allColumnValueList))
                                 .primaryKeyValueMap(primaryKeyValueMap)
                                 .recordCompareStatus(RecordCompareStatus.READY)
                                 .build();
