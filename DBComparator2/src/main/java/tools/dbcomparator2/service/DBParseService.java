@@ -163,10 +163,17 @@ public class DBParseService {
                                 .primaryKeyValueMap(primaryKeyValueMap)
                                 .recordCompareStatus(RecordCompareStatus.READY)
                                 .build();
-                        notification.parsedTableRecord(dbCompareEntity.getConnectEntity(), tableName, tableRecordEntity);
+                        notification.parsedTableRecord(dbCompareEntity.getConnectEntity(), tableName, row, tableRecordEntity);
 
                         row++;
                         logger.info(String.format("Parsed table record. [row:%,d] [columns:%,d] [table:%s] %s", row, allColumnValueList.size(), tableName, dbCompareEntity.getConnectEntity().getConnectionName()));
+
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
             }

@@ -2,6 +2,7 @@ package tools.dbcomparator2.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.dbcomparator2.controller.MainControllerNotification;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.DBCompareEntity;
 import tools.dbcomparator2.entity.RecordHashEntity;
@@ -14,10 +15,16 @@ import java.util.List;
 public class DBCompareService implements DBParseNotification {
     private Logger logger = LoggerFactory.getLogger(DBCompareService.class);
     private static final int MAX_COMPARE_COUNT = 2;
+    private MainControllerNotification mainControllerNotification;
     private List<DBCompareEntity> dbCompareEntityList;
 
     public DBCompareService() {
-        dbCompareEntityList = new ArrayList<>();
+        this.mainControllerNotification = null;
+        this.dbCompareEntityList = new ArrayList<>();
+    }
+
+    public void setMainControllerNotification(MainControllerNotification mainControllerNotification) {
+        this.mainControllerNotification = mainControllerNotification;
     }
 
     public void startCompare(ConnectEntity connectEntity) {
@@ -90,6 +97,11 @@ public class DBCompareService implements DBParseNotification {
                                 .tableName(tableName)
                                 .build();
                         entity.addTableCompareEntity(tableCompareEntity);
+
+                        // 画面に通知
+                        if (mainControllerNotification!=null) {
+                            mainControllerNotification.addRow(tableName);
+                        }
                     })
                 );
     }
@@ -98,7 +110,14 @@ public class DBCompareService implements DBParseNotification {
     public void countedTableRecord(ConnectEntity connectEntity, String tableName, int recordCount) {
         dbCompareEntityList.stream()
                 .filter(entity -> entity.getConnectEntity() == connectEntity)
-                .forEach(entity -> entity.getTableCompareEntity(tableName).setRecordCount(recordCount));
+                .forEach(entity -> {
+                    entity.getTableCompareEntity(tableName).setRecordCount(recordCount);
+
+                    // 画面に通知
+                    if (mainControllerNotification!=null) {
+                        mainControllerNotification.initProgress(tableName, recordCount);
+                    }
+                });
     }
 
     @Override
@@ -109,10 +128,17 @@ public class DBCompareService implements DBParseNotification {
     }
 
     @Override
-    public void parsedTableRecord(ConnectEntity connectEntity, String tableName, RecordHashEntity tableRecordEntity) {
+    public void parsedTableRecord(ConnectEntity connectEntity, String tableName, int rowNumber, RecordHashEntity tableRecordEntity) {
         dbCompareEntityList.stream()
                 .filter(entity -> entity.getConnectEntity() == connectEntity)
-                .forEach(entity -> entity.getTableCompareEntity(tableName).addRecordHashEntity(tableRecordEntity));
+                .forEach(entity -> {
+                    entity.getTableCompareEntity(tableName).addRecordHashEntity(tableRecordEntity);
+
+                    // 画面に通知
+                    if (mainControllerNotification!=null) {
+                        mainControllerNotification.updateProgress(tableName, rowNumber);
+                    }
+                });
     }
 
     @Override

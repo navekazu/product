@@ -28,7 +28,7 @@ public class DBParseNotificationAdapter implements DBParseNotification{
     }
 
     @Override
-    public void parsedTableRecord(ConnectEntity connectEntity, String tableName, RecordHashEntity tableRecordEntity) {
+    public void parsedTableRecord(ConnectEntity connectEntity, String tableName, int rowNumber, RecordHashEntity tableRecordEntity) {
 
     }
 

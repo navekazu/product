@@ -223,7 +223,7 @@ public class DBParseServiceTest {
     public void parsedTableRecordTest() {
         DBParseNotification dbParseNotification = new DBParseNotificationAdapter(){
             @Override
-            public void parsedTableRecord(ConnectEntity connectEntity, String tableName, RecordHashEntity tableRecordEntity) {
+            public void parsedTableRecord(ConnectEntity connectEntity, String tableName, int rowNumber, RecordHashEntity tableRecordEntity) {
                 switch (tableName) {
                     case "TABLE01":
                         assertEquals(1, tableRecordEntity.getPrimaryKeyValueMap().entrySet().size());
