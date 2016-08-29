@@ -3,14 +3,12 @@ package tools.dbcomparator2.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.controller.MainControllerNotification;
-import tools.dbcomparator2.entity.ConnectEntity;
-import tools.dbcomparator2.entity.DBCompareEntity;
-import tools.dbcomparator2.entity.RecordHashEntity;
-import tools.dbcomparator2.entity.TableCompareEntity;
-import tools.dbcomparator2.enums.DBCompareStatus;
+import tools.dbcomparator2.entity.*;
+import tools.dbcomparator2.enums.DBParseStatus;
+import tools.dbcomparator2.enums.RecordCompareStatus;
+import tools.dbcomparator2.enums.TableCompareStatus;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class DBCompareService implements DBParseNotification {
     private Logger logger = LoggerFactory.getLogger(DBCompareService.class);
@@ -18,9 +16,16 @@ public class DBCompareService implements DBParseNotification {
     private MainControllerNotification mainControllerNotification;
     private List<DBCompareEntity> dbCompareEntityList;
 
+    // 比較結果
+    private Map<String, TableCompareStatus> tableCompareStatusMap;
+    private Map<String, Map<String, RecordCompareStatus>> recordCompareStatusMap;
+
     public DBCompareService() {
         this.mainControllerNotification = null;
         this.dbCompareEntityList = new ArrayList<>();
+
+        this.tableCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
+        this.recordCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
     }
 
     public void setMainControllerNotification(MainControllerNotification mainControllerNotification) {
@@ -54,22 +59,22 @@ public class DBCompareService implements DBParseNotification {
     private void startCompare() {
         // DBParseServiceの初期化・登録
         dbCompareEntityList.stream()
-                .filter(entity -> entity.getStatus()!=DBCompareStatus.SCAN_FINISHED)
+                .filter(entity -> entity.getStatus()!= DBParseStatus.SCAN_FINISHED)
                 .forEach(entity -> entity.setDbParseService(new DBParseService(this, entity)));
 
         // DB接続
         dbCompareEntityList.parallelStream()
-                .filter(entity -> entity.getStatus() != DBCompareStatus.SCAN_FINISHED)
+                .filter(entity -> entity.getStatus() != DBParseStatus.SCAN_FINISHED)
                 .forEach(entity -> entity.getDbParseService().connect());
 
         // テーブル一覧取得
         dbCompareEntityList.parallelStream()
-                .filter(entity -> entity.getStatus() != DBCompareStatus.SCAN_FINISHED)
+                .filter(entity -> entity.getStatus() != DBParseStatus.SCAN_FINISHED)
                 .forEach(entity -> entity.getDbParseService().parseTableList());
 
         // 解析開始
         dbCompareEntityList.parallelStream()
-                .filter(entity -> entity.getStatus() != DBCompareStatus.SCAN_FINISHED)
+                .filter(entity -> entity.getStatus() != DBParseStatus.SCAN_FINISHED)
                 .forEach(
                         entity -> entity.getTableCompareEntityMap().keySet().parallelStream()
                                 .forEach(
@@ -79,12 +84,12 @@ public class DBCompareService implements DBParseNotification {
 
         // DB切断
         dbCompareEntityList.parallelStream()
-                .filter(entity -> entity.getStatus() != DBCompareStatus.SCAN_FINISHED)
+                .filter(entity -> entity.getStatus() != DBParseStatus.SCAN_FINISHED)
                 .forEach(entity -> entity.getDbParseService().disconnect());
 
         // ステータス更新
         dbCompareEntityList.stream()
-                .forEach(entity -> entity.setStatus(DBCompareStatus.SCAN_FINISHED));
+                .forEach(entity -> entity.setStatus(DBParseStatus.SCAN_FINISHED));
     }
 
     @Override
@@ -97,11 +102,7 @@ public class DBCompareService implements DBParseNotification {
                                 .tableName(tableName)
                                 .build();
                         entity.addTableCompareEntity(tableCompareEntity);
-
-                        // 画面に通知
-                        if (mainControllerNotification!=null) {
-                            mainControllerNotification.addRow(tableName);
-                        }
+                        putTableCompareStatusMap(tableName);
                     })
                 );
     }
@@ -133,11 +134,8 @@ public class DBCompareService implements DBParseNotification {
                 .filter(entity -> entity.getConnectEntity() == connectEntity)
                 .forEach(entity -> {
                     entity.getTableCompareEntity(tableName).addRecordHashEntity(tableRecordEntity);
+                    putRecordCompareStatusMap();
 
-                    // 画面に通知
-                    if (mainControllerNotification!=null) {
-                        mainControllerNotification.updateProgress(tableName, rowNumber);
-                    }
                 });
     }
 
@@ -149,5 +147,37 @@ public class DBCompareService implements DBParseNotification {
     @Override
     public void error(ConnectEntity connectEntity, Exception exception) {
 
+    }
+
+
+    private void putTableCompareStatusMap(String tableName) {
+        synchronized (tableCompareStatusMap) {
+            if (tableCompareStatusMap.containsKey(tableName)) {
+                tableCompareStatusMap.put(tableName, TableCompareStatus.PAIR);
+                return;
+            }
+
+            tableCompareStatusMap.put(tableName, TableCompareStatus.ONE_SIDE_ONLY);
+            // 画面に通知
+            if (mainControllerNotification!=null) {
+                mainControllerNotification.addRow(tableName);
+            }
+        }
+    }
+
+    private void putRecordCompareStatusMap(String tableName, RecordHashEntity tableRecordEntity) {
+        synchronized (recordCompareStatusMap) {
+            if (recordCompareStatusMap.containsKey(tableName)) {
+                if (recordCompareStatusMap.get(tableName).containsKey(tableRecordEntity.getPrimaryKeyHashValue())) {
+                    recordCompareStatusMap.get(tableName).put(tableRecordEntity.getPrimaryKeyHashValue(), RecordCompareStatus.EQUALITY);
+                    return;
+                }
+                recordCompareStatusMap.get(tableName).put(tableRecordEntity.getPrimaryKeyHashValue(), RecordCompareStatus.INEQUALITY);
+                // 画面に通知
+                if (mainControllerNotification!=null) {
+                    mainControllerNotification.updateProgress(tableName, rowNumber);
+                }
+            }
+        }
     }
 }

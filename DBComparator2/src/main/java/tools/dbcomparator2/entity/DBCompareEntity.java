@@ -2,7 +2,7 @@ package tools.dbcomparator2.entity;
 
 import lombok.Data;
 import lombok.experimental.Builder;
-import tools.dbcomparator2.enums.DBCompareStatus;
+import tools.dbcomparator2.enums.DBParseStatus;
 import tools.dbcomparator2.service.DBParseService;
 
 import java.util.*;
@@ -14,7 +14,7 @@ import java.util.*;
 @Builder
 public class DBCompareEntity {
     private ConnectEntity connectEntity;
-    private DBCompareStatus status;
+    private DBParseStatus status;
     private DBParseService dbParseService;
     private Map<String, TableCompareEntity> tableCompareEntityMap;
 

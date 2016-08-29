@@ -26,9 +26,6 @@ public class RecordHashEntity {
     // プライマリーキーのカラム名とその値のマップ
     private Map<String, Object> primaryKeyValueMap;
 
-    // 比較結果
-    private RecordCompareStatus recordCompareStatus;
-
     public void putPrimaryKeyValueMap(String column, Object value) {
         if (primaryKeyValueMap==null) {
             primaryKeyValueMap = new HashMap<>();

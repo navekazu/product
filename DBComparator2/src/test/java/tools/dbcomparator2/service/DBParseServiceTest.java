@@ -6,9 +6,8 @@ import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.DBCompareEntity;
 import tools.dbcomparator2.entity.RecordHashEntity;
-import tools.dbcomparator2.enums.DBCompareStatus;
+import tools.dbcomparator2.enums.DBParseStatus;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Statement;
@@ -130,7 +129,7 @@ public class DBParseServiceTest {
 
         DBParseService dbParseService = new DBParseService(dbParseNotification, dbCompareEntity);
         dbParseService.connect();
-        assertEquals(DBCompareStatus.CONNECTED, dbCompareEntity.getStatus());
+        assertEquals(DBParseStatus.CONNECTED, dbCompareEntity.getStatus());
         dbParseService.disconnect();
     }
 
@@ -154,7 +153,7 @@ public class DBParseServiceTest {
         dbParseService.connect();
         dbParseService.parseTableList();
 
-        assertEquals(DBCompareStatus.SCANNED_TABLE_LIST, dbCompareEntity.getStatus());
+        assertEquals(DBParseStatus.SCANNED_TABLE_LIST, dbCompareEntity.getStatus());
 
         dbParseService.disconnect();
     }
@@ -178,7 +177,7 @@ public class DBParseServiceTest {
         dbParseService.parseTableList();
         dbParseService.parseTableData("TABLE01");
 
-        assertEquals(DBCompareStatus.SCAN_FINISHED, dbCompareEntity.getStatus());
+        assertEquals(DBParseStatus.SCAN_FINISHED, dbCompareEntity.getStatus());
 
         dbParseService.disconnect();
     }
@@ -214,7 +213,7 @@ public class DBParseServiceTest {
         dbParseService.parseTableData("TABLE01");
         dbParseService.parseTableData("TABLE02");
 
-        assertEquals(DBCompareStatus.SCAN_FINISHED, dbCompareEntity.getStatus());
+        assertEquals(DBParseStatus.SCAN_FINISHED, dbCompareEntity.getStatus());
 
         dbParseService.disconnect();
     }
@@ -249,7 +248,7 @@ public class DBParseServiceTest {
         dbParseService.parseTableData("TABLE01");
         dbParseService.parseTableData("TABLE02");
 
-        assertEquals(DBCompareStatus.SCAN_FINISHED, dbCompareEntity.getStatus());
+        assertEquals(DBParseStatus.SCAN_FINISHED, dbCompareEntity.getStatus());
 
         dbParseService.disconnect();
     }

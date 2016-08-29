@@ -2,7 +2,8 @@ package tools.dbcomparator2.controller;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,16 +17,16 @@ import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.service.DBCompareService;
 
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController extends Application implements Initializable, MainControllerNotification {
+    private Logger logger = LoggerFactory.getLogger(MainController.class);
     private DBCompareService dbCompareService;
 
     @FXML
@@ -75,46 +76,48 @@ public class MainController extends Application implements Initializable, MainCo
 
     @FXML
     private void handleConnectButton(ActionEvent event) {
-
-        Thread t = new Thread() {
-
+        Service service = new Service() {
             @Override
-            public void run() {
-                ConnectEntity connectEntity1 = ConnectEntity.builder()
-                        .library("h2-1.3.176.jar")
-                        .driver("org.h2.Driver")
-                        .url("jdbc:h2:file:./testdb1/testdb")
-                        .user("sa")
-                        .password(null)
-                        .schema("PUBLIC")
-                        .build();
-                ConnectEntity connectEntity2 = ConnectEntity.builder()
-                        .library("h2-1.3.176.jar")
-                        .driver("org.h2.Driver")
-                        .url("jdbc:h2:file:./testdb2/testdb")
-                        .user("sa")
-                        .password(null)
-                        .schema("PUBLIC")
-                        .build();
-                dbCompareService.startCompare(connectEntity1, connectEntity2);
+            protected Task createTask() {
+                Task<Void> task = new Task<Void>() {
+                    @Override protected Void call() throws Exception {
+                        ConnectEntity connectEntity1 = ConnectEntity.builder()
+                                .library("h2-1.3.176.jar")
+                                .driver("org.h2.Driver")
+                                .url("jdbc:h2:file:./testdb1/testdb")
+                                .user("sa")
+                                .password(null)
+                                .schema("PUBLIC")
+                                .build();
+                        ConnectEntity connectEntity2 = ConnectEntity.builder()
+                                .library("h2-1.3.176.jar")
+                                .driver("org.h2.Driver")
+                                .url("jdbc:h2:file:./testdb2/testdb")
+                                .user("sa")
+                                .password(null)
+                                .schema("PUBLIC")
+                                .build();
+                        dbCompareService.startCompare(connectEntity1, connectEntity2);
+
+                        return null;
+                    }
+                };
+                return task;
             }
         };
-        t.start();
+        service.restart();
 
     }
 
     @FXML
     private void handleRestartButton(ActionEvent event) {
-
     }
 
     @Override
     public void addRow(String tableName) {
         synchronized (compareTableRecordMap) {
-            if (compareTableRecordMap.containsKey(tableName)) {
-                return;
-            }
-            CompareTableRecord record = CompareTableRecord.builder().tableName(tableName).build();
+            CompareTableRecord record = new CompareTableRecord();
+            record.setTableName(tableName);
             compareTableRecordMap.put(tableName, record);
             compareTable.getItems().add(record);
         }
@@ -131,13 +134,26 @@ public class MainController extends Application implements Initializable, MainCo
     }
 
     @Override
-    public void updateProgress(String tableName, int count) {
+    public void updateProgress(String tableName, final int count) {
         if (!compareTableRecordMap.containsKey(tableName)) {
             return;
         }
 
-        CompareTableRecord record = compareTableRecordMap.get(tableName);
-        record.setProgress(((double) (count + 1) / (double) record.getRowCount()));
-        record.setMemo(String.format("%,d/%,d", (count + 1), record.getRowCount()));
+//        Platform.runLater(() -> {
+            List<CompareTableRecord> list = compareTable.getItems();
+            list.stream()
+                    .filter(record -> tableName.equals(record.getTableName()))
+                    .forEach(record -> {
+                        double d = ((double) (count + 1) / (double) record.getRowCount());
+                        record.setProgress(d);
+                        record.setMemo(String.format("%,d/%,d", (count + 1), record.getRowCount()));
+                    });
+
+//            CompareTableRecord record = compareTableRecordMap.get(tableName);
+//            double d = ((double) (count + 1) / (double) record.getRowCount());
+//            logger.debug("d:"+d);
+//            record.setProgress(d);
+//            record.setMemo(String.format("%,d/%,d", (count + 1), record.getRowCount()));
+//        });
     }
 }

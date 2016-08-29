@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.DBCompareEntity;
 import tools.dbcomparator2.entity.RecordHashEntity;
-import tools.dbcomparator2.enums.DBCompareStatus;
+import tools.dbcomparator2.enums.DBParseStatus;
 import tools.dbcomparator2.enums.RecordCompareStatus;
 
 import java.io.File;
@@ -27,7 +27,7 @@ public class DBParseService {
         this.notification = notification;
         this.dbCompareEntity = dbCompareEntity;
         this.connection = null;
-        dbCompareEntity.setStatus(DBCompareStatus.READY);
+        dbCompareEntity.setStatus(DBParseStatus.READY);
     }
 
     public void connect() {
@@ -61,12 +61,12 @@ public class DBParseService {
                 connection = driver.connect(connectEntity.getUrl(), info);
             }
 
-            dbCompareEntity.setStatus(DBCompareStatus.CONNECTED);
+            dbCompareEntity.setStatus(DBParseStatus.CONNECTED);
             logger.info(String.format("DB connect end. %s", dbCompareEntity.getConnectEntity().getConnectionName()));
 
         } catch (Exception e) {
             e.printStackTrace();
-            dbCompareEntity.setStatus(DBCompareStatus.FAILED);
+            dbCompareEntity.setStatus(DBParseStatus.FAILED);
             notification.fatal(connectEntity, e);
         }
     }
@@ -80,7 +80,7 @@ public class DBParseService {
             logger.info(String.format("DB disconnect end. %s", dbCompareEntity.getConnectEntity().getConnectionName()));
         } catch (SQLException e) {
             e.printStackTrace();
-            dbCompareEntity.setStatus(DBCompareStatus.FAILED);
+            dbCompareEntity.setStatus(DBParseStatus.FAILED);
             notification.fatal(dbCompareEntity.getConnectEntity(), e);
         }
     }
@@ -99,13 +99,13 @@ public class DBParseService {
                 }
             }
 
-            dbCompareEntity.setStatus(DBCompareStatus.SCANNED_TABLE_LIST);
+            dbCompareEntity.setStatus(DBParseStatus.SCANNED_TABLE_LIST);
             notification.parsedTableList(dbCompareEntity.getConnectEntity(), tableList);
             logger.info(String.format("Table parse end. [count:%,d] %s",tableList.size(), dbCompareEntity.getConnectEntity().getConnectionName()));
 
         } catch (SQLException e) {
             e.printStackTrace();
-            dbCompareEntity.setStatus(DBCompareStatus.FAILED);
+            dbCompareEntity.setStatus(DBParseStatus.FAILED);
             notification.fatal(dbCompareEntity.getConnectEntity(), e);
         }
 
@@ -122,7 +122,7 @@ public class DBParseService {
 
             // PK情報の取得
             List<String> primaryKeyList = getPrimaryKeyList(tableName);
-            dbCompareEntity.setStatus(DBCompareStatus.SCANNED_PRIMARY_KEY);
+            dbCompareEntity.setStatus(DBParseStatus.SCANNED_PRIMARY_KEY);
             notification.parsedPrimaryKey(dbCompareEntity.getConnectEntity(), tableName, primaryKeyList);
             logger.info(String.format("PrimaryKey parse end. [column count:%,d] [table:%s] %s", primaryKeyList.size(), tableName, dbCompareEntity.getConnectEntity().getConnectionName()));
 
@@ -161,7 +161,6 @@ public class DBParseService {
                                 .primaryKeyHashValue(RecordHashEntity.createHashValue((List)primaryKeyValueList))
                                 .allColumnHashValue(RecordHashEntity.createHashValue((List)allColumnValueList))
                                 .primaryKeyValueMap(primaryKeyValueMap)
-                                .recordCompareStatus(RecordCompareStatus.READY)
                                 .build();
                         notification.parsedTableRecord(dbCompareEntity.getConnectEntity(), tableName, row, tableRecordEntity);
 
@@ -178,11 +177,11 @@ public class DBParseService {
                 }
             }
 
-            dbCompareEntity.setStatus(DBCompareStatus.SCAN_FINISHED);
+            dbCompareEntity.setStatus(DBParseStatus.SCAN_FINISHED);
             logger.info(String.format("Data parse end. [table:%s] %s", tableName, dbCompareEntity.getConnectEntity().getConnectionName()));
         } catch (SQLException e) {
             e.printStackTrace();
-            dbCompareEntity.setStatus(DBCompareStatus.FAILED);
+            dbCompareEntity.setStatus(DBParseStatus.FAILED);
             notification.fatal(dbCompareEntity.getConnectEntity(), e);
         }
     }
