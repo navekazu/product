@@ -134,7 +134,7 @@ public class DBCompareService implements DBParseNotification {
                 .filter(entity -> entity.getConnectEntity() == connectEntity)
                 .forEach(entity -> {
                     entity.getTableCompareEntity(tableName).addRecordHashEntity(tableRecordEntity);
-                    putRecordCompareStatusMap();
+//                    putRecordCompareStatusMap();
 
                 });
     }
@@ -175,7 +175,7 @@ public class DBCompareService implements DBParseNotification {
                 recordCompareStatusMap.get(tableName).put(tableRecordEntity.getPrimaryKeyHashValue(), RecordCompareStatus.INEQUALITY);
                 // 画面に通知
                 if (mainControllerNotification!=null) {
-                    mainControllerNotification.updateProgress(tableName, rowNumber);
+//                    mainControllerNotification.updateProgress(tableName, rowNumber);
                 }
             }
         }

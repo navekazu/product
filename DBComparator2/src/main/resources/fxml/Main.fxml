@@ -1,10 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="700.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tools.dbcomparator2.controller.MainController">
+<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tools.dbcomparator2.controller.MainController">
+   <bottom>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="statusLabel" />
+         </children>
+      </VBox>
+   </bottom>
+   <top>
+      <Accordion BorderPane.alignment="CENTER">
+        <panes>
+          <TitledPane animated="false" text="General operations">
+            <content>
+              <AnchorPane>
+                     <children>
+                        <FlowPane hgap="3.0" orientation="VERTICAL" vgap="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <BorderPane>
+                                 <center>
+                                    <fx:include source="./Connect.fxml" />
+                                 </center>
+                                 <top>
+                                    <FlowPane BorderPane.alignment="CENTER">
+                                       <children>
+                                          <Label text="Primary database" />
+                                       </children>
+                                    </FlowPane>
+                                 </top>
+                                 <left>
+                                    <FlowPane prefWidth="10.0" BorderPane.alignment="CENTER" />
+                                 </left>
+                              </BorderPane>
+                              <Separator />
+                              <BorderPane>
+                                 <top>
+                                    <FlowPane BorderPane.alignment="CENTER">
+                                       <children>
+                                          <Label text="Secondary database" />
+                                       </children>
+                                    </FlowPane>
+                                 </top>
+                                 <center>
+                                    <fx:include source="./Connect.fxml" />
+                                 </center>
+                                 <left>
+                                    <FlowPane prefWidth="10.0" BorderPane.alignment="CENTER" />
+                                 </left>
+                              </BorderPane>
+                              <Separator prefWidth="200.0" />
+                              <BorderPane>
+                                 <center>
+                                    <BorderPane BorderPane.alignment="CENTER">
+                                       <left>
+                                          <GridPane BorderPane.alignment="CENTER">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label text="Compare type" />
+                                             </children>
+                                          </GridPane>
+                                       </left>
+                                       <center>
+                                          <GridPane BorderPane.alignment="CENTER">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <ChoiceBox fx:id="compareType" prefWidth="150.0" />
+                                             </children>
+                                          </GridPane>
+                                       </center>
+                                    </BorderPane>
+                                 </center>
+                                 <top>
+                                    <FlowPane BorderPane.alignment="CENTER">
+                                       <children>
+                                          <Label text="Operations" />
+                                       </children>
+                                    </FlowPane>
+                                 </top>
+                                 <left>
+                                    <FlowPane prefWidth="10.0" BorderPane.alignment="CENTER" />
+                                 </left>
+                                 <bottom>
+                                    <Button fx:id="startCompareButton" mnemonicParsing="false" onAction="#handleStartCompareButton" text="Start compare" BorderPane.alignment="CENTER">
+                                       <BorderPane.margin>
+                                          <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                       </BorderPane.margin>
+                                       <padding>
+                                          <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+                                       </padding>
+                                    </Button>
+                                 </bottom>
+                              </BorderPane>
+                           </children>
+                        </FlowPane>
+                     </children>
+                     <padding>
+                        <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                     </padding>
+                  </AnchorPane>
+            </content>
+          </TitledPane>
+        </panes>
+      </Accordion>
+   </top>
    <center>
       <TableView fx:id="compareTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
@@ -14,19 +129,4 @@
         </columns>
       </TableView>
    </center>
-   <bottom>
-      <VBox BorderPane.alignment="CENTER">
-         <children>
-            <Label fx:id="statusLabel" />
-         </children>
-      </VBox>
-   </bottom>
-   <top>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <items>
-          <Button fx:id="connectButton" mnemonicParsing="false" onAction="#handleConnectButton" text="Connect" />
-            <Button fx:id="restartButton" mnemonicParsing="false" onAction="#handleRestartButton" text="Restart" />
-        </items>
-      </ToolBar>
-   </top>
 </BorderPane>

@@ -8,9 +8,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ProgressBarTableCell;
@@ -28,6 +30,12 @@ import java.util.*;
 public class MainController extends Application implements Initializable, MainControllerNotification {
     private Logger logger = LoggerFactory.getLogger(MainController.class);
     private DBCompareService dbCompareService;
+
+    @FXML
+    private SplitPane mainSplitPane;
+
+    @FXML
+    private Node mainBorderPane;
 
     @FXML
     private TableView compareTable;
@@ -71,6 +79,13 @@ public class MainController extends Application implements Initializable, MainCo
         dbCompareService.setMainControllerNotification(this);
 
         compareTableRecordMap = Collections.synchronizedMap(new HashMap<>());
+
+//        SplitPane.setResizableWithParent(mainSplitPane, false);
+
+    }
+
+    @FXML
+    private void handleStartCompareButton(ActionEvent event) {
 
     }
 
