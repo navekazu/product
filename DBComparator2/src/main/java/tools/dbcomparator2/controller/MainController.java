@@ -8,13 +8,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
@@ -22,6 +18,7 @@ import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.ConnectEntity;
+import tools.dbcomparator2.enums.CompareType;
 import tools.dbcomparator2.service.DBCompareService;
 
 import java.net.URL;
@@ -32,10 +29,29 @@ public class MainController extends Application implements Initializable, MainCo
     private DBCompareService dbCompareService;
 
     @FXML
-    private SplitPane mainSplitPane;
+    private TitledPane generalOperationsTitledPane;
 
     @FXML
-    private Node mainBorderPane;
+    private Accordion generalOperationsAccordion;
+
+
+    @FXML
+    private ConnectController primaryController;
+
+    @FXML
+    private ConnectController secondaryController;
+
+    @FXML
+    private ChoiceBox compareType;
+
+    @FXML
+    private Button startCompareButton;
+
+    @FXML
+    private Button restartCompareButton;
+
+    @FXML
+    private Button cancelButton;
 
     @FXML
     private TableView compareTable;
@@ -53,6 +69,8 @@ public class MainController extends Application implements Initializable, MainCo
     private Label statusLabel;
 
     private Map<String, CompareTableRecord> compareTableRecordMap;
+
+    private Service compareBackgroundService;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -80,22 +98,37 @@ public class MainController extends Application implements Initializable, MainCo
 
         compareTableRecordMap = Collections.synchronizedMap(new HashMap<>());
 
-//        SplitPane.setResizableWithParent(mainSplitPane, false);
+        compareType.getItems().add(CompareType.IMMEDIATE);
+        compareType.getItems().add(CompareType.PIVOT);
+        compareType.getItems().add(CompareType.ROTATION);
+        compareType.getSelectionModel().select(0);
 
-    }
+        generalOperationsAccordion.setExpandedPane(generalOperationsTitledPane);
 
-    @FXML
-    private void handleStartCompareButton(ActionEvent event) {
+        restartCompareButton.setDisable(true);
+        cancelButton.setDisable(true);
 
-    }
 
-    @FXML
-    private void handleConnectButton(ActionEvent event) {
-        Service service = new Service() {
+        // テストコード
+        primaryController.setLibraryPath("h2-1.3.176.jar");
+        primaryController.setDriver("org.h2.Driver");
+        primaryController.setUrl("jdbc:h2:file:./testdb1/testdb");
+        primaryController.setUser("sa");
+        primaryController.setPassword("");
+        primaryController.setSchema("PUBLIC");
+        secondaryController.setLibraryPath("h2-1.3.176.jar");
+        secondaryController.setDriver("org.h2.Driver");
+        secondaryController.setUrl("jdbc:h2:file:./testdb2/testdb");
+        secondaryController.setUser("sa");
+        secondaryController.setPassword("");
+        secondaryController.setSchema("PUBLIC");
+
+        compareBackgroundService = new Service() {
             @Override
             protected Task createTask() {
                 Task<Void> task = new Task<Void>() {
-                    @Override protected Void call() throws Exception {
+                    @Override
+                    protected Void call() throws Exception {
                         ConnectEntity connectEntity1 = ConnectEntity.builder()
                                 .library("h2-1.3.176.jar")
                                 .driver("org.h2.Driver")
@@ -116,16 +149,61 @@ public class MainController extends Application implements Initializable, MainCo
 
                         return null;
                     }
+
+                    @Override
+                    protected void 	scheduled() {
+                        updateStatus(isRunning());
+                    }
+
+                    @Override
+                    protected void 	cancelled() {
+                        updateStatus(isRunning());
+                    }
+
+                    @Override
+                    protected void 	failed() {
+                        updateStatus(isRunning());
+                    }
+
+                    @Override
+                    protected void 	succeeded() {
+                        updateStatus(isRunning());
+                    }
                 };
                 return task;
             }
         };
-        service.restart();
+        updateStatus(false);
+    }
 
+    private void updateStatus(boolean isRunning) {
+        startCompareButton.setDisable(isRunning);
+        restartCompareButton.setDisable(isRunning);
+        cancelButton.setDisable(!isRunning);
     }
 
     @FXML
-    private void handleRestartButton(ActionEvent event) {
+    private void handleStartCompareButton(ActionEvent event) {
+        generalOperationsTitledPane.setExpanded(false);
+        statusLabel.setText("Compare start.");
+
+        dbCompareService.setCompareType((CompareType) compareType.getSelectionModel().getSelectedItem());
+        compareBackgroundService.restart();
+    }
+
+    @FXML
+    private void handleRestartCompareButton(ActionEvent event) {
+        generalOperationsTitledPane.setExpanded(false);
+        statusLabel.setText("Compare start.");
+
+        dbCompareService.setCompareType((CompareType) compareType.getSelectionModel().getSelectedItem());
+        compareBackgroundService.restart();
+    }
+
+    @FXML
+    private void handleCancelButton(ActionEvent event) {
+        statusLabel.setText("Compare cancel.");
+        compareBackgroundService.cancel();
     }
 
     @Override

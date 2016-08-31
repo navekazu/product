@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.controller.MainControllerNotification;
 import tools.dbcomparator2.entity.*;
+import tools.dbcomparator2.enums.CompareType;
 import tools.dbcomparator2.enums.DBParseStatus;
 import tools.dbcomparator2.enums.RecordCompareStatus;
 import tools.dbcomparator2.enums.TableCompareStatus;
@@ -15,6 +16,7 @@ public class DBCompareService implements DBParseNotification {
     private static final int MAX_COMPARE_COUNT = 2;
     private MainControllerNotification mainControllerNotification;
     private List<DBCompareEntity> dbCompareEntityList;
+    private CompareType compareType;
 
     // 比較結果
     private Map<String, TableCompareStatus> tableCompareStatusMap;
@@ -26,6 +28,10 @@ public class DBCompareService implements DBParseNotification {
 
         this.tableCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
         this.recordCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
+    }
+
+    public void setCompareType(CompareType compareType) {
+        this.compareType = compareType;
     }
 
     public void setMainControllerNotification(MainControllerNotification mainControllerNotification) {

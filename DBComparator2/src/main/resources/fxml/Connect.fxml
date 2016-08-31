@@ -25,6 +25,7 @@
             <Label text="URL" GridPane.rowIndex="2" />
             <Label text="User" GridPane.rowIndex="3" />
             <Label text="Password" GridPane.rowIndex="4" />
+            <Label text="Schema" GridPane.rowIndex="5" />
          </children>
       </GridPane>
    </left>
@@ -44,16 +45,24 @@
          <children>
             <BorderPane>
                <center>
-                  <TextField BorderPane.alignment="CENTER" />
+                  <TextField fx:id="libraryPathField" BorderPane.alignment="CENTER" />
                </center>
                <right>
-                  <Button mnemonicParsing="false" text="..." BorderPane.alignment="CENTER" />
+                  <Button fx:id="referenceButton" mnemonicParsing="false" onAction="#handleReferenceButton" text="..." BorderPane.alignment="CENTER" />
                </right>
             </BorderPane>
-            <TextField GridPane.rowIndex="1" />
-            <TextField GridPane.rowIndex="2" />
-            <TextField GridPane.rowIndex="3" />
-            <PasswordField GridPane.rowIndex="4" />
+            <TextField fx:id="driverField" GridPane.rowIndex="1" />
+            <BorderPane GridPane.rowIndex="2">
+               <center>
+                  <TextField fx:id="urlField" BorderPane.alignment="CENTER" />
+               </center>
+               <right>
+                  <Button fx:id="backslashToSlashButton" mnemonicParsing="false" onAction="#handleBackslashToSlashButton" text="\\ to /" BorderPane.alignment="CENTER" />
+               </right>
+            </BorderPane>
+            <TextField fx:id="userField" GridPane.rowIndex="3" />
+            <PasswordField fx:id="passwordField" GridPane.rowIndex="4" />
+            <TextField fx:id="schemaField" GridPane.rowIndex="5" />
          </children>
       </GridPane>
    </center>
