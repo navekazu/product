@@ -17,8 +17,8 @@ public class DBCompareService implements DBParseNotification {
     private Logger logger = LoggerFactory.getLogger(DBCompareService.class);
     private static final int MAX_COMPARE_COUNT = 2;
     private MainControllerNotification mainControllerNotification;
-    private List<DBCompareEntity> dbCompareEntityList;
     private CompareType compareType;
+    List<DBCompareEntity> dbCompareEntityList;
 
     // 比較結果
     private Map<String, TableCompareStatus> tableCompareStatusMap;
@@ -70,6 +70,8 @@ public class DBCompareService implements DBParseNotification {
                     // 2つ目を削除
                     dbCompareEntityList.remove(1);
                     break;
+
+                case IMMEDIATE:
                 case ROTATION:
                     // 先頭を削除
                     dbCompareEntityList.remove(0);
@@ -109,8 +111,10 @@ public class DBCompareService implements DBParseNotification {
 
         // DB切断
         dbCompareEntityList.parallelStream()
-                .filter(entity -> entity.getStatus() != DBParseStatus.SCAN_FINISHED)
-                .forEach(entity -> entity.getDbParseService().disconnect());
+//                .filter(entity -> entity.getStatus() != DBParseStatus.SCAN_FINISHED)
+                .forEach(entity -> {
+                    entity.getDbParseService().disconnect();
+                });
 
         // ステータス更新
         dbCompareEntityList.stream()

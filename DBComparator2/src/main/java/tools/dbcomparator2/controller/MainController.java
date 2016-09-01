@@ -117,21 +117,6 @@ public class MainController extends Application implements Initializable, MainCo
         restartCompareButton.setDisable(true);
         cancelButton.setDisable(true);
 
-
-        // テストコード
-        primaryController.setLibraryPath("h2-1.3.176.jar");
-        primaryController.setDriver("org.h2.Driver");
-        primaryController.setUrl("jdbc:h2:file:./testdb1/testdb");
-        primaryController.setUser("sa");
-        primaryController.setPassword("");
-        primaryController.setSchema("PUBLIC");
-        secondaryController.setLibraryPath("h2-1.3.176.jar");
-        secondaryController.setDriver("org.h2.Driver");
-        secondaryController.setUrl("jdbc:h2:file:./testdb2/testdb");
-        secondaryController.setUser("sa");
-        secondaryController.setPassword("");
-        secondaryController.setSchema("PUBLIC");
-
         compareBackgroundService = new Service() {
             @Override
             protected Task createTask() {
@@ -166,6 +151,20 @@ public class MainController extends Application implements Initializable, MainCo
             }
         };
         updateStatus(false);
+
+        // テストコード
+        primaryController.setLibraryPath("h2-1.3.176.jar");
+        primaryController.setDriver("org.h2.Driver");
+        primaryController.setUrl("jdbc:h2:file:./testdb1/testdb");
+        primaryController.setUser("sa");
+        primaryController.setPassword("");
+        primaryController.setSchema("PUBLIC");
+        secondaryController.setLibraryPath("h2-1.3.176.jar");
+        secondaryController.setDriver("org.h2.Driver");
+        secondaryController.setUrl("jdbc:h2:file:./testdb2/testdb");
+        secondaryController.setUser("sa");
+        secondaryController.setPassword("");
+        secondaryController.setSchema("PUBLIC");
     }
 
     private void updateStatus(boolean isRunning) {
