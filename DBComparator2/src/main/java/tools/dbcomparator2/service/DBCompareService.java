@@ -34,6 +34,21 @@ public class DBCompareService implements DBParseNotification {
         this.compareType = compareType;
     }
 
+    public boolean canRestartable() {
+        // dbCompareEntityListが空なら再開不可
+        if (dbCompareEntityList.size()==0) {
+            return false;
+        }
+
+        // dbCompareEntityListの先頭が解析完了していないなら再開不可
+        if (dbCompareEntityList.get(0).getStatus()!=DBParseStatus.SCAN_FINISHED) {
+            return false;
+        }
+
+        // dbCompareEntityListの先頭が解析完了しているなら再開可
+        return true;
+    }
+
     public void setMainControllerNotification(MainControllerNotification mainControllerNotification) {
         this.mainControllerNotification = mainControllerNotification;
     }

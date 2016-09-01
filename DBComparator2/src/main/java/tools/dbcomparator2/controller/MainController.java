@@ -2,6 +2,8 @@ package tools.dbcomparator2.controller;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -102,6 +104,13 @@ public class MainController extends Application implements Initializable, MainCo
         compareType.getItems().add(CompareType.PIVOT);
         compareType.getItems().add(CompareType.ROTATION);
         compareType.getSelectionModel().select(0);
+        compareType.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<CompareType>() {
+                    @Override
+                    public void changed(ObservableValue<? extends CompareType> observable, CompareType oldValue, CompareType newValue) {
+                        updateStatus(false);
+                    }
+                });
 
         generalOperationsAccordion.setExpandedPane(generalOperationsTitledPane);
 
@@ -130,20 +139,20 @@ public class MainController extends Application implements Initializable, MainCo
                     @Override
                     protected Void call() throws Exception {
                         ConnectEntity connectEntity1 = ConnectEntity.builder()
-                                .library("h2-1.3.176.jar")
-                                .driver("org.h2.Driver")
-                                .url("jdbc:h2:file:./testdb1/testdb")
-                                .user("sa")
-                                .password(null)
-                                .schema("PUBLIC")
+                                .library(primaryController.getLibraryPath())
+                                .driver(primaryController.getDriver())
+                                .url(primaryController.getUrl())
+                                .user(primaryController.getUser())
+                                .password(primaryController.getPassword())
+                                .schema(primaryController.getSchema())
                                 .build();
                         ConnectEntity connectEntity2 = ConnectEntity.builder()
-                                .library("h2-1.3.176.jar")
-                                .driver("org.h2.Driver")
-                                .url("jdbc:h2:file:./testdb2/testdb")
-                                .user("sa")
-                                .password(null)
-                                .schema("PUBLIC")
+                                .library(secondaryController.getLibraryPath())
+                                .driver(secondaryController.getDriver())
+                                .url(secondaryController.getUrl())
+                                .user(secondaryController.getUser())
+                                .password(secondaryController.getPassword())
+                                .schema(secondaryController.getSchema())
                                 .build();
                         dbCompareService.startCompare(connectEntity1, connectEntity2);
 
@@ -177,8 +186,9 @@ public class MainController extends Application implements Initializable, MainCo
     }
 
     private void updateStatus(boolean isRunning) {
+        compareType.setDisable(isRunning);
         startCompareButton.setDisable(isRunning);
-        restartCompareButton.setDisable(isRunning);
+        restartCompareButton.setDisable(!(!isRunning && dbCompareService.canRestartable() && compareType.getSelectionModel().getSelectedItem()!=CompareType.IMMEDIATE));
         cancelButton.setDisable(!isRunning);
     }
 

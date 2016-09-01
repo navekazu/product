@@ -81,9 +81,6 @@ public class ConnectController implements Initializable {
 
 
 
-
-
-
     public void setLibraryPath(String value) {
         libraryPathField.setText(value);
     }
