@@ -7,6 +7,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import tools.dbcomparator2.entity.ConnectEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 public class DBCompareServiceTest {
@@ -30,25 +33,26 @@ public class DBCompareServiceTest {
     @Test
     public void test() {
 
-        ConnectEntity connectEntity1 = ConnectEntity.builder()
+        List<ConnectEntity> entityList = new ArrayList<>();
+        entityList.add(ConnectEntity.builder()
                 .library("h2-1.3.176.jar")
                 .driver("org.h2.Driver")
                 .url("jdbc:h2:file:./testdb1/testdb")
                 .user("sa")
                 .password(null)
                 .schema("PUBLIC")
-                .build();
-        ConnectEntity connectEntity2 = ConnectEntity.builder()
+                .build());
+        entityList.add(ConnectEntity.builder()
                 .library("h2-1.3.176.jar")
                 .driver("org.h2.Driver")
                 .url("jdbc:h2:file:./testdb2/testdb")
                 .user("sa")
                 .password(null)
                 .schema("PUBLIC")
-                .build();
+                .build());
 
         DBCompareService service = new DBCompareService();
-        service.startCompare(connectEntity1, connectEntity2);
+        service.updateConnectEntity(entityList);
         assertEquals(true, true);
     }
 }

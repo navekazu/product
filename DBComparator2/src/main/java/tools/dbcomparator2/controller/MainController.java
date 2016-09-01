@@ -138,24 +138,7 @@ public class MainController extends Application implements Initializable, MainCo
                 Task<Void> task = new Task<Void>() {
                     @Override
                     protected Void call() throws Exception {
-                        ConnectEntity connectEntity1 = ConnectEntity.builder()
-                                .library(primaryController.getLibraryPath())
-                                .driver(primaryController.getDriver())
-                                .url(primaryController.getUrl())
-                                .user(primaryController.getUser())
-                                .password(primaryController.getPassword())
-                                .schema(primaryController.getSchema())
-                                .build();
-                        ConnectEntity connectEntity2 = ConnectEntity.builder()
-                                .library(secondaryController.getLibraryPath())
-                                .driver(secondaryController.getDriver())
-                                .url(secondaryController.getUrl())
-                                .user(secondaryController.getUser())
-                                .password(secondaryController.getPassword())
-                                .schema(secondaryController.getSchema())
-                                .build();
-                        dbCompareService.startCompare(connectEntity1, connectEntity2);
-
+                        dbCompareService.startCompare();
                         return null;
                     }
 
@@ -197,7 +180,31 @@ public class MainController extends Application implements Initializable, MainCo
         generalOperationsTitledPane.setExpanded(false);
         statusLabel.setText("Compare start.");
 
-        dbCompareService.setCompareType((CompareType) compareType.getSelectionModel().getSelectedItem());
+        CompareType type = (CompareType)compareType.getSelectionModel().getSelectedItem();
+        List<ConnectEntity> entityList = new ArrayList<>();
+
+        entityList.add(ConnectEntity.builder()
+                .library(primaryController.getLibraryPath())
+                .driver(primaryController.getDriver())
+                .url(primaryController.getUrl())
+                .user(primaryController.getUser())
+                .password(primaryController.getPassword())
+                .schema(primaryController.getSchema())
+                .build());
+
+        if (type!=CompareType.IMMEDIATE) {
+            entityList.add(ConnectEntity.builder()
+                    .library(secondaryController.getLibraryPath())
+                    .driver(secondaryController.getDriver())
+                    .url(secondaryController.getUrl())
+                    .user(secondaryController.getUser())
+                    .password(secondaryController.getPassword())
+                    .schema(secondaryController.getSchema())
+                    .build());
+        }
+
+        dbCompareService.setCompareType(type);
+        dbCompareService.updateConnectEntity(entityList);
         compareBackgroundService.restart();
     }
 
@@ -206,7 +213,17 @@ public class MainController extends Application implements Initializable, MainCo
         generalOperationsTitledPane.setExpanded(false);
         statusLabel.setText("Compare start.");
 
+        ConnectEntity secondaryEntity = ConnectEntity.builder()
+                .library(secondaryController.getLibraryPath())
+                .driver(secondaryController.getDriver())
+                .url(secondaryController.getUrl())
+                .user(secondaryController.getUser())
+                .password(secondaryController.getPassword())
+                .schema(secondaryController.getSchema())
+                .build();
+
         dbCompareService.setCompareType((CompareType) compareType.getSelectionModel().getSelectedItem());
+        dbCompareService.addConnectEntity(secondaryEntity);
         compareBackgroundService.restart();
     }
 

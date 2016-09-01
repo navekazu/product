@@ -11,6 +11,8 @@ import tools.dbcomparator2.enums.TableCompareStatus;
 
 import java.util.*;
 
+import static tools.dbcomparator2.enums.CompareType.PIVOT;
+
 public class DBCompareService implements DBParseNotification {
     private Logger logger = LoggerFactory.getLogger(DBCompareService.class);
     private static final int MAX_COMPARE_COUNT = 2;
@@ -53,31 +55,33 @@ public class DBCompareService implements DBParseNotification {
         this.mainControllerNotification = mainControllerNotification;
     }
 
-    public void startCompare(ConnectEntity connectEntity) {
+    public void updateConnectEntity(List<ConnectEntity> entityList) {
         dbCompareEntityList.clear();
-        addDbCompareEntityList(connectEntity);
-        startCompare();
+        entityList.stream().forEach(entity -> addDbCompareEntityList(entity));
     }
-
-    public void restartCompare(ConnectEntity connectEntity) {
+    public void addConnectEntity(ConnectEntity connectEntity) {
         addDbCompareEntityList(connectEntity);
-        startCompare();
-    }
-
-    public void startCompare(ConnectEntity firstConnectEntity, ConnectEntity secondConnectEntity) {
-        dbCompareEntityList.clear();
-        addDbCompareEntityList(firstConnectEntity);
-        addDbCompareEntityList(secondConnectEntity);
-        startCompare();
     }
 
     private void addDbCompareEntityList(ConnectEntity connectEntity) {
+        if (dbCompareEntityList.size()>=MAX_COMPARE_COUNT) {
+            switch (compareType) {
+                case PIVOT:
+                    // 2つ目を削除
+                    dbCompareEntityList.remove(1);
+                    break;
+                case ROTATION:
+                    // 先頭を削除
+                    dbCompareEntityList.remove(0);
+                    break;
+            }
+        }
         dbCompareEntityList.add(DBCompareEntity.builder()
                 .connectEntity(connectEntity)
                 .build());
     }
 
-    private void startCompare() {
+    public void startCompare() {
         // DBParseServiceの初期化・登録
         dbCompareEntityList.stream()
                 .filter(entity -> entity.getStatus()!= DBParseStatus.SCAN_FINISHED)
