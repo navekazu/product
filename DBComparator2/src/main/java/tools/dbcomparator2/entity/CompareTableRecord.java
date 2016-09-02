@@ -1,4 +1,4 @@
-package tools.dbcomparator2.controller;
+package tools.dbcomparator2.entity;
 
 import javafx.beans.property.*;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,6 @@
 package tools.dbcomparator2.controller;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
@@ -19,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.dbcomparator2.entity.CompareTableRecord;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.enums.CompareType;
 import tools.dbcomparator2.service.DBCompareService;
@@ -97,6 +97,7 @@ public class MainController extends Application implements Initializable, MainCo
 
         dbCompareService = new DBCompareService();
         dbCompareService.setMainControllerNotification(this);
+        dbCompareService.setCompareTableRecordList(compareTable.getItems());
 
         compareTableRecordMap = Collections.synchronizedMap(new HashMap<>());
 
@@ -191,7 +192,7 @@ public class MainController extends Application implements Initializable, MainCo
                 .schema(primaryController.getSchema())
                 .build());
 
-        if (type!=CompareType.IMMEDIATE) {
+        if (type==CompareType.IMMEDIATE) {
             entityList.add(ConnectEntity.builder()
                     .library(secondaryController.getLibraryPath())
                     .driver(secondaryController.getDriver())

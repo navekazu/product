@@ -76,9 +76,6 @@ public class DBParseService {
         try {
             if (connection!=null) {
                 connection.close();
-                if (connection.isClosed()) {
-                    logger.info(String.format("DB disconnect error. %s", dbCompareEntity.getConnectEntity().getConnectionName()));
-                }
             }
             logger.info(String.format("DB disconnect end. %s", dbCompareEntity.getConnectEntity().getConnectionName()));
         } catch (SQLException e) {

@@ -19,6 +19,7 @@ public class DBCompareService implements DBParseNotification {
     private MainControllerNotification mainControllerNotification;
     private CompareType compareType;
     List<DBCompareEntity> dbCompareEntityList;
+    List<CompareTableRecord> compareTableRecordList;
 
     // 比較結果
     private Map<String, TableCompareStatus> tableCompareStatusMap;
@@ -27,6 +28,7 @@ public class DBCompareService implements DBParseNotification {
     public DBCompareService() {
         this.mainControllerNotification = null;
         this.dbCompareEntityList = new ArrayList<>();
+        this.compareTableRecordList = new ArrayList<>(); // NullPointerException防止のためのインスタンス
 
         this.tableCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
         this.recordCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
@@ -34,6 +36,10 @@ public class DBCompareService implements DBParseNotification {
 
     public void setCompareType(CompareType compareType) {
         this.compareType = compareType;
+    }
+
+    public void setCompareTableRecordList(List<CompareTableRecord> compareTableRecordList) {
+        this.compareTableRecordList = compareTableRecordList;
     }
 
     public boolean canRestartable() {
@@ -144,9 +150,14 @@ public class DBCompareService implements DBParseNotification {
                     entity.getTableCompareEntity(tableName).setRecordCount(recordCount);
 
                     // 画面に通知
-                    if (mainControllerNotification!=null) {
-                        mainControllerNotification.initProgress(tableName, recordCount);
-                    }
+                    compareTableRecordList.stream()
+                            .filter(compareTableRecord -> tableName.equals(compareTableRecord.getTableName()))
+                            .forEach(compareTableRecord -> {
+                                if (compareTableRecord.getRowCount()<recordCount){
+                                    // 現状より大きい方をテーブルの行数とする
+                                    compareTableRecord.setRowCount(recordCount);
+                                }
+                            });
                 });
     }
 
@@ -187,10 +198,10 @@ public class DBCompareService implements DBParseNotification {
             }
 
             tableCompareStatusMap.put(tableName, TableCompareStatus.ONE_SIDE_ONLY);
-            // 画面に通知
-            if (mainControllerNotification!=null) {
-                mainControllerNotification.addRow(tableName);
-            }
+
+            CompareTableRecord compareTableRecord = new CompareTableRecord();
+            compareTableRecord.setTableName(tableName);
+            compareTableRecordList.add(compareTableRecord);
         }
     }
 
