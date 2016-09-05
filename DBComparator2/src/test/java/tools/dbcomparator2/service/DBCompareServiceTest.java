@@ -5,13 +5,18 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import tools.dbcomparator2.entity.CompareTableRecord;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.enums.CompareType;
+import tools.dbcomparator2.enums.TableCompareStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DBCompareServiceTest {
 
@@ -209,5 +214,79 @@ public class DBCompareServiceTest {
         service.startCompare();
         assertEquals(true, service.canRestartable());
 
+    }
+
+    @Test
+    public void compareTableRecordListTest_リストに追加する際のテスト() {
+
+        DBCompareService service = new DBCompareService();
+
+        // 初期状態はゼロ件
+        assertFalse(service.compareTableRecordList.stream().anyMatch(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())));
+
+        // 追加するとヒットし、ステータスはONE_SIDE_ONLY
+        service.addCompareTableRecordList("TEST_TABLE01");
+        assertTrue(service.compareTableRecordList.stream().anyMatch(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())));
+        List<CompareTableRecord> records1 = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(TableCompareStatus.ONE_SIDE_ONLY, records1.get(0).getTableCompareStatus());
+
+        // 2回目の追加は、ステータスがPAIRになる
+        service.addCompareTableRecordList("TEST_TABLE01");
+        assertTrue(service.compareTableRecordList.stream().anyMatch(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())));
+        List<CompareTableRecord> records2 = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(TableCompareStatus.PAIR, records2.get(0).getTableCompareStatus());
+    }
+
+    @Test
+    public void compareTableRecordListTest_テーブルのレコード件数更新のテスト() {
+        DBCompareService service = new DBCompareService();
+        service.addCompareTableRecordList("TEST_TABLE01");
+        service.addCompareTableRecordList("TEST_TABLE01");
+        service.addCompareTableRecordList("TEST_TABLE02");
+        service.addCompareTableRecordList("TEST_TABLE02");
+
+        List<CompareTableRecord> records;
+
+        // TEST_TABLE01 （TEST_TABLE02からの影響はない？）
+
+        // 初期値はゼロ
+        records = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(0, records.get(0).getRowCount());
+
+        // 更新したらその値になる
+        service.updateCompareTableRecordRowCount("TEST_TABLE01", 10);
+        records = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(10, records.get(0).getRowCount());
+
+        // 一度更新した値より小さい値への更新は行えない
+        service.updateCompareTableRecordRowCount("TEST_TABLE01", 5);
+        records = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(10, records.get(0).getRowCount());
+
+        // 一度更新した値より大きい値への更新は行える
+        service.updateCompareTableRecordRowCount("TEST_TABLE01", 15);
+        records = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(15, records.get(0).getRowCount());
+
+        // TEST_TABLE02 （TEST_TABLE01からの影響はない？）
+
+        // 初期値はゼロ
+        records = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE02".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(0, records.get(0).getRowCount());
+
+        // 更新したらその値になる
+        service.updateCompareTableRecordRowCount("TEST_TABLE02", 100);
+        records = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE02".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(100, records.get(0).getRowCount());
+
+        // 一度更新した値より小さい値への更新は行えない
+        service.updateCompareTableRecordRowCount("TEST_TABLE02", 50);
+        records = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE02".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(100, records.get(0).getRowCount());
+
+        // 一度更新した値より大きい値への更新は行える
+        service.updateCompareTableRecordRowCount("TEST_TABLE01", 15);
+        records = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
+        assertEquals(15, records.get(0).getRowCount());
     }
 }

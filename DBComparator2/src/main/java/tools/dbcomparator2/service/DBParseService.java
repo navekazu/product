@@ -6,7 +6,6 @@ import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.DBCompareEntity;
 import tools.dbcomparator2.entity.RecordHashEntity;
 import tools.dbcomparator2.enums.DBParseStatus;
-import tools.dbcomparator2.enums.RecordCompareStatus;
 
 import java.io.File;
 import java.net.URL;

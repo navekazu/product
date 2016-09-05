@@ -6,32 +6,31 @@ import tools.dbcomparator2.controller.MainControllerNotification;
 import tools.dbcomparator2.entity.*;
 import tools.dbcomparator2.enums.CompareType;
 import tools.dbcomparator2.enums.DBParseStatus;
-import tools.dbcomparator2.enums.RecordCompareStatus;
 import tools.dbcomparator2.enums.TableCompareStatus;
 
 import java.util.*;
-
-import static tools.dbcomparator2.enums.CompareType.PIVOT;
 
 public class DBCompareService implements DBParseNotification {
     private Logger logger = LoggerFactory.getLogger(DBCompareService.class);
     private static final int MAX_COMPARE_COUNT = 2;
     private MainControllerNotification mainControllerNotification;
     private CompareType compareType;
+
+    // 比較対象
     List<DBCompareEntity> dbCompareEntityList;
-    List<CompareTableRecord> compareTableRecordList;
 
     // 比較結果
-    private Map<String, TableCompareStatus> tableCompareStatusMap;
-    private Map<String, Map<String, RecordCompareStatus>> recordCompareStatusMap;
+//    Map<String, TableCompareStatus> tableCompareStatusMap;
+//    Map<String, Map<String, RecordCompareStatus>> recordCompareStatusMap;
+    List<CompareTableRecord> compareTableRecordList;
 
     public DBCompareService() {
         this.mainControllerNotification = null;
         this.dbCompareEntityList = new ArrayList<>();
         this.compareTableRecordList = new ArrayList<>(); // NullPointerException防止のためのインスタンス
 
-        this.tableCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
-        this.recordCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
+//        this.tableCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
+//        this.recordCompareStatusMap = Collections.synchronizedMap(new HashMap<>());
     }
 
     public void setCompareType(CompareType compareType) {
@@ -115,6 +114,8 @@ public class DBCompareService implements DBParseNotification {
                                 )
                 );
 
+        // この時点でまだ比較が出来ていないものは「出来ていない」のではなく「出来ない」ものなので、ステータスを更新する
+
         // DB切断
         dbCompareEntityList.parallelStream()
 //                .filter(entity -> entity.getStatus() != DBParseStatus.SCAN_FINISHED)
@@ -138,8 +139,26 @@ public class DBCompareService implements DBParseNotification {
                                 .build();
                         entity.addTableCompareEntity(tableCompareEntity);
                         putTableCompareStatusMap(tableName);
+
+                        addCompareTableRecordList(tableName);
                     })
                 );
+    }
+
+    void addCompareTableRecordList(String tableName) {
+        synchronized (compareTableRecordList) {
+            if (compareTableRecordList.parallelStream().anyMatch(compareTableRecord -> tableName.equals(compareTableRecord.getTableName()))) {
+                compareTableRecordList.stream()
+                        .filter(compareTableRecord -> tableName.equals(compareTableRecord.getTableName()))
+                        .forEach(compareTableRecord -> compareTableRecord.setTableCompareStatus(TableCompareStatus.PAIR));
+                return;
+            }
+
+            CompareTableRecord compareTableRecord = new CompareTableRecord();
+            compareTableRecord.setTableName(tableName);
+            compareTableRecord.setTableCompareStatus(TableCompareStatus.ONE_SIDE_ONLY);
+            compareTableRecordList.add(compareTableRecord);
+        }
     }
 
     @Override
@@ -148,18 +167,23 @@ public class DBCompareService implements DBParseNotification {
                 .filter(entity -> entity.getConnectEntity() == connectEntity)
                 .forEach(entity -> {
                     entity.getTableCompareEntity(tableName).setRecordCount(recordCount);
-
-                    // 画面に通知
-                    compareTableRecordList.stream()
-                            .filter(compareTableRecord -> tableName.equals(compareTableRecord.getTableName()))
-                            .forEach(compareTableRecord -> {
-                                if (compareTableRecord.getRowCount()<recordCount){
-                                    // 現状より大きい方をテーブルの行数とする
-                                    compareTableRecord.setRowCount(recordCount);
-                                }
-                            });
+                    updateCompareTableRecordRowCount(tableName, recordCount);
                 });
     }
+
+    void updateCompareTableRecordRowCount(String tableName, int recordCount) {
+        synchronized (compareTableRecordList) {
+            compareTableRecordList.stream()
+                    .filter(compareTableRecord -> tableName.equals(compareTableRecord.getTableName()))
+                    .forEach(compareTableRecord -> {
+                        if (compareTableRecord.getRowCount() < recordCount) {
+                            // 現状より大きい方をテーブルの行数とする
+                            compareTableRecord.setRowCount(recordCount);
+                        }
+                    });
+        }
+    }
+
 
     @Override
     public void parsedPrimaryKey(ConnectEntity connectEntity, String tableName, List<String> primaryKeyColumnList) {
@@ -172,11 +196,7 @@ public class DBCompareService implements DBParseNotification {
     public void parsedTableRecord(ConnectEntity connectEntity, String tableName, int rowNumber, RecordHashEntity tableRecordEntity) {
         dbCompareEntityList.stream()
                 .filter(entity -> entity.getConnectEntity() == connectEntity)
-                .forEach(entity -> {
-                    entity.getTableCompareEntity(tableName).addRecordHashEntity(tableRecordEntity);
-//                    putRecordCompareStatusMap();
-
-                });
+                .forEach(entity -> entity.getTableCompareEntity(tableName).addRecordHashEntity(tableRecordEntity));
     }
 
     @Override
@@ -191,6 +211,7 @@ public class DBCompareService implements DBParseNotification {
 
 
     private void putTableCompareStatusMap(String tableName) {
+/*
         synchronized (tableCompareStatusMap) {
             if (tableCompareStatusMap.containsKey(tableName)) {
                 tableCompareStatusMap.put(tableName, TableCompareStatus.PAIR);
@@ -203,9 +224,11 @@ public class DBCompareService implements DBParseNotification {
             compareTableRecord.setTableName(tableName);
             compareTableRecordList.add(compareTableRecord);
         }
+*/
     }
 
     private void putRecordCompareStatusMap(String tableName, RecordHashEntity tableRecordEntity) {
+/*
         synchronized (recordCompareStatusMap) {
             if (recordCompareStatusMap.containsKey(tableName)) {
                 if (recordCompareStatusMap.get(tableName).containsKey(tableRecordEntity.getPrimaryKeyHashValue())) {
@@ -219,5 +242,6 @@ public class DBCompareService implements DBParseNotification {
                 }
             }
         }
+*/
     }
 }
