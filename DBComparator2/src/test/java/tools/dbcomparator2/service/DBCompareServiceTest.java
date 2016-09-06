@@ -7,10 +7,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import tools.dbcomparator2.entity.CompareTableRecord;
 import tools.dbcomparator2.entity.ConnectEntity;
+import tools.dbcomparator2.entity.RecordHashEntity;
 import tools.dbcomparator2.enums.CompareType;
+import tools.dbcomparator2.enums.RecordCompareStatus;
 import tools.dbcomparator2.enums.TableCompareStatus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -288,5 +291,85 @@ public class DBCompareServiceTest {
         service.updateCompareTableRecordRowCount("TEST_TABLE01", 15);
         records = service.compareTableRecordList.stream().filter(compareTableRecord -> "TEST_TABLE01".equals(compareTableRecord.getTableName())).collect(Collectors.toList());
         assertEquals(15, records.get(0).getRowCount());
+    }
+
+    @Test
+    public void compareTableRecordListTest_値比較のテスト() {
+        List<ConnectEntity> entityList = new ArrayList<>();
+        ConnectEntity entity1 = ConnectEntity.builder()
+                .library("h2-1.3.176.jar")
+                .driver("org.h2.Driver")
+                .url("jdbc:h2:file:./testdb1/testdb")
+                .user("sa")
+                .password(null)
+                .schema("PUBLIC")
+                .build();
+        entityList.add(entity1);
+        ConnectEntity entity2 = ConnectEntity.builder()
+                .library("h2-1.3.176.jar")
+                .driver("org.h2.Driver")
+                .url("jdbc:h2:file:./testdb2/testdb")
+                .user("sa")
+                .password(null)
+                .schema("PUBLIC")
+                .build();
+        entityList.add(entity2);
+
+        DBCompareService service = new DBCompareService();
+        service.updateConnectEntity(entityList);
+        service.setCompareTableRecordList(new ArrayList<>());
+
+        service.addCompareTableRecordList("TEST_TABLE01");
+        service.addCompareTableRecordList("TEST_TABLE02");
+
+        List<String> tableList1 = new ArrayList<>();
+        List<String> tableList2 = new ArrayList<>();
+
+        tableList1.add("TEST_TABLE01");
+        tableList1.add("TEST_TABLE02");
+        tableList2.add("TEST_TABLE01");
+        tableList2.add("TEST_TABLE02");
+
+        service.parsedTableList(entity1, tableList1);
+        service.parsedTableList(entity2, tableList2);
+
+        service.updateCompareTableRecordRowCount("TEST_TABLE01", 10);
+        service.updateCompareTableRecordRowCount("TEST_TABLE02", 10);
+
+        RecordHashEntity tableRecordEntity1_01 = RecordHashEntity.builder()
+                .primaryKeyHashValue("A1")
+                .allColumnHashValue("B1")
+                .build();
+        RecordHashEntity tableRecordEntity1_02 = RecordHashEntity.builder()
+                .primaryKeyHashValue("A2")
+                .allColumnHashValue("B2")
+                .build();
+        RecordHashEntity tableRecordEntity2_01 = RecordHashEntity.builder()
+                .primaryKeyHashValue("A1")
+                .allColumnHashValue("B1")
+                .build();
+        RecordHashEntity tableRecordEntity2_02 = RecordHashEntity.builder()
+                .primaryKeyHashValue("A2")
+                .allColumnHashValue("B2_")
+                .build();
+
+        service.parsedTableRecord(entity1, "TEST_TABLE01", 0, tableRecordEntity1_01);
+        assertEquals(2, service.compareTableRecordList.size());
+        assertEquals("TEST_TABLE01", service.compareTableRecordList.get(0).getTableName());
+        assertEquals(1, service.compareTableRecordList.get(0).getPrimaryKeyHashValueMap().size());
+        assertEquals(RecordCompareStatus.ONE_SIDE_ONLY, service.compareTableRecordList.get(0).getPrimaryKeyHashValueMap().get("A1"));
+
+        service.parsedTableRecord(entity2, "TEST_TABLE01", 0, tableRecordEntity2_01);
+        assertEquals(RecordCompareStatus.EQUALITY, service.compareTableRecordList.get(0).getPrimaryKeyHashValueMap().get("A1"));
+
+        service.parsedTableRecord(entity1, "TEST_TABLE02", 0, tableRecordEntity1_02);
+        service.parsedTableRecord(entity2, "TEST_TABLE02", 0, tableRecordEntity2_02);
+        assertEquals(2, service.compareTableRecordList.size());
+        assertEquals("TEST_TABLE02", service.compareTableRecordList.get(1).getTableName());
+        assertEquals(1, service.compareTableRecordList.get(1).getPrimaryKeyHashValueMap().size());
+        assertEquals(RecordCompareStatus.INEQUALITY, service.compareTableRecordList.get(1).getPrimaryKeyHashValueMap().get("A2"));
+//        service.parsedTableRecord(entity1, "TEST_TABLE01", 0, tableRecordEntity1_02);
+//        service.parsedTableRecord(entity1, "TEST_TABLE02", 0, tableRecordEntity2_01);
+//        service.parsedTableRecord(entity1, "TEST_TABLE02", 0, tableRecordEntity2_02);
     }
 }

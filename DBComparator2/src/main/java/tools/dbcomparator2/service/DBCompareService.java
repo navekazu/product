@@ -6,6 +6,7 @@ import tools.dbcomparator2.controller.MainControllerNotification;
 import tools.dbcomparator2.entity.*;
 import tools.dbcomparator2.enums.CompareType;
 import tools.dbcomparator2.enums.DBParseStatus;
+import tools.dbcomparator2.enums.RecordCompareStatus;
 import tools.dbcomparator2.enums.TableCompareStatus;
 
 import java.util.*;
@@ -138,7 +139,6 @@ public class DBCompareService implements DBParseNotification {
                                 .tableName(tableName)
                                 .build();
                         entity.addTableCompareEntity(tableCompareEntity);
-                        putTableCompareStatusMap(tableName);
 
                         addCompareTableRecordList(tableName);
                     })
@@ -196,7 +196,41 @@ public class DBCompareService implements DBParseNotification {
     public void parsedTableRecord(ConnectEntity connectEntity, String tableName, int rowNumber, RecordHashEntity tableRecordEntity) {
         dbCompareEntityList.stream()
                 .filter(entity -> entity.getConnectEntity() == connectEntity)
-                .forEach(entity -> entity.getTableCompareEntity(tableName).addRecordHashEntity(tableRecordEntity));
+                .forEach(entity -> {
+                    entity.getTableCompareEntity(tableName).addRecordHashEntity(tableRecordEntity);
+                    updateCompareTableRecordCompareStatus(connectEntity, tableName, tableRecordEntity);
+                });
+    }
+
+    void updateCompareTableRecordCompareStatus(ConnectEntity connectEntity, String tableName, RecordHashEntity tableRecordEntity) {
+        synchronized (compareTableRecordList) {
+            compareTableRecordList.stream()
+                    .filter(compareTableRecord -> tableName.equals(compareTableRecord.getTableName()))
+                    .forEach(compareTableRecord -> {
+                        if (compareTableRecord.getPrimaryKeyHashValueMap().containsKey(tableRecordEntity.getPrimaryKeyHashValue())) {
+                            // すでにある -> 自身の接続以外の同じプライマリーキーハッシュを取ってきて、レコードハッシュと比較する
+                            RecordCompareStatus status = RecordCompareStatus.INEQUALITY;
+                            if (dbCompareEntityList.stream()
+                                    .filter(entity -> entity.getConnectEntity() != connectEntity)
+                                    .filter(entity -> tableName.equals(entity.getTableCompareEntity(tableName).getTableName()))
+                                    .filter(entity -> tableRecordEntity.getPrimaryKeyHashValue().equals(entity.getTableCompareEntity(tableName).getRecordHashEntityMap().get(tableRecordEntity.getPrimaryKeyHashValue())))
+//                                    .allMatch(entity -> tableRecordEntity.getAllColumnHashValue().equals(
+//                                            entity.getTableCompareEntity(tableName).getRecordHashEntityMap().get(tableRecordEntity.getPrimaryKeyHashValue()).getAllColumnHashValue()))) {
+                                    .allMatch(entity -> {
+                                                String h1 = tableRecordEntity.getAllColumnHashValue();
+                                                String h2 = entity.getTableCompareEntity(tableName).getRecordHashEntityMap().get(tableRecordEntity.getPrimaryKeyHashValue()).getAllColumnHashValue();
+                                                return h1.equals(h2);
+                                            })) {
+                                status = RecordCompareStatus.EQUALITY;
+                            }
+                            compareTableRecord.getPrimaryKeyHashValueMap().put(tableRecordEntity.getPrimaryKeyHashValue(), status);
+
+                        } else {
+                            // ない
+                            compareTableRecord.getPrimaryKeyHashValueMap().put(tableRecordEntity.getPrimaryKeyHashValue(), RecordCompareStatus.ONE_SIDE_ONLY);
+                        }
+                    });
+        }
     }
 
     @Override
@@ -207,41 +241,5 @@ public class DBCompareService implements DBParseNotification {
     @Override
     public void error(ConnectEntity connectEntity, Exception exception) {
 
-    }
-
-
-    private void putTableCompareStatusMap(String tableName) {
-/*
-        synchronized (tableCompareStatusMap) {
-            if (tableCompareStatusMap.containsKey(tableName)) {
-                tableCompareStatusMap.put(tableName, TableCompareStatus.PAIR);
-                return;
-            }
-
-            tableCompareStatusMap.put(tableName, TableCompareStatus.ONE_SIDE_ONLY);
-
-            CompareTableRecord compareTableRecord = new CompareTableRecord();
-            compareTableRecord.setTableName(tableName);
-            compareTableRecordList.add(compareTableRecord);
-        }
-*/
-    }
-
-    private void putRecordCompareStatusMap(String tableName, RecordHashEntity tableRecordEntity) {
-/*
-        synchronized (recordCompareStatusMap) {
-            if (recordCompareStatusMap.containsKey(tableName)) {
-                if (recordCompareStatusMap.get(tableName).containsKey(tableRecordEntity.getPrimaryKeyHashValue())) {
-                    recordCompareStatusMap.get(tableName).put(tableRecordEntity.getPrimaryKeyHashValue(), RecordCompareStatus.EQUALITY);
-                    return;
-                }
-                recordCompareStatusMap.get(tableName).put(tableRecordEntity.getPrimaryKeyHashValue(), RecordCompareStatus.INEQUALITY);
-                // 画面に通知
-                if (mainControllerNotification!=null) {
-//                    mainControllerNotification.updateProgress(tableName, rowNumber);
-                }
-            }
-        }
-*/
     }
 }
