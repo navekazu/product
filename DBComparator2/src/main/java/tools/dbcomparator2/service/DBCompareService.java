@@ -219,6 +219,7 @@ public class DBCompareService implements DBParseNotification {
                                     .allMatch(entity -> {
                                                 String h1 = tableRecordEntity.getAllColumnHashValue();
                                                 String h2 = entity.getTableCompareEntity(tableName).getRecordHashEntityMap().get(tableRecordEntity.getPrimaryKeyHashValue()).getAllColumnHashValue();
+                                                logger.info(String.format("h1:%s h2:%s", h1, h2));
                                                 return h1.equals(h2);
                                             })) {
                                 status = RecordCompareStatus.EQUALITY;

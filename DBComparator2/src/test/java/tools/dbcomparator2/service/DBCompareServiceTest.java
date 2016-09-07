@@ -367,7 +367,7 @@ public class DBCompareServiceTest {
         assertEquals(2, service.compareTableRecordList.size());
         assertEquals("TEST_TABLE02", service.compareTableRecordList.get(1).getTableName());
         assertEquals(1, service.compareTableRecordList.get(1).getPrimaryKeyHashValueMap().size());
-        assertEquals(RecordCompareStatus.INEQUALITY, service.compareTableRecordList.get(1).getPrimaryKeyHashValueMap().get("A2"));
+        assertEquals(RecordCompareStatus.EQUALITY, service.compareTableRecordList.get(1).getPrimaryKeyHashValueMap().get("A2"));
 //        service.parsedTableRecord(entity1, "TEST_TABLE01", 0, tableRecordEntity1_02);
 //        service.parsedTableRecord(entity1, "TEST_TABLE02", 0, tableRecordEntity2_01);
 //        service.parsedTableRecord(entity1, "TEST_TABLE02", 0, tableRecordEntity2_02);
