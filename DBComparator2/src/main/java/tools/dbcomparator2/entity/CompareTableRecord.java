@@ -1,10 +1,14 @@
-package tools.dbcomparator2.controller;
+package tools.dbcomparator2.entity;
 
 import javafx.beans.property.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
+import tools.dbcomparator2.enums.RecordCompareStatus;
+import tools.dbcomparator2.enums.TableCompareStatus;
+
+import java.util.*;
 
 public class CompareTableRecord {
     private SimpleStringProperty tableName;
@@ -13,12 +17,16 @@ public class CompareTableRecord {
     private SimpleIntegerProperty rowCount;
     private SimpleIntegerProperty count;
 
+    private Map<String, RecordCompareStatus> primaryKeyHashValueMap;
+    private TableCompareStatus tableCompareStatus;
+
     public CompareTableRecord() {
         tableName = new SimpleStringProperty();
         progress = new SimpleDoubleProperty();
         memo = new SimpleStringProperty();
         rowCount = new SimpleIntegerProperty();
         count = new SimpleIntegerProperty();
+        primaryKeyHashValueMap = Collections.synchronizedMap(new HashMap<>());
     }
 
     public String getTableName() {
@@ -71,4 +79,15 @@ public class CompareTableRecord {
         return memo;
     }
 
+    public Map<String, RecordCompareStatus> getPrimaryKeyHashValueMap() {
+        return this.primaryKeyHashValueMap;
+    }
+
+    public void setTableCompareStatus(TableCompareStatus tableCompareStatus) {
+        this.tableCompareStatus = tableCompareStatus;
+    }
+
+    public TableCompareStatus getTableCompareStatus() {
+        return tableCompareStatus;
+    }
 }

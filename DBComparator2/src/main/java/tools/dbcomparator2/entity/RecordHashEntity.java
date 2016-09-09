@@ -2,7 +2,6 @@ package tools.dbcomparator2.entity;
 
 import lombok.Data;
 import lombok.experimental.Builder;
-import tools.dbcomparator2.enums.RecordCompareStatus;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -6,7 +6,6 @@ import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.DBCompareEntity;
 import tools.dbcomparator2.entity.RecordHashEntity;
 import tools.dbcomparator2.enums.DBParseStatus;
-import tools.dbcomparator2.enums.RecordCompareStatus;
 
 import java.io.File;
 import java.net.URL;
@@ -76,9 +75,6 @@ public class DBParseService {
         try {
             if (connection!=null) {
                 connection.close();
-                if (connection.isClosed()) {
-                    logger.info(String.format("DB disconnect error. %s", dbCompareEntity.getConnectEntity().getConnectionName()));
-                }
             }
             logger.info(String.format("DB disconnect end. %s", dbCompareEntity.getConnectEntity().getConnectionName()));
         } catch (SQLException e) {
