@@ -94,11 +94,48 @@ java -jar target\DBConnector6-0.1-jar-with-dependencies.jar
 |Index    |テーブルのインデックス情報を表示 |
 
 ### クエリ入力エリア
-![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_03_Query.png)
+![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_03_Query.png)  
+SQLクエリを入力し、接続先のデータベースに対して実行するためのエリアです。  
+クエリ入力には補完機能があり、SQLの予約語、接続先データベースのテーブル名とカラム名を補完します。  
+クエリの実行等、様々な機能はメニューバーからも呼び出し可能ですが、ショートカットキーを活用するとスムーズです。  
+
+主なショートカットキーは下記のとおりです。  
+※macOSは未検証  
+
+|機能                       |ショートカット|
+|---------------------------|--------------|
+|クエリの実行               |Ctrl + Enter  |
+|実行中のクエリのキャンセル |Alt + A       |
+|コミット                   |Alt + C       |
+|ロールバック               |Alt + R       |
+|外部SQLエディタの呼び出し  |Ctrl + E      |
+
+クエリの実行は選択した部分のみを実行します。  
+なので、クエリ入力エリアに複数のクエリを記述した場合、どれを実行するかは選択範囲によって決まります。  
+何も選択していない場合、クエリ入力エリア全体の入力内容を実行します。
+
+複数行に渡るクエリを入力した場合、Shiftキーを押しながら入力した複数行を選択する必要がありますが、Shift + Ctrlキーを押しながら上矢印キーもしくは下矢印キーを押すと、カーソル位置の次の空行までを一気に選択することが出来ます。  
+
+クエリは行末にあるセミコロンもしくはスラッシュごとに実行します。  
+例えば以下のような複数のinsert文を範囲選択して実行すると、3行のインサートが実行されます。
+```SQL
+insert into FOO values(1);
+insert into FOO values(2);
+insert into FOO values(3);
+```
+
+単語を選択してクエリ実行をした場合、その単語をテーブルとみなしてselectを実行します。  
+例えば「FOO」を選択してクエリ実行をした場合、下記のSQLクエリが実行されます。
+```SQL
+select * from FOO
+```
 
 ### 実行結果表示エリア
-![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_04_Result.png)
+![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_04_Result.png)  
+select等、実行結果が返るSQLクエリを実行した場合、ここに結果を出力します。  
+エビデンスモードをONにしている場合、ここに表示した内容をクリップボードに張り付けます。
 
 ### ログ出力エリア
-![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_05_Log.png)
-
+![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_05_Log.png)  
+データベース構造の解析やクエリの実行のログやJDBCドライバの例外出力を表示します。  
+実行したSQLクエリに文法エラーがあった場合もここに表示します。
