@@ -65,13 +65,13 @@ java -jar target\DBConnector6-0.1-jar-with-dependencies.jar
 
 
 ## メイン画面について
-![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main.pn g)  
+![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main.png)  
 データベースに接続すると、この画面に移ります。  
 この画面で接続したデータベースに対して各種操作を行います。  
 以下ではメイン画面のそれぞれのエリアについて説明します。
 
 ### データベース構造エリア
-![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_01_Database.pn g)  
+![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_01_Database.png)  
 接続したデータベースの全スキーマをツリー表示します。  
 スキーマを展開すると、そのスキーマに属するテーブルやビューやファンクション等を表示します。
 
@@ -79,15 +79,15 @@ java -jar target\DBConnector6-0.1-jar-with-dependencies.jar
 例えばOracleなら「シノニム、テーブル、ビュー、ファンクション、プロシージャ」ですし、PostgreSQLなら「テーブル、ビュー、プロシージャ、シーケンス、マテリアライズドビュー」等になります。
 
 ### テーブル構造エリア
-![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_02_Table.pn g)  
+![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_02_Table.png)  
 データベース構造エリアで選択したテーブルやビューの
 
 ### クエリ入力エリア
-![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_03_Query.pn g)
+![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_03_Query.png)
 
 ### 実行結果表示エリア
-![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_04_Result.pn g)
+![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_04_Result.png)
 
 ### ログ出力エリア
-![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_05_Log.pn g)
+![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_05_Log.png)
 
