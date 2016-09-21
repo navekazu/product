@@ -84,7 +84,14 @@ java -jar target\DBConnector6-0.1-jar-with-dependencies.jar
 
 ### テーブル構造エリア
 ![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_02_Table.png)  
-データベース構造エリアで選択したテーブルやビューの
+データベース構造エリアで選択したテーブルやビューの構造を表示します。  
+3つのタブがあり、それぞれ下記を表示します。
+
+|タブ     |内容                             |
+|---------|---------------------------------|
+|Property |テーブルのメタ情報を表示         |
+|Column   |テーブルの各カラムの情報を表示   |
+|Index    |テーブルのインデックス情報を表示 |
 
 ### クエリ入力エリア
 ![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_03_Query.png)
