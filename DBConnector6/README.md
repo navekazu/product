@@ -139,3 +139,8 @@ select等、実行結果が返るSQLクエリを実行した場合、ここに�
 ![メイン画面](https://github.com/navekazu/product/raw/master/DBConnector6/img/02_Main_05_Log.png)  
 データベース構造の解析やクエリの実行のログやJDBCドライバの例外出力を表示します。  
 実行したSQLクエリに文法エラーがあった場合もここに表示します。
+
+***
+# アーキテクチャ
+DBConnector6の内部アーキテクチャを紹介します。
+
