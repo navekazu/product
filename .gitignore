@@ -1,12 +1,14 @@
 # Intellij
 */.idea/
 */*.iml
+*.iml
 */*.iws
 
 # Maven
 */log/
 */logs/
 */target/
+target
 */testdb/
 
 # jar
