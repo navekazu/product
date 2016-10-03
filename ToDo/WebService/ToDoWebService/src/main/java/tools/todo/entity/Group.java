@@ -7,7 +7,6 @@ import lombok.experimental.Builder;
 @Data
 @Builder
 @NoArgsConstructor
-public class ToDo {
-    private String title;
-    private Group group;
+public class Group {
+    private String name;
 }
