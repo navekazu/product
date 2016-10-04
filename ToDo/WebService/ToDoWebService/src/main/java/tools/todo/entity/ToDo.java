@@ -9,5 +9,5 @@ import lombok.experimental.Builder;
 @NoArgsConstructor
 public class ToDo {
     private String title;
-    private Group group;
+    private ToDoGroup toDoGroup;
 }
