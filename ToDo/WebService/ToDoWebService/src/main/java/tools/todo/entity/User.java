@@ -7,6 +7,5 @@ import lombok.experimental.Builder;
 @Data
 @Builder
 @NoArgsConstructor
-public class User implements Owner {
-    private String name;
+public class User extends Owner {
 }

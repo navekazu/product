@@ -1,4 +1,5 @@
 package tools.todo.entity;
 
-public interface Owner {
+public class Owner {
+    private String name;
 }
