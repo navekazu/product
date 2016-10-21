@@ -25,6 +25,7 @@ import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -166,6 +167,19 @@ public class ConnectController extends SubController implements Initializable {
             return false;
         }
         return true;
+    }
+
+    public Connection getDbConnection() {
+        if (connect==null) {
+            return null;
+        }
+        return connect.getConnection();
+    }
+    public void closeDbConnection() throws SQLException {
+        if (connect==null) {
+            return;
+        }
+        connect.getConnection().close();
     }
 
     // 現在の接続先一覧の内容を永続化する

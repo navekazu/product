@@ -189,7 +189,7 @@ public class MainController extends Application implements Initializable, MainCo
     private BackgroundService sqlEditorLaunchService;                           // SQLエディタを起動するサービス
 
     // other field
-    private Connect connectParam;                                               // データベース接続パラメータ
+//    private Connect connectParam;                                               // データベース接続パラメータ
     private String queryScript = null;                                          // ファイル選択ダイアログで選択したクエリスクリプトファイル（SQLバッチ実行スクリプト）
 
     /**
@@ -298,11 +298,11 @@ public class MainController extends Application implements Initializable, MainCo
     private void closeConnection() {
         if (isConnectWithoutOutputMessage()) {
             try {
-                connectParam.getConnection().close();
+                connectPair.controller.closeDbConnection();
             } catch (SQLException e) {
                 writeLog(e);
             }
-            connectParam = null;
+//            connectParam = null;
             writeLog("Disconnected.");
         }
         dbStructureUpdateService.restart();
@@ -584,7 +584,7 @@ public class MainController extends Application implements Initializable, MainCo
             return ;
         }
         try {
-            connectParam.getConnection().commit();
+            connectPair.controller.getDbConnection().commit();
             writeLog("Commit success.");
         } catch(Exception e) {
             writeLog(e);
@@ -599,7 +599,7 @@ public class MainController extends Application implements Initializable, MainCo
             return ;
         }
         try {
-            connectParam.getConnection().rollback();
+            connectPair.controller.getDbConnection().rollback();
             writeLog("Rollback success.");
         } catch(Exception e) {
             writeLog(e);
@@ -613,7 +613,7 @@ public class MainController extends Application implements Initializable, MainCo
         if (!isConnect()) {
             return ;
         }
-        writeLog("Transaction isolation: %s", ISOLATIONS.get(connectParam.getConnection().getTransactionIsolation()));
+        writeLog("Transaction isolation: %s", ISOLATIONS.get(connectPair.controller.getDbConnection().getTransactionIsolation()));
     }
     private static final Map<Integer, String> ISOLATIONS = new HashMap<>();
     static {
@@ -1159,10 +1159,9 @@ public class MainController extends Application implements Initializable, MainCo
      */
     @Override
     public void connectNotify() {
-        Connection con = connectPair.controller.getConnection();
-        if (con!=null) {
+        if (connectPair.controller.getConnection()!=null) {
             writeLog("Connected.");
-            connectParam = connectPair.controller.getConnect();
+//            connectParam = connectPair.controller.getConnect();
             dbStructureUpdateService.restart();
             reservedWordUpdateService.restart();
         }
@@ -1174,7 +1173,7 @@ public class MainController extends Application implements Initializable, MainCo
      */
     @Override
     public Connect getConnectParam() {
-        return connectParam;
+        return connectPair.controller.getConnect();
     }
 
     /**
@@ -1183,7 +1182,7 @@ public class MainController extends Application implements Initializable, MainCo
      */
     @Override
     public Connection getConnection() {
-        return connectParam==null? null: connectParam.getConnection();
+        return connectPair.controller.getConnect()==null? null: connectPair.controller.getDbConnection();
     }
 
     /**
@@ -1209,7 +1208,7 @@ public class MainController extends Application implements Initializable, MainCo
      */
     @Override
     public boolean isConnectWithoutOutputMessage() {
-        return connectParam==null? false: connectParam.getConnection()!=null;
+        return connectPair.controller.getConnect()==null? false: connectPair.controller.getDbConnection()!=null;
     }
 
     /**
