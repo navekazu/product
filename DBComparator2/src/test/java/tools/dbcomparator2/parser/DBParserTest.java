@@ -8,10 +8,16 @@ import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.*;
 import tools.dbcomparator2.entity.ConnectEntity;
+import tools.dbcomparator2.entity.RecordHashEntity;
 import tools.dbcomparator2.entity.TableCompareEntity;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -64,14 +70,17 @@ public class DBParserTest {
             public void parsedPrimaryKey(ConnectEntity connectEntity, TableCompareEntity tableCompareEntity) throws Exception {
                 switch(tableCompareEntity.getTableName()) {
                     case "TABLE01":
+                        // TABLE01のプライマリーキーは1つで、COL01
                         assertEquals(1, tableCompareEntity.getPrimaryKeyColumnList().size());
                         assertEquals("COL01", tableCompareEntity.getPrimaryKeyColumnList().get(0));
                         break;
                     case "TABLE02":
+                        // TABLE02のプライマリーキーは1つで、COL01
                         assertEquals(1, tableCompareEntity.getPrimaryKeyColumnList().size());
                         assertEquals("COL01", tableCompareEntity.getPrimaryKeyColumnList().get(0));
                         break;
                     case "TABLE03":
+                        // TABLE03のプライマリーキーは2つで、COL01とCOL02
                         assertEquals(2, tableCompareEntity.getPrimaryKeyColumnList().size());
                         assertEquals("COL01", tableCompareEntity.getPrimaryKeyColumnList().get(0));
                         assertEquals("COL02", tableCompareEntity.getPrimaryKeyColumnList().get(1));
@@ -83,13 +92,127 @@ public class DBParserTest {
             public void countedTableRecord(ConnectEntity connectEntity, TableCompareEntity tableCompareEntity) {
                 switch(tableCompareEntity.getTableName()) {
                     case "TABLE01":
+                        // TABLE01のレコード数は3つ
                         assertEquals(3, tableCompareEntity.getRecordCount());
                         break;
                     case "TABLE02":
+                        // TABLE02のレコード数は20つ
                         assertEquals(20, tableCompareEntity.getRecordCount());
                         break;
                     case "TABLE03":
+                        // TABLE03のレコード数は10つ
                         assertEquals(10, tableCompareEntity.getRecordCount());
+                        break;
+                }
+            }
+
+            @Override
+            public void parsedTableRecord(ConnectEntity connectEntity, TableCompareEntity tableCompareEntity, int rowNumber, RecordHashEntity tableRecordEntity) throws Exception {
+                List<Object> primaryKeyValueList = new ArrayList<>();
+                List<Object> allColumnValueList = new ArrayList<>();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                Calendar calendar = Calendar.getInstance();
+
+                switch(tableCompareEntity.getTableName()) {
+                    case "TABLE01":
+                        switch(rowNumber) {
+                            case 0:
+                                // TABLE01の1レコード目
+
+                                // プライマリーキーのハッシュ
+                                primaryKeyValueList.add(1);
+                                assertEquals(RecordHashEntity.createHashValue(primaryKeyValueList), tableRecordEntity.getPrimaryKeyHashValue());
+
+                                // 全カラム値のハッシュ
+                                allColumnValueList.add(1);
+                                allColumnValueList.add("Value0001");
+                                assertEquals(RecordHashEntity.createHashValue(allColumnValueList), tableRecordEntity.getAllColumnHashValue());
+
+                                // プライマリーキー値
+                                assertEquals(1, tableRecordEntity.getPrimaryKeyValueMap().size());
+                                assertEquals(BigDecimal.valueOf(1), tableRecordEntity.getPrimaryKeyValueMap().get("COL01"));
+                                break;
+                            case 1:
+                                // TABLE01の2レコード目
+
+                                // プライマリーキーのハッシュ
+                                primaryKeyValueList.add(2);
+                                assertEquals(RecordHashEntity.createHashValue(primaryKeyValueList), tableRecordEntity.getPrimaryKeyHashValue());
+
+                                // 全カラム値のハッシュ
+                                allColumnValueList.add(2);
+                                allColumnValueList.add("Value0002");
+                                assertEquals(RecordHashEntity.createHashValue(allColumnValueList), tableRecordEntity.getAllColumnHashValue());
+
+                                // プライマリーキー値
+                                assertEquals(1, tableRecordEntity.getPrimaryKeyValueMap().size());
+                                assertEquals(BigDecimal.valueOf(2), tableRecordEntity.getPrimaryKeyValueMap().get("COL01"));
+                                break;
+                            case 2:
+                                // TABLE01の3レコード目
+
+                                // プライマリーキーのハッシュ
+                                primaryKeyValueList.add(3);
+                                assertEquals(RecordHashEntity.createHashValue(primaryKeyValueList), tableRecordEntity.getPrimaryKeyHashValue());
+
+                                // 全カラム値のハッシュ
+                                allColumnValueList.add(3);
+                                allColumnValueList.add("Value0003");
+                                assertEquals(RecordHashEntity.createHashValue(allColumnValueList), tableRecordEntity.getAllColumnHashValue());
+
+                                // プライマリーキー値
+                                assertEquals(1, tableRecordEntity.getPrimaryKeyValueMap().size());
+                                assertEquals(BigDecimal.valueOf(3), tableRecordEntity.getPrimaryKeyValueMap().get("COL01"));
+                                break;
+                        }
+                        break;
+
+                    case "TABLE02":
+                        switch(rowNumber) {
+                            case 0:
+                                // TABLE02の1レコード目
+
+                                // プライマリーキーのハッシュ
+                                primaryKeyValueList.add(1);
+                                assertEquals(RecordHashEntity.createHashValue(primaryKeyValueList), tableRecordEntity.getPrimaryKeyHashValue());
+
+                                // 全カラム値のハッシュ
+                                allColumnValueList.add(1);
+                                allColumnValueList.add("Value0001");
+                                allColumnValueList.add("Value0001");
+                                allColumnValueList.add(new java.sql.Date(simpleDateFormat.parse("2016/01/01").getTime()));
+                                assertEquals(RecordHashEntity.createHashValue(allColumnValueList), tableRecordEntity.getAllColumnHashValue());
+
+                                // プライマリーキー値
+                                assertEquals(1, tableRecordEntity.getPrimaryKeyValueMap().size());
+                                assertEquals(BigDecimal.valueOf(1), tableRecordEntity.getPrimaryKeyValueMap().get("COL01"));
+                                break;
+                        }
+                        break;
+
+                    case "TABLE03":
+                        switch(rowNumber) {
+                            case 0:
+                                // TABLE03の1レコード目
+
+                                // プライマリーキーのハッシュ
+                                primaryKeyValueList.add(1);
+                                primaryKeyValueList.add("Value0001");
+                                assertEquals(RecordHashEntity.createHashValue(primaryKeyValueList), tableRecordEntity.getPrimaryKeyHashValue());
+
+                                // 全カラム値のハッシュ
+                                allColumnValueList.add(1);
+                                allColumnValueList.add("Value0001");
+                                allColumnValueList.add("Value0001");
+                                allColumnValueList.add(new java.sql.Date(simpleDateFormat.parse("2016/01/01").getTime()));
+                                assertEquals(RecordHashEntity.createHashValue(allColumnValueList), tableRecordEntity.getAllColumnHashValue());
+
+                                // プライマリーキー値
+                                assertEquals(2, tableRecordEntity.getPrimaryKeyValueMap().size());
+                                assertEquals(BigDecimal.valueOf(1), tableRecordEntity.getPrimaryKeyValueMap().get("COL01"));
+                                assertEquals("Value0001", tableRecordEntity.getPrimaryKeyValueMap().get("COL02"));
+                                break;
+                        }
                         break;
                 }
             }
@@ -105,8 +228,26 @@ public class DBParserTest {
                         .build()
         );
 
-        dbParser.parse();
+        dbParser.parseDatabase();
+        dbParser.parseTables();
+        dbParser.parsePrimaryKey();
+        dbParser.parseTableData();
 
         dbParser.colseDatabase();
     }
+/*
+    @Test
+    public void stringJoinTest() throws Exception {
+        List<String> list;
+
+        list = new ArrayList<>();
+        list.add("aaa");
+        list.add("bbb");
+        list.add("ccc");
+        assertEquals("aaa,bbb,ccc", String.join(",", list));
+
+        list = new ArrayList<>();
+        assertEquals("", String.join(",", list));
+    }
+*/
 }
