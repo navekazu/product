@@ -61,6 +61,17 @@ public class DBParserTest {
     @Test
     public void parseTablesTest() throws Exception {
         DBParser dbParser = new DBParser(new DBParseNotification(){
+
+            @Override
+            public void start() {
+
+            }
+
+            @Override
+            public void end() {
+
+            }
+
             @Override
             public void parsedTableList(ConnectEntity connectEntity, List<TableCompareEntity> tableCompareEntityList) {
                 assertEquals(3, tableCompareEntityList.size());

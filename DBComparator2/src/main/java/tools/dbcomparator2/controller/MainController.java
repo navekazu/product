@@ -20,13 +20,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.CompareTableRecord;
 import tools.dbcomparator2.entity.ConnectEntity;
+import tools.dbcomparator2.entity.RecordHashEntity;
+import tools.dbcomparator2.entity.TableCompareEntity;
 import tools.dbcomparator2.enums.CompareType;
+import tools.dbcomparator2.enums.RecordCompareStatus;
+import tools.dbcomparator2.parser.DBComparator;
+import tools.dbcomparator2.parser.DBParseNotification;
 import tools.dbcomparator2.service.DBCompareService;
 
 import java.net.URL;
 import java.util.*;
 
-public class MainController extends Application implements Initializable, MainControllerNotification {
+public class MainController extends Application implements Initializable, MainControllerNotification, DBParseNotification {
     private Logger logger = LoggerFactory.getLogger(MainController.class);
     private DBCompareService dbCompareService;
 
@@ -73,6 +78,7 @@ public class MainController extends Application implements Initializable, MainCo
     private Map<String, CompareTableRecord> compareTableRecordMap;
 
     private Service compareBackgroundService;
+    private DBComparator dbComparator;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -98,6 +104,8 @@ public class MainController extends Application implements Initializable, MainCo
         dbCompareService = new DBCompareService();
         dbCompareService.setMainControllerNotification(this);
         dbCompareService.setCompareTableRecordList(compareTable.getItems());
+
+        dbComparator = new DBComparator(this);
 
         compareTableRecordMap = Collections.synchronizedMap(new HashMap<>());
 
@@ -205,7 +213,13 @@ public class MainController extends Application implements Initializable, MainCo
 
         dbCompareService.setCompareType(type);
         dbCompareService.updateConnectEntity(entityList);
-        compareBackgroundService.restart();
+//        compareBackgroundService.restart();
+
+        try {
+            dbComparator.startCompare(entityList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -225,6 +239,7 @@ public class MainController extends Application implements Initializable, MainCo
         dbCompareService.setCompareType((CompareType) compareType.getSelectionModel().getSelectedItem());
         dbCompareService.addConnectEntity(secondaryEntity);
         compareBackgroundService.restart();
+
     }
 
     @FXML
@@ -275,5 +290,74 @@ public class MainController extends Application implements Initializable, MainCo
 //            record.setProgress(d);
 //            record.setMemo(String.format("%,d/%,d", (count + 1), record.getRowCount()));
 //        });
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void end() {
+
+    }
+
+    @Override
+    public void parsedTableList(ConnectEntity connectEntity, List<TableCompareEntity> tableCompareEntityList) throws Exception {
+        synchronized (compareTableRecordMap) {
+            tableCompareEntityList.stream()
+                    .filter(tableCompareEntity -> !compareTableRecordMap.containsKey(tableCompareEntity.getTableName()))
+                    .forEach(tableCompareEntity -> {
+                        CompareTableRecord record = new CompareTableRecord();
+                        record.setTableName(tableCompareEntity.getTableName());
+                        compareTableRecordMap.put(tableCompareEntity.getTableName(), record);
+                        compareTable.getItems().add(record);
+                    });
+        }
+
+    }
+
+    @Override
+    public void parsedPrimaryKey(ConnectEntity connectEntity, TableCompareEntity tableCompareEntity) throws Exception {
+    }
+
+    @Override
+    public void countedTableRecord(ConnectEntity connectEntity, TableCompareEntity tableCompareEntity) throws Exception {
+        synchronized (compareTableRecordMap) {
+            if (!compareTableRecordMap.containsKey(tableCompareEntity.getTableName())) {
+                return;
+            }
+            CompareTableRecord record = compareTableRecordMap.get(tableCompareEntity.getTableName());
+            record.setRowCount(record.getRowCount()<tableCompareEntity.getRecordCount()? tableCompareEntity.getRecordCount(): record.getRowCount());
+            record.setMemo(String.format("Row counts: %,3d", record.getRowCount()));
+        }
+    }
+
+    @Override
+    public void parsedTableRecord(ConnectEntity connectEntity, TableCompareEntity tableCompareEntity, int rowNumber, RecordHashEntity tableRecordEntity) throws Exception {
+        synchronized (compareTableRecordMap) {
+            if (!compareTableRecordMap.containsKey(tableCompareEntity.getTableName())) {
+                return;
+            }
+            CompareTableRecord record = compareTableRecordMap.get(tableCompareEntity.getTableName());
+            record.setCount(record.getCount()<rowNumber? rowNumber: record.getCount());
+
+            double rowCount = record.getRowCount();
+            double count = record.getCount()+1;
+            record.setProgress(count/rowCount);
+            record.setMemo(String.format("Compare: %,3d", record.getCount()+1));
+
+            if (!record.getPrimaryKeyHashValueMap().containsKey(tableRecordEntity.getPrimaryKeyHashValue())) {
+                record.getPrimaryKeyHashValueMap().put(tableRecordEntity.getPrimaryKeyHashValue(), RecordCompareStatus.ONE_SIDE_ONLY);
+                return ;
+            }
+
+            List<RecordHashEntity> reverseSideRecordHashEntityList = dbComparator.getReverseSideRecordHashEntity(connectEntity, tableCompareEntity, tableRecordEntity);
+            record.getPrimaryKeyHashValueMap().put(tableRecordEntity.getPrimaryKeyHashValue(),
+                reverseSideRecordHashEntityList.stream().allMatch(recordHashEntity -> recordHashEntity.getAllColumnHashValue().equals(tableRecordEntity.getAllColumnHashValue()))?
+                    RecordCompareStatus.EQUALITY: RecordCompareStatus.INEQUALITY);
+
+        }
+
     }
 }

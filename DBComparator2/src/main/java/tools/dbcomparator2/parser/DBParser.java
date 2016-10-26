@@ -1,5 +1,7 @@
 package tools.dbcomparator2.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.dbcomparator2.entity.ConnectEntity;
 import tools.dbcomparator2.entity.RecordHashEntity;
 import tools.dbcomparator2.entity.TableCompareEntity;
@@ -13,14 +15,29 @@ import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 
 public class DBParser {
+    private Logger logger = LoggerFactory.getLogger(DBParser.class);
     private DBParseNotification dbParseNotification;
     private List<TableCompareEntity> tableCompareEntityList;
     private ConnectEntity connectEntity;
     private Connection connection;
+    private DBParseStatus dbParseStatus = DBParseStatus.READY;
+
 
     public DBParser(DBParseNotification dbParseNotification) {
         this.dbParseNotification = dbParseNotification;
         this.tableCompareEntityList = new ArrayList<>();
+    }
+
+    public DBParseStatus getDbParseStatus() {
+        return this.dbParseStatus;
+    }
+
+    public ConnectEntity getConnectEntity() {
+        return connectEntity;
+    }
+
+    public List<TableCompareEntity> getTableCompareEntityList() {
+        return tableCompareEntityList;
     }
 
     public void connectDatabase(ConnectEntity connectEntity) throws Exception {
@@ -54,8 +71,10 @@ public class DBParser {
 
         } catch (Exception e) {
             e.printStackTrace();
+            dbParseStatus = DBParseStatus.FAILED;
             throw e;
         }
+        logger.info(String.format("Connected database. ->%s", connectEntity.toString()));
     }
 
     public void colseDatabase() throws Exception {
@@ -64,8 +83,10 @@ public class DBParser {
 
         } catch (Exception e) {
             e.printStackTrace();
+            dbParseStatus = DBParseStatus.FAILED;
             throw e;
         }
+        logger.info(String.format("Closed database. ->%s", connectEntity.toString()));
     }
 
     public void parseDatabase() throws Exception {
@@ -81,6 +102,7 @@ public class DBParser {
             }
         }
 
+        logger.info(String.format("Parsed table list. count:%d ->%s", tableCompareEntityList.size(), connectEntity.toString()));
         dbParseNotification.parsedTableList(connectEntity, tableCompareEntityList);
     }
 
@@ -91,6 +113,7 @@ public class DBParser {
     }
 
     private void parseRecordCount(TableCompareEntity tableCompareEntity) {
+        logger.info(String.format("Start parse record count. table:%s ->%s", tableCompareEntity.getTableName(), connectEntity.toString()));
         String query = "select count(*) CNT from "+tableCompareEntity.getTableName();
         try {
             try (Statement statement = connection.createStatement();
@@ -104,11 +127,15 @@ public class DBParser {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            dbParseStatus = DBParseStatus.FAILED;
         }
+        logger.info(String.format("Parsed record count. table:%s ->%s", tableCompareEntity.getTableName(), connectEntity.toString()));
     }
 
     public void parsePrimaryKey() throws Exception {
+        logger.info(String.format("Start parse primary key. ->%s", connectEntity.toString()));
         for (TableCompareEntity entity: tableCompareEntityList) {
+            logger.info(String.format("Start parse primary key. table:%s ->%s", entity.getTableName(), connectEntity.toString()));
 
             DatabaseMetaData dmd = connection.getMetaData();
 
@@ -122,17 +149,23 @@ public class DBParser {
 
             dbParseNotification.parsedPrimaryKey(connectEntity, entity);
         }
+        logger.info(String.format("Parsed primary key. ->%s", connectEntity.toString()));
     }
 
     public void parseTableData() throws Exception {
+        logger.info(String.format("Start parse table data. ->%s", connectEntity.toString()));
+
         ForkJoinPool forkJoinPool = new ForkJoinPool(30);
         forkJoinPool.submit(() ->
                 tableCompareEntityList.parallelStream()
                         .forEach(entity -> parseTable(entity))
         ).get();
+
+        logger.info(String.format("Parsed table data. ->%s", connectEntity.toString()));
     }
 
     private void parseTable(TableCompareEntity tableCompareEntity) {
+        logger.info(String.format("Start parse table. table:%s ->%s", tableCompareEntity.getTableName(), connectEntity.toString()));
         String query = String.format("select * from %s", tableCompareEntity.getTableName());
 
         try (Statement statement = connection.createStatement();
@@ -166,8 +199,11 @@ public class DBParser {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            dbParseStatus = DBParseStatus.FAILED;
         } catch (Exception e) {
             e.printStackTrace();
+            dbParseStatus = DBParseStatus.FAILED;
         }
+        logger.info(String.format("Parsed table. table:%s ->%s", tableCompareEntity.getTableName(), connectEntity.toString()));
     }
 }
