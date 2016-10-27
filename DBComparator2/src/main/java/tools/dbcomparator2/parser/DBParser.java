@@ -17,8 +17,8 @@ import java.util.concurrent.ForkJoinPool;
 public class DBParser {
     private Logger logger = LoggerFactory.getLogger(DBParser.class);
     private DBParseNotification dbParseNotification;
-    private List<TableCompareEntity> tableCompareEntityList;
-    private ConnectEntity connectEntity;
+    List<TableCompareEntity> tableCompareEntityList;
+    ConnectEntity connectEntity;
     private Connection connection;
     private DBParseStatus dbParseStatus = DBParseStatus.READY;
 

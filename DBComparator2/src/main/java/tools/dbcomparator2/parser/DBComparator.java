@@ -43,7 +43,7 @@ public class DBComparator implements DBParseNotification {
     static class CompareTask extends ForkJoinTask<Void> {
         private Logger logger = LoggerFactory.getLogger(CompareTask.class);
         private List<ConnectEntity> connectEntityList;
-        private List<DBParser> dbParserList;
+        List<DBParser> dbParserList;
         private DBParseNotification dbParseNotification;
 
         public CompareTask(DBParseNotification dbParseNotification) {

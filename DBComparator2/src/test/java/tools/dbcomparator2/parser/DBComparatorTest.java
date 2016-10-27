@@ -15,8 +15,9 @@ import tools.dbcomparator2.entity.TableCompareEntity;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 public class DBComparatorTest {
     private Logger logger = LoggerFactory.getLogger(DBComparatorTest.class);
@@ -113,8 +114,7 @@ public class DBComparatorTest {
 
     @Test
     public void compareTaskTest() throws Exception {
-        DBComparator.CompareTask compareTask = new DBComparator.CompareTask(new DBParseNotification() {
-
+        DBParseNotification dbParseNotification = new DBParseNotification() {
             @Override
             public void start() {
 
@@ -144,7 +144,113 @@ public class DBComparatorTest {
             public void parsedTableRecord(ConnectEntity connectEntity, TableCompareEntity tableCompareEntity, int rowNumber, RecordHashEntity tableRecordEntity) throws Exception {
 
             }
-        });
+        };
 
+        Map<String, Object> primaryKeyValueMapAA1 = new HashMap<>();
+        primaryKeyValueMapAA1.put("COL1", "COL1VALUE");
+        primaryKeyValueMapAA1.put("COL2", "COL2VALUE");
+        primaryKeyValueMapAA1.put("COL3", "COL3VALUE");
+
+        Map<String, Object> primaryKeyValueMapAA2 = new HashMap<>();
+        primaryKeyValueMapAA2.put("COL1", "COL1VALUE");
+        primaryKeyValueMapAA2.put("COL2", "COL2VALUE");
+        primaryKeyValueMapAA2.put("COL3", "COL3VALUE");
+
+        Map<String, Object> primaryKeyValueMapAA3 = new HashMap<>();
+        primaryKeyValueMapAA3.put("COL1", "COL1VALUE");
+        primaryKeyValueMapAA3.put("COL2", "COL2VALUE");
+        primaryKeyValueMapAA3.put("COL3", "COL3VALUE");
+
+        RecordHashEntity recordHashEntityAA1 = RecordHashEntity.builder()
+                .primaryKeyHashValue("a")
+                .allColumnHashValue("b")
+                .primaryKeyValueMap(primaryKeyValueMapAA1)
+                .build();
+        RecordHashEntity recordHashEntityAA2 = RecordHashEntity.builder()
+                .primaryKeyHashValue("a")
+                .allColumnHashValue("b")
+                .primaryKeyValueMap(primaryKeyValueMapAA2)
+                .build();
+        RecordHashEntity recordHashEntityAA3 = RecordHashEntity.builder()
+                .primaryKeyHashValue("a")
+                .allColumnHashValue("b")
+                .primaryKeyValueMap(primaryKeyValueMapAA3)
+                .build();
+
+        Map<String, RecordHashEntity> recordHashEntityMapAA = new HashMap<>();
+        recordHashEntityMapAA.put(recordHashEntityAA1.getPrimaryKeyHashValue(), recordHashEntityAA1);
+        recordHashEntityMapAA.put(recordHashEntityAA2.getPrimaryKeyHashValue(), recordHashEntityAA2);
+        recordHashEntityMapAA.put(recordHashEntityAA3.getPrimaryKeyHashValue(), recordHashEntityAA3);
+
+        TableCompareEntity tableCompareEntityAA = TableCompareEntity.builder()
+                .tableName("TABLEA")
+                .recordCount(3)
+                .recordHashEntityMap(recordHashEntityMapAA)
+                .build();
+
+        DBParser dbParserA = new DBParser(dbParseNotification);
+        dbParserA.tableCompareEntityList.add(tableCompareEntityAA);
+
+
+        Map<String, Object> primaryKeyValueMapBA1 = new HashMap<>();
+        primaryKeyValueMapBA1.put("COL1", "COL1VALUE");
+        primaryKeyValueMapBA1.put("COL2", "COL2VALUE");
+        primaryKeyValueMapBA1.put("COL3", "COL3VALUE");
+
+        Map<String, Object> primaryKeyValueMapBA2 = new HashMap<>();
+        primaryKeyValueMapBA2.put("COL1", "COL1VALUE");
+        primaryKeyValueMapBA2.put("COL2", "COL2VALUE");
+        primaryKeyValueMapBA2.put("COL3", "COL3VALUE");
+
+        Map<String, Object> primaryKeyValueMapBA3 = new HashMap<>();
+        primaryKeyValueMapBA3.put("COL1", "COL1VALUE");
+        primaryKeyValueMapBA3.put("COL2", "COL2VALUE");
+        primaryKeyValueMapBA3.put("COL3", "COL3VALUE");
+
+        RecordHashEntity recordHashEntityBA1 = RecordHashEntity.builder()
+                .primaryKeyHashValue("a")
+                .allColumnHashValue("b")
+                .primaryKeyValueMap(primaryKeyValueMapBA1)
+                .build();
+        RecordHashEntity recordHashEntityBA2 = RecordHashEntity.builder()
+                .primaryKeyHashValue("a")
+                .allColumnHashValue("b")
+                .primaryKeyValueMap(primaryKeyValueMapBA2)
+                .build();
+        RecordHashEntity recordHashEntityBA3 = RecordHashEntity.builder()
+                .primaryKeyHashValue("a")
+                .allColumnHashValue("b")
+                .primaryKeyValueMap(primaryKeyValueMapBA3)
+                .build();
+
+        Map<String, RecordHashEntity> recordHashEntityMapBA = new HashMap<>();
+        recordHashEntityMapBA.put(recordHashEntityBA1.getPrimaryKeyHashValue(), recordHashEntityBA1);
+        recordHashEntityMapBA.put(recordHashEntityBA2.getPrimaryKeyHashValue(), recordHashEntityBA2);
+        recordHashEntityMapBA.put(recordHashEntityBA3.getPrimaryKeyHashValue(), recordHashEntityBA3);
+
+        TableCompareEntity tableCompareEntityBA = TableCompareEntity.builder()
+                .tableName("TABLEA")
+                .recordCount(3)
+                .recordHashEntityMap(recordHashEntityMapBA)
+                .build();
+
+        DBParser dbParserB = new DBParser(dbParseNotification);
+        dbParserB.tableCompareEntityList.add(tableCompareEntityBA);
+
+
+        DBComparator.CompareTask compareTask = new DBComparator.CompareTask(dbParseNotification);
+        compareTask.dbParserList = new ArrayList<>();
+        compareTask.dbParserList.add(dbParserA);
+        compareTask.dbParserList.add(dbParserB);
+        List<RecordHashEntity> list = compareTask.getReverseSideRecordHashEntity(
+                ConnectEntity.builder()
+                .build(),
+                TableCompareEntity.builder()
+                .build(),
+                RecordHashEntity.builder()
+                .build()
+        );
+        assertEquals(0, list.size());
     }
+
 }
