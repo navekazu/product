@@ -190,6 +190,9 @@ public class DBComparatorTest {
 
         DBParser dbParserA = new DBParser(dbParseNotification);
         dbParserA.tableCompareEntityList.add(tableCompareEntityAA);
+        dbParserA.connectEntity = ConnectEntity.builder()
+                .url("A")
+                .build();
 
 
         Map<String, Object> primaryKeyValueMapBA1 = new HashMap<>();
@@ -236,6 +239,9 @@ public class DBComparatorTest {
 
         DBParser dbParserB = new DBParser(dbParseNotification);
         dbParserB.tableCompareEntityList.add(tableCompareEntityBA);
+        dbParserB.connectEntity = ConnectEntity.builder()
+                .url("B")
+                .build();
 
 
         DBComparator.CompareTask compareTask = new DBComparator.CompareTask(dbParseNotification);
@@ -244,13 +250,10 @@ public class DBComparatorTest {
         compareTask.dbParserList.add(dbParserB);
         List<RecordHashEntity> list = compareTask.getReverseSideRecordHashEntity(
                 ConnectEntity.builder()
+                        .url("B")
                 .build(),
-                TableCompareEntity.builder()
-                .build(),
-                RecordHashEntity.builder()
-                .build()
-        );
-        assertEquals(0, list.size());
+                tableCompareEntityBA, recordHashEntityBA1);
+        assertEquals(1, list.size());
     }
 
 }
