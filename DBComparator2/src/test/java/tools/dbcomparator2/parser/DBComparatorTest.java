@@ -248,12 +248,27 @@ public class DBComparatorTest {
         compareTask.dbParserList = new ArrayList<>();
         compareTask.dbParserList.add(dbParserA);
         compareTask.dbParserList.add(dbParserB);
-        List<RecordHashEntity> list = compareTask.getReverseSideRecordHashEntity(
+        List<RecordHashEntity> list;
+
+        list= compareTask.getReverseSideRecordHashEntity(
                 ConnectEntity.builder()
                         .url("B")
                 .build(),
                 tableCompareEntityBA, recordHashEntityBA1);
         assertEquals(1, list.size());
+        assertEquals(recordHashEntityAA1.getPrimaryKeyHashValue(), list.get(0).getPrimaryKeyHashValue());
+        assertEquals(recordHashEntityAA1.getPrimaryKeyHashValue(), list.get(0).getPrimaryKeyHashValue());
+        assertEquals(recordHashEntityAA1.getPrimaryKeyValueMap(), list.get(0).getPrimaryKeyValueMap());
+
+        list= compareTask.getReverseSideRecordHashEntity(
+                ConnectEntity.builder()
+                        .url("B")
+                        .build(),
+                tableCompareEntityBA, recordHashEntityBA2);
+        assertEquals(1, list.size());
+        assertEquals(recordHashEntityAA2.getPrimaryKeyHashValue(), list.get(0).getPrimaryKeyHashValue());
+        assertEquals(recordHashEntityAA2.getPrimaryKeyHashValue(), list.get(0).getPrimaryKeyHashValue());
+        assertEquals(recordHashEntityAA2.getPrimaryKeyValueMap(), list.get(0).getPrimaryKeyValueMap());
     }
 
 }
