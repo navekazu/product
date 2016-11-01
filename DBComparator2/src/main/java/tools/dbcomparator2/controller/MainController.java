@@ -356,6 +356,11 @@ public class MainController extends Application implements Initializable, MainCo
             record.getPrimaryKeyHashValueMap().put(tableRecordEntity.getPrimaryKeyHashValue(),
                 reverseSideRecordHashEntityList.stream().allMatch(recordHashEntity -> recordHashEntity.getAllColumnHashValue().equals(tableRecordEntity.getAllColumnHashValue()))?
                     RecordCompareStatus.EQUALITY: RecordCompareStatus.INEQUALITY);
+            if (reverseSideRecordHashEntityList.size()>=1) {
+                if (!reverseSideRecordHashEntityList.stream().allMatch(e -> e.getAllColumnHashValue().equals(tableRecordEntity.getAllColumnHashValue()))) {
+
+                }
+            }
 
         }
 
