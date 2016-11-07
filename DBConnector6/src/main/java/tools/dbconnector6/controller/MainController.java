@@ -189,7 +189,6 @@ public class MainController extends Application implements Initializable, MainCo
     private BackgroundService sqlEditorLaunchService;                           // SQLエディタを起動するサービス
 
     // other field
-//    private Connect connectParam;                                               // データベース接続パラメータ
     private String queryScript = null;                                          // ファイル選択ダイアログで選択したクエリスクリプトファイル（SQLバッチ実行スクリプト）
 
     /**
@@ -302,7 +301,6 @@ public class MainController extends Application implements Initializable, MainCo
             } catch (SQLException e) {
                 writeLog(e);
             }
-//            connectParam = null;
             writeLog("Disconnected.");
         }
         dbStructureUpdateService.restart();
@@ -1161,7 +1159,6 @@ public class MainController extends Application implements Initializable, MainCo
     public void connectNotify() {
         if (connectPair.controller.getConnection()!=null) {
             writeLog("Connected.");
-//            connectParam = connectPair.controller.getConnect();
             dbStructureUpdateService.restart();
             reservedWordUpdateService.restart();
         }
