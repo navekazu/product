@@ -33,11 +33,11 @@ public interface MainControllerInterface {
     public void writeLog(Throwable e);
 
     /**
-     * 予約語選択画面の選択結果の通知。<br>
+     * 入力補完選択画面の選択結果の通知。<br>
      * クエリー入力欄に現在入力中の単語を指定された単語に置き換える。<br>
-     * @param word 選択結果の予約語
+     * @param word 選択結果の入力補完
      */
-    public void selectReservedWord(String word);
+    public void selectAutoComplete(String word);
 
     /**
      * メイン画面にフォーカスを移動させる。<br>
@@ -45,9 +45,9 @@ public interface MainControllerInterface {
     public void requestFocusToMainController();
 
     /**
-     * 予約語選択画面を閉じる
+     * 入力補完選択画面を閉じる
      */
-    public void hideReservedWordStage();
+    public void hideAutoCompleteStage();
 
     /**
      * 警告画面をモーダルで表示する。<br>

@@ -29,7 +29,7 @@ public abstract class QueryResultCellValue<V> {
      * @param column 値を取得する際のカラムインデックス
      * @throws SQLException 値の取得に失敗した場合
      */
-    protected abstract void initValue(ResultSet resultSet, int column) throws SQLException;
+    protected abstract void setValue(ResultSet resultSet, int column) throws SQLException;
 
     /**
      * クエリ実行結果一覧に出力する際のFormatを返す。<br>
@@ -124,7 +124,7 @@ public abstract class QueryResultCellValue<V> {
     public static QueryResultCellValue createQueryResultCellValue(ResultSetMetaData meta, ResultSet resultSet, int column) throws SQLException {
         QueryResultCellValue queryResultCellValue = QueryResultCellValueCreator.createQueryResultCellValue(meta, column, resultSet);
         System.out.println(String.format("%s.%s value:%s", meta.getTableName(column), meta.getColumnName(column), resultSet.getString(column)));
-        queryResultCellValue.initValue(resultSet, column);
+        queryResultCellValue.setValue(resultSet, column);
         return queryResultCellValue;
     }
 }

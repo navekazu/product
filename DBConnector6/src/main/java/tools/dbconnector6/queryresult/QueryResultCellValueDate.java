@@ -27,7 +27,7 @@ public class QueryResultCellValueDate extends QueryResultCellValue<Date> {
      * @see java.sql.ResultSet#getDate
      */
     @Override
-    protected void initValue(ResultSet resultSet, int column) throws SQLException {
+    protected void setValue(ResultSet resultSet, int column) throws SQLException {
         value = resultSet.getDate(column);
     }
 

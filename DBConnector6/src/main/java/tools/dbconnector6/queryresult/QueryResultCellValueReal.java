@@ -27,7 +27,7 @@ public class QueryResultCellValueReal extends QueryResultCellValue<BigDecimal> {
      * @see java.sql.ResultSet#getBigDecimal
      */
     @Override
-    protected void initValue(ResultSet resultSet, int column) throws SQLException {
+    protected void setValue(ResultSet resultSet, int column) throws SQLException {
         value = resultSet.getBigDecimal(column);
     }
 

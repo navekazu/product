@@ -6,17 +6,17 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 
 /**
- * 予約語用のエンティティクラス。
+ * 入力補完用のエンティティクラス。
  */
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
 @Builder
-public class ReservedWord {
+public class AutoComplete {
     /**
-     * 予約語の種類
+     * 入力補完の種類
      */
-    public enum ReservedWordType{
+    public enum AutoCompleteType{
         /**
          * SQL予約語
          */
@@ -33,13 +33,13 @@ public class ReservedWord {
         COLUMN,
     }
 
-    private ReservedWordType type;  // 予約語の種類
-    private String word;            // 予約語
+    private AutoCompleteType type;  // 入力補完の種類
+    private String word;            // 入力補完
 
     /**
-     * 予約語の文字列表現。<br>
-     * 予約語フィールドの値を返す
-     * @return 予約語フィールドの値
+     * 入力補完の文字列表現。<br>
+     * 入力補完フィールドの値を返す
+     * @return 入力補完フィールドの値
      */
     @Override
     public String toString() {

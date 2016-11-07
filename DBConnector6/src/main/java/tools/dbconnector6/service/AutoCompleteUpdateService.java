@@ -2,7 +2,7 @@ package tools.dbconnector6.service;
 
 import javafx.concurrent.Task;
 import tools.dbconnector6.MainControllerInterface;
-import tools.dbconnector6.entity.ReservedWord;
+import tools.dbconnector6.entity.AutoComplete;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -10,18 +10,18 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * データベース接続時、データベース内のテーブル名とカラム名を走査し、予約語として登録するサービス。
+ * データベース接続時、データベース内のテーブル名とカラム名を走査し、入力補完として登録するサービス。
  * 走査データは入力補完としてクエリ入力時にポップアップ表示する。<br>
  */
-public class ReservedWordUpdateService implements BackgroundServiceInterface<Void, Void> {
+public class AutoCompleteUpdateService implements BackgroundServiceInterface<Void, Void> {
     // メイン画面へのアクセス用インターフェース
     private MainControllerInterface mainControllerInterface;
 
-    // 走査した予約語を格納する参照
-    private Set<ReservedWord> reservedWordList;
+    // 走査した入力補完を格納する参照
+    private Set<AutoComplete> autoCompleteList;
 
     // SQL予約語
-    // 初期化時に予約語として登録する
+    // 初期化時に入力補完として登録する
     private static final String[] PRESET_RESERVED_WORD = new String[]{
             "select", "distinct", "from", "where", "group", "order", "by", "asc", "desc", "having",
             "insert", "into", "values",
@@ -35,11 +35,11 @@ public class ReservedWordUpdateService implements BackgroundServiceInterface<Voi
     /**
      * コンストラクタ。<br>
      * @param mainControllerInterface メイン画面へのアクセス用インターフェース
-     * @param reservedWordList 予約語の格納先
+     * @param autoCompleteList 入力補完の格納先
      */
-    public ReservedWordUpdateService(MainControllerInterface mainControllerInterface, Set<ReservedWord> reservedWordList) {
+    public AutoCompleteUpdateService(MainControllerInterface mainControllerInterface, Set<AutoComplete> autoCompleteList) {
         this.mainControllerInterface = mainControllerInterface;
-        this.reservedWordList = reservedWordList;
+        this.autoCompleteList = autoCompleteList;
     }
 
     /**
@@ -50,8 +50,8 @@ public class ReservedWordUpdateService implements BackgroundServiceInterface<Voi
      */
     @Override
     public void run(Task task) throws Exception {
-        synchronized (reservedWordList) {
-            reservedWordList.clear();
+        synchronized (autoCompleteList) {
+            autoCompleteList.clear();
             addSQLReservedWord();
         }
 
@@ -68,7 +68,7 @@ public class ReservedWordUpdateService implements BackgroundServiceInterface<Voi
             types = getResultList(resultSet, "TABLE_TYPE");
         } catch(SQLException e){
             // テーブルタイプが取得できなければ解析は不可能
-            mainControllerInterface.writeLog("Failed reserved word parsing.");
+            mainControllerInterface.writeLog("Failed auto complete parsing.");
             return ;
         }
 
@@ -87,29 +87,29 @@ public class ReservedWordUpdateService implements BackgroundServiceInterface<Voi
         // ToDo: 同時実行スレッド上限(32bit Windowsで2048本)を考慮して実装する必要がある
         // ToDo: 全スレッドが終了したことをユーザーに知らせる仕組みが必要
         schemas.parallelStream().forEach(schema -> {
-            mainControllerInterface.writeLog("Reserved word parsing... (%s)", schema);
+            mainControllerInterface.writeLog("Auto complete word parsing... (%s)", schema);
 
             // テーブル一覧
-            Set<ReservedWord> tables = new HashSet<>();
+            Set<AutoComplete> tables = new HashSet<>();
             try (ResultSet resultSet = dmd.getTables(null, schema, "%", (String[]) finalTypes.toArray(new String[0]))) {
-                tables = getMetadataReservedWord(ReservedWord.ReservedWordType.TABLE, resultSet, "TABLE_NAME");
-                synchronized (reservedWordList) {
-                    reservedWordList.addAll(tables);
+                tables = getMetadataAutoComplete(AutoComplete.AutoCompleteType.TABLE, resultSet, "TABLE_NAME");
+                synchronized (autoCompleteList) {
+                    autoCompleteList.addAll(tables);
                 }
             } catch(SQLException e){}
 
             // カラム一覧
-            for (ReservedWord reservedWord : tables) {
-                Set<ReservedWord> columns = new HashSet<>();
-                try (ResultSet resultSet = dmd.getColumns(null, schema, reservedWord.getWord(), null)) {
-                    columns = getMetadataReservedWord(ReservedWord.ReservedWordType.COLUMN, resultSet, "COLUMN_NAME");
-                    synchronized (reservedWordList) {
-                        reservedWordList.addAll(columns);
+            for (AutoComplete autoComplete : tables) {
+                Set<AutoComplete> columns = new HashSet<>();
+                try (ResultSet resultSet = dmd.getColumns(null, schema, autoComplete.getWord(), null)) {
+                    columns = getMetadataAutoComplete(AutoComplete.AutoCompleteType.COLUMN, resultSet, "COLUMN_NAME");
+                    synchronized (autoCompleteList) {
+                        autoCompleteList.addAll(columns);
                     }
                 } catch(SQLException e){}
             }
 
-            mainControllerInterface.writeLog("Reserved word parsed. (%s)", schema);
+            mainControllerInterface.writeLog("Auto complete parsed. (%s)", schema);
         });
     }
 
@@ -179,25 +179,25 @@ public class ReservedWordUpdateService implements BackgroundServiceInterface<Voi
     }
 
     /**
-     * ResultSetから指定されたカラムの値を取得し、ReservedWordのセットで返す。<br>
+     * ResultSetから指定されたカラムの値を取得し、AutoCompleteのセットで返す。<br>
      * セットなので重複する値はない。<br>
-     * @param reservedWordType ReservedWordに設定する予約語のタイプ
+     * @param autoCompleteType AutoCompleteに設定する入力補完のタイプ
      * @param resultSet 取得元のResultSet
      * @param name 取得するカラム
-     * @return 指定されたカラムの値で初期化したReservedWordのセット
+     * @return 指定されたカラムの値で初期化したAutoCompleteのセット
      * @throws SQLException ResultSetからの取得に失敗した場合
      */
-    private Set<ReservedWord> getMetadataReservedWord(ReservedWord.ReservedWordType reservedWordType, ResultSet resultSet, String name) throws SQLException {
-        Set<ReservedWord> set = new HashSet<>();
+    private Set<AutoComplete> getMetadataAutoComplete(AutoComplete.AutoCompleteType autoCompleteType, ResultSet resultSet, String name) throws SQLException {
+        Set<AutoComplete> set = new HashSet<>();
         while (resultSet.next()) {
-            set.add(new ReservedWord(reservedWordType, resultSet.getString(name)));
+            set.add(new AutoComplete(autoCompleteType, resultSet.getString(name)));
         }
         return set;
     }
 
-    // reservedWordListにSQL予約語を追加する
+    // autoCompleteListにSQL予約語を追加する
     private void addSQLReservedWord() {
         Arrays.stream(PRESET_RESERVED_WORD).
-                forEach(word -> reservedWordList.add(new ReservedWord(ReservedWord.ReservedWordType.SQL, word)));
+                forEach(word -> autoCompleteList.add(new AutoComplete(AutoComplete.AutoCompleteType.SQL, word)));
     }
 }

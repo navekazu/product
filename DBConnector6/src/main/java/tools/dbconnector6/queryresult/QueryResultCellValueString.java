@@ -20,7 +20,7 @@ public class QueryResultCellValueString extends QueryResultCellValue<String> {
      * @see java.sql.ResultSet#getString
      */
     @Override
-    protected void initValue(ResultSet resultSet, int column) throws SQLException {
+    protected void setValue(ResultSet resultSet, int column) throws SQLException {
         value = resultSet.getString(column);
     }
 

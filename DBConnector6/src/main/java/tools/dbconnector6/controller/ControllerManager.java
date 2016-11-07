@@ -33,7 +33,7 @@ public class ControllerManager {
     static {
         stageDefinedMap.put("main", StageDefine.builder().fxml("/fxml/Main.fxml").title("DBConnector6").build());
         stageDefinedMap.put("connect", StageDefine.builder().fxml("/fxml/Connect.fxml").title("Connect").build());
-        stageDefinedMap.put("reservedWord", StageDefine.builder().fxml("/fxml/ReservedWord.fxml").title("ReservedWord").build());
+        stageDefinedMap.put("autoComplete", StageDefine.builder().fxml("/fxml/AutoComplete.fxml").title("AutoComplete").build());
         stageDefinedMap.put("alertDialog", StageDefine.builder().fxml("/fxml/Alert.fxml").title("Message").build());
         stageDefinedMap.put("editorChooser", StageDefine.builder().fxml("/fxml/EditorChooser.fxml").title("Editor chooser").build());
     }

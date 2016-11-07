@@ -175,9 +175,9 @@ public class MainController extends Application implements Initializable, MainCo
     private StageAndControllerPair<ConnectController> connectPair;              // 接続するデータベースを選択・登録するステージとコントローラ
     private StageAndControllerPair<AlertController> alertDialogPair;            // 警告を表示するステージとコントローラ
     private StageAndControllerPair<EditorChooserController> editorChooserPair;  // エディタ選択を表示するステージとコントローラ
-    private StageAndControllerPair<ReservedWordController> reservedWordPair;    // 予約語を表示するステージとコントローラ
+    private StageAndControllerPair<AutoCompleteController> autoCompletePair;    // 入力補完を表示するステージとコントローラ
 
-    private Set<ReservedWord> reservedWordList = new HashSet<>();               // 予約語を格納する一覧
+    private Set<AutoComplete> autoCompleteList = new HashSet<>();               // 入力補完を格納する一覧
     private AppConfigEditor appConfigEditor = new AppConfigEditor();            // アプリケーション設定内容の永続化クラス
 
     // background service
@@ -185,7 +185,7 @@ public class MainController extends Application implements Initializable, MainCo
     private BackgroundService tableStructureTabPaneUpdateService;               // メイン画面左下のタブを状態するサービス
     private BackgroundService tableStructureUpdateService;                      // メイン画面左下のテーブル構造を更新するサービス
     private BackgroundService queryExecuteService;                              // クエリを実行するサービス
-    private BackgroundService reservedWordUpdateService;                        // 予約語一覧を更新するサービス
+    private BackgroundService autoCompleteUpdateService;                        // 入力補完一覧を更新するサービス
     private BackgroundService sqlEditorLaunchService;                           // SQLエディタを起動するサービス
 
     // other field
@@ -230,15 +230,16 @@ public class MainController extends Application implements Initializable, MainCo
         // データベース構造のルート要素を関連付け
         dbStructureRootItem = new DbStructureTreeItem(DATABASE, DATABASE.getName(), null);
         dbStructureTreeView.setRoot(dbStructureRootItem);
-        dbStructureTreeView.getSelectionModel().selectedItemProperty().addListener(new DbStructureTreeViewChangeListener());
 
         // サービスの作成
         queryExecuteService = new BackgroundService(new QueryExecuteService(this), this);
-        reservedWordUpdateService = new BackgroundService(new ReservedWordUpdateService(this, reservedWordList), this);
+        autoCompleteUpdateService = new BackgroundService(new AutoCompleteUpdateService(this, autoCompleteList), this);
         sqlEditorLaunchService = new BackgroundService(new SqlEditorLaunchService(this), this);
         dbStructureUpdateService = new BackgroundService(new DbStructureUpdateService(this), this);
         tableStructureTabPaneUpdateService = new BackgroundService(new TableStructureTabPaneUpdateService(this), this);
         tableStructureUpdateService = new BackgroundService(new TableStructureUpdateService(this), this);
+
+        dbStructureTreeView.getSelectionModel().selectedItemProperty().addListener(new DbStructureTreeViewChangeListener(tableStructureTabPaneUpdateService));
 
         // TableColumnとプロパティの紐付け
         keyTableColumn.setCellValueFactory(new PropertyValueFactory<TablePropertyTab, String>("key"));
@@ -271,11 +272,11 @@ public class MainController extends Application implements Initializable, MainCo
         // Controllerの読み込み
         try {
             connectPair = SubController.createStageAndControllerPair("connect", this);
-            reservedWordPair = SubController.createTransparentStageAndControllerPair("reservedWord", this);
+            autoCompletePair = SubController.createTransparentStageAndControllerPair("autoComplete", this);
             alertDialogPair = SubController.createStageAndControllerPair("alertDialog", this);
             editorChooserPair = SubController.createStageAndControllerPair("editorChooser", this);
 
-            reservedWordPair.controller.setReservedWordList(reservedWordList);
+            autoCompletePair.controller.setAutoCompleteList(autoCompleteList);
 
         } catch(IOException e) {
             e.printStackTrace();
@@ -283,7 +284,7 @@ public class MainController extends Application implements Initializable, MainCo
     }
 
     // データベース接続画面を表示する
-    private void showConnect() {
+    private void showConnectDialog() {
         closeConnection();
         Platform.runLater(new Runnable() {
             @Override
@@ -304,7 +305,7 @@ public class MainController extends Application implements Initializable, MainCo
             writeLog("Disconnected.");
         }
         dbStructureUpdateService.restart();
-        reservedWordUpdateService.restart();
+        autoCompleteUpdateService.restart();
     }
 
     /**
@@ -315,7 +316,7 @@ public class MainController extends Application implements Initializable, MainCo
      * @param inputCharacter キーイベントで発生した入力文字列
      * @return 現在のキャレット位置の左側にある単語
      */
-    protected String inputWord(String text, int caret, String inputCharacter) {
+    String inputWord(String text, int caret, String inputCharacter) {
         // キーイベント前の入力内容に、キーイベントで入力した文字をキャレットの位置に入れる
         StringBuilder realText = new StringBuilder(text);
         realText.insert(caret, inputCharacter);
@@ -331,34 +332,34 @@ public class MainController extends Application implements Initializable, MainCo
         return inputKeyword.toString();
     }
 
-    // クエリ入力中に入力したキーが予約語一覧へのフォーカス移動のキーかを判定する
-    // 予約語一覧が表示されていて、かつ入力したキーが「TAB」か「DOWN」キーの場合はtrue
-    private boolean isChangeFocusForReservedWordStage(KeyCode code) {
-        if(!reservedWordPair.stage.isShowing()) {
+    // クエリ入力中に入力したキーが入力補完一覧へのフォーカス移動のキーかを判定する
+    // 入力補完一覧が表示されていて、かつ入力したキーが「TAB」か「DOWN」キーの場合はtrue
+    private boolean canChangeFocusForAutoCompleteStage(KeyCode code) {
+        if(!autoCompletePair.stage.isShowing()) {
             return false;
         }
-        return Arrays.stream(CHANGE_FOCUS_FOR_RESERVED_WORD_STAGE_CODES).anyMatch(c -> c == code);
+        return Arrays.stream(CHANGE_FOCUS_FOR_AUTO_COMPLETE_STAGE_CODES).anyMatch(c -> c == code);
     }
-    private static final KeyCode[] CHANGE_FOCUS_FOR_RESERVED_WORD_STAGE_CODES = new KeyCode[] {
+    private static final KeyCode[] CHANGE_FOCUS_FOR_AUTO_COMPLETE_STAGE_CODES = new KeyCode[] {
             KeyCode.TAB, KeyCode.DOWN,
     };
 
-    // クエリ入力中に入力したキーが予約語一覧へのフォーカス移動の文字入力かを判定する
-    // 予約語一覧が表示されていて、かつ入力した文字が「TAB」の場合はtrue
-    private boolean isChangeFocusForReservedWordStage(String key) {
-        if(!reservedWordPair.stage.isShowing()) {
+    // クエリ入力中に入力したキーが入力補完一覧へのフォーカス移動の文字入力かを判定する
+    // 入力補完一覧が表示されていて、かつ入力した文字が「TAB」の場合はtrue
+    private boolean canChangeFocusForAutoCompleteStage(String key) {
+        if(!autoCompletePair.stage.isShowing()) {
             return false;
         }
-        return Arrays.stream(CHANGE_FOCUS_FOR_RESERVED_WORD_STAGE_STRING).anyMatch(s -> s.equals(key));
+        return Arrays.stream(CHANGE_FOCUS_FOR_AUTO_COMPLETE_STAGE_STRING).anyMatch(s -> s.equals(key));
     }
-    private static final String[] CHANGE_FOCUS_FOR_RESERVED_WORD_STAGE_STRING = new String[] {
+    private static final String[] CHANGE_FOCUS_FOR_AUTO_COMPLETE_STAGE_STRING = new String[] {
             "\t"
     };
 
-    // クエリ入力中に入力したキーが予約語一覧を非表示にするキーかを判定する
-    // 予約語一覧が表示されていて、かつ入力したキーが「ALT」か「Ctrl」か文字以外の場合はtrue
-    private boolean isHideReservedWordStage(KeyEvent event) {
-        if(!reservedWordPair.stage.isShowing()) {
+    // クエリ入力中に入力したキーが入力補完一覧を非表示にするキーかを判定する
+    // 入力補完一覧が表示されていて、かつ入力したキーが「ALT」か「Ctrl」か文字以外の場合はtrue
+    private boolean isHideAutoCompleteStage(KeyEvent event) {
+        if(!autoCompletePair.stage.isShowing()) {
             return false;
         }
         return (event.isAltDown() || event.isControlDown() || !isTextInput(event.getCode()));
@@ -505,7 +506,7 @@ public class MainController extends Application implements Initializable, MainCo
     // データベース接続画面を表示する
     @FXML
     private void onConnect(ActionEvent event) {
-        showConnect();
+        showConnectDialog();
     }
 
     // メニュー「Database > Disconnect」のアクションイベントハンドラ
@@ -626,7 +627,13 @@ public class MainController extends Application implements Initializable, MainCo
     // DB structure event
 
     // メイン画面左上のデータベース構造の選択変更イベントリスナ
-    private class DbStructureTreeViewChangeListener implements ChangeListener {
+    private static class DbStructureTreeViewChangeListener implements ChangeListener {
+        private BackgroundService tableStructureTabPaneUpdateService;
+
+        public DbStructureTreeViewChangeListener(BackgroundService tableStructureTabPaneUpdateService) {
+            this.tableStructureTabPaneUpdateService = tableStructureTabPaneUpdateService;
+        }
+
         /**
          * 選択変更イベント。<br>
          * メイン画面左下のテーブル構造の更新を実行する
@@ -678,19 +685,19 @@ public class MainController extends Application implements Initializable, MainCo
     // queryTextArea event
 
     // クエリ入力欄でのキー押下イベントハンドラ
-    // 予約語画面へのフォーカス移動や行選択の処理を行う
+    // 入力補完画面へのフォーカス移動や行選択の処理を行う
     @FXML
     private void onQueryTextAreaKeyPressed(KeyEvent event) {
-        // 予約語ウィンドウにフォーカス移動
-        if (isChangeFocusForReservedWordStage(event.getCode())) {
+        // 入力補完ウィンドウにフォーカス移動
+        if (canChangeFocusForAutoCompleteStage(event.getCode())) {
             event.consume();
-            reservedWordPair.stage.requestFocus();
+            autoCompletePair.stage.requestFocus();
             return;
         }
 
-        // 予約語ウィンドウを非表示
-        if (isHideReservedWordStage(event)) {
-            reservedWordPair.stage.hide();
+        // 入力補完ウィンドウを非表示
+        if (isHideAutoCompleteStage(event)) {
+            autoCompletePair.stage.hide();
         }
 
         // 次の空行までを選択
@@ -703,10 +710,10 @@ public class MainController extends Application implements Initializable, MainCo
     }
 
     // クエリ入力欄でのキー入力イベントハンドラ
-    // 予約語画面へのフォーカス移動や予約語画面の表示制御を行う
+    // 入力補完画面へのフォーカス移動や入力補完画面の表示制御を行う
     @FXML
     private void onQueryTextAreaKeyTyped(KeyEvent event) {
-        if (isChangeFocusForReservedWordStage(event.getCharacter())) {
+        if (canChangeFocusForAutoCompleteStage(event.getCharacter())) {
             return;
         }
 
@@ -715,15 +722,15 @@ public class MainController extends Application implements Initializable, MainCo
         String inputText = event.getCharacter();
         String inputKeyword = inputWord(text, caret, inputText);       // キャレットより前の単語を取得
 
-        if (reservedWordPair.controller.isInputReservedWord(event, inputKeyword)) {
+        if (autoCompletePair.controller.isInputAutoComplete(event, inputKeyword)) {
             // キャレット位置に選択画面を出す
             InputMethodRequests imr = queryTextArea.getInputMethodRequests();
-            reservedWordPair.stage.setX(imr.getTextLocation(0).getX());
-            reservedWordPair.stage.setY(imr.getTextLocation(0).getY());
-            reservedWordPair.stage.show();
+            autoCompletePair.stage.setX(imr.getTextLocation(0).getX());
+            autoCompletePair.stage.setY(imr.getTextLocation(0).getY());
+            autoCompletePair.stage.show();
             primaryStage.requestFocus();    // フォーカスは移動させない
         } else {
-            reservedWordPair.stage.hide();
+            autoCompletePair.stage.hide();
         }
     }
 
@@ -731,7 +738,7 @@ public class MainController extends Application implements Initializable, MainCo
     // MainWindow event
 
     // メイン画面のウィンドウ表示イベントハンドラクラス
-    private class MainWindowShownHandler implements EventHandler<WindowEvent> {
+    private static class MainWindowShownHandler implements EventHandler<WindowEvent> {
         // メイン画面のコントローラ
         private MainController controller;
 
@@ -795,15 +802,15 @@ public class MainController extends Application implements Initializable, MainCo
                 controller.queryTextArea.positionCaret(workingQuery.length());
 
                 // DB接続画面を表示
-                controller.showConnect();
+                controller.showConnectDialog();
             } catch (IOException e) {
-                writeLog(e);
+                controller.writeLog(e);
             }
         }
     }
 
     // メイン画面のウィンドウクローズイベントハンドラクラス
-    private class MainWindowCloseRequestHandler implements EventHandler<WindowEvent> {
+    private static class MainWindowCloseRequestHandler implements EventHandler<WindowEvent> {
         // メイン画面のコントローラ
         private MainController controller;
 
@@ -868,7 +875,7 @@ public class MainController extends Application implements Initializable, MainCo
                 mapper.save(list);
 
             } catch (IOException e) {
-                writeLog(e);
+                controller.writeLog(e);
             }
         }
     }
@@ -948,7 +955,8 @@ public class MainController extends Application implements Initializable, MainCo
      */
     @Override
     public void writeLog(String format, Object... args) {
-        final String logText = LOG_DATE_FORMAT.format(new Date())+" " + String.format(format, args);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+        final String logText = sdf.format(new Date())+" " + String.format(format, args);
 
         Platform.runLater(new Runnable() {
             @Override
@@ -957,7 +965,6 @@ public class MainController extends Application implements Initializable, MainCo
             }
         });
     }
-    private static final SimpleDateFormat LOG_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 
     /**
      * 例外ログの出力。<br>
@@ -978,12 +985,12 @@ public class MainController extends Application implements Initializable, MainCo
     }
 
     /**
-     * 予約語選択画面の選択結果の通知。<br>
+     * 入力補完選択画面の選択結果の通知。<br>
      * クエリー入力欄に現在入力中の単語を指定された単語に置き換える。<br>
-     * @param word 選択結果の予約語
+     * @param word 選択結果の入力補完
      */
     @Override
-    public void selectReservedWord(String word) {
+    public void selectAutoComplete(String word) {
         int caret = queryTextArea.getCaretPosition();
         String text = queryTextArea.getText();
         String inputKeyword = inputWord(text, caret, "");       // キャレットより前の単語を取得
@@ -1004,11 +1011,11 @@ public class MainController extends Application implements Initializable, MainCo
     }
 
     /**
-     * 予約語選択画面を閉じる
+     * 入力補完選択画面を閉じる
      */
     @Override
-    public void hideReservedWordStage() {
-        reservedWordPair.stage.hide();
+    public void hideAutoCompleteStage() {
+        autoCompletePair.stage.hide();
     }
 
     /**
@@ -1160,7 +1167,7 @@ public class MainController extends Application implements Initializable, MainCo
         if (connectPair.controller.getConnection()!=null) {
             writeLog("Connected.");
             dbStructureUpdateService.restart();
-            reservedWordUpdateService.restart();
+            autoCompleteUpdateService.restart();
         }
     }
 

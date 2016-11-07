@@ -34,15 +34,6 @@ import java.util.List;
  * SQLクエリを実行するサービス。
  */
 public class QueryExecuteService implements BackgroundServiceInterface<List<TableColumn<QueryResult, String>>, List<List<QueryResultCellValue>>> {
-    // ログフォーマット：クエリ実行時の経過時間を表示する際に使用
-    private static final DecimalFormat RESPONSE_TIME_FORMAT = new DecimalFormat("#,##0.000");               // ToDo:書式付き出力に置き換えたい
-
-    // ログフォーマット：数値を出力する際に使用
-    private static final DecimalFormat NUMBER_FORMAT = new DecimalFormat("#,##0");                          // ToDo:書式付き出力に置き換えたい
-
-    // ログフォーマット：クエリ実行時のログ出力時に使用
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
-
     // 画面上にフラッシュするしきい値
     private static final int FLUSH_ROW_COUNT = 1000;
 
@@ -200,7 +191,8 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
             boolean executeResult = statement.execute(query);
             endTime = System.currentTimeMillis();
             if (!silentMode) {
-                mainControllerInterface.writeLog("Response time: %s sec", RESPONSE_TIME_FORMAT.format(((double) (endTime - startTime)) / 1000.0));
+                DecimalFormat df = new DecimalFormat("#,##0.000");               // ToDo:書式付き出力に置き換えたい
+                mainControllerInterface.writeLog("Response time: %s sec", df.format(((double) (endTime - startTime)) / 1000.0));
             }
 
             if (task.isCancelled()) {
@@ -210,7 +202,8 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
             // 結果なしならメソッドを抜ける
             if (!executeResult) {
                 if (!silentMode) {
-                    mainControllerInterface.writeLog("Success. count: %S", NUMBER_FORMAT.format(statement.getUpdateCount()));
+                    DecimalFormat df = new DecimalFormat("#,##0");                          // ToDo:書式付き出力に置き換えたい
+                    mainControllerInterface.writeLog("Success. count: %S", df.format(statement.getUpdateCount()));
                 }
                 return ;
             }
@@ -290,8 +283,9 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
                 update(new ArrayList<>(rowList));
                 endTime = System.currentTimeMillis();
                 if (!silentMode) {
+                    DecimalFormat df = new DecimalFormat("#,##0");                          // ToDo:書式付き出力に置き換えたい
                     mainControllerInterface.writeLog("Success. count: %s  recieved data time: %s sec",
-                            NUMBER_FORMAT.format(rowCount), RESPONSE_TIME_FORMAT.format(((double) (endTime - startTime)) / 1000.0));
+                            df.format(rowCount), df.format(((double) (endTime - startTime)) / 1000.0));
                 }
             }
         }
@@ -351,10 +345,11 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
     private String createQueryHistory(String query) {
         Connect connect = mainControllerInterface.getConnectParam();
         StringBuilder builder = new StringBuilder();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 
         builder.append("====================================================================================================\n");
         builder.append(String.format("%s Lib[%s] Dir[%s] URL[%s] Use[%s]\n"
-                , DATE_FORMAT.format(new Date())
+                , sdf.format(new Date())
                 , (connect.getLibraryPath()==null? "": connect.getLibraryPath())
                 , (connect.getDriver()==null? "": connect.getDriver())
                 , (connect.getUrl()==null? "": connect.getUrl())

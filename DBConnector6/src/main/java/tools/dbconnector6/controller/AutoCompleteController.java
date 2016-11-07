@@ -7,7 +7,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import tools.dbconnector6.entity.ReservedWord;
+import tools.dbconnector6.entity.AutoComplete;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -17,47 +17,47 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * 予約語画面用コントローラ。<br>
- * 予約語はSQL予約語・テーブル名・カラム名を対象に、SQL入力欄へ入力補完としてポップアップ表示を行う。<br>
+ * 入力補完画面用コントローラ。<br>
+ * 入力補完はSQL予約語・テーブル名・カラム名を対象に、SQL入力欄へポップアップ表示して行う。<br>
  */
-public class ReservedWordController extends SubController implements Initializable {
+public class AutoCompleteController extends SubController implements Initializable {
 
     // Scene overview
     // +----------------------------------+
-    // | reservedWordListView             |
+    // | autoCompleteListView             |
     // |                                  |
     // |                                  |
     // +----------------------------------+
-    @FXML private ListView reservedWordListView;        // 予約語表示用
+    @FXML private ListView autoCompleteListView;        // 入力補完表示用
 
-    // 予約語一覧の参照（SQLの予約語・全テーブル名・全カラム名が入る）
+    // 入力補完一覧の参照（SQLの予約語・全テーブル名・全カラム名が入る）
     // インスタンスの生成はMainControllerが行う。
-    private Set<ReservedWord> reservedWordList;
+    private Set<AutoComplete> autoCompleteList;
 
     /**
-     * 予約語一覧の参照をセットする
-     * @param reservedWordList 予約語一覧の参照
+     * 入力補完一覧の参照をセットする
+     * @param autoCompleteList 入力補完一覧の参照
      */
-    public void setReservedWordList(Set<ReservedWord> reservedWordList) {
-        this.reservedWordList = reservedWordList;
+    public void setAutoCompleteList(Set<AutoComplete> autoCompleteList) {
+        this.autoCompleteList = autoCompleteList;
     }
 
     /**
-     * 予約語を入力されたか、予約語一覧と突き合わせる
+     * 補完対象を入力したか、入力補完一覧と突き合わせる
      * @param event キーイベントの内容
      * @param query キャレット位置にある入力済みSQL
-     * @return 予約語一覧に入力済みSQLがあれば true、なければ false
+     * @return 入力補完一覧に入力済みSQLがあれば true、なければ false
      */
-    public boolean isInputReservedWord(KeyEvent event, String query) {
+    public boolean isInputAutoComplete(KeyEvent event, String query) {
         if (query.length()<=1) {
             return false;
         }
 
         final boolean upperCase = isUpperCase(query);
 
-        List<ReservedWord> list;
-        synchronized (reservedWordList) {
-            list = reservedWordList.stream()
+        List<AutoComplete> list;
+        synchronized (autoCompleteList) {
+            list = autoCompleteList.stream()
                     .filter(word -> word.getWord().toLowerCase().startsWith(query.toLowerCase()))
                     .map(word -> {
                         word.setWord(upperCase ? word.getWord().toUpperCase() : word.getWord().toLowerCase());
@@ -70,10 +70,10 @@ public class ReservedWordController extends SubController implements Initializab
             return false;
         }
 
-        ObservableList<ReservedWord> items = reservedWordListView.getItems();
+        ObservableList<AutoComplete> items = autoCompleteListView.getItems();
         items.clear();
         items.addAll(list);
-        reservedWordListView.getSelectionModel().select(0);
+        autoCompleteListView.getSelectionModel().select(0);
         return true;
     }
 
@@ -138,15 +138,15 @@ public class ReservedWordController extends SubController implements Initializab
 
     }
 
-    // 選択した予約語をメイン画面に通知する
+    // 選択した入力補完をメイン画面に通知する
     private void selected() {
-        int index = reservedWordListView.getSelectionModel().getSelectedIndex();
+        int index = autoCompleteListView.getSelectionModel().getSelectedIndex();
         if (index==-1) {
             return;
         }
 
-        ObservableList<ReservedWord> items = reservedWordListView.getItems();
-        mainControllerInterface.selectReservedWord(items.get(index).getWord());
+        ObservableList<AutoComplete> items = autoCompleteListView.getItems();
+        mainControllerInterface.selectAutoComplete(items.get(index).getWord());
     }
 
     /***************************************************************************
@@ -155,16 +155,16 @@ public class ReservedWordController extends SubController implements Initializab
      *                                                                         *
      **************************************************************************/
 
-    // 予約語表示用ListViewのキープレスイベントハンドラ
+    // 入力補完表示用ListViewのキープレスイベントハンドラ
     // キーの種類によって以下のように処理する。
-    //   ENTER -> ListViewで現在選択中の予約語をメイン画面に通知して自画面を閉じる
+    //   ENTER -> ListViewで現在選択中の入力補完をメイン画面に通知して自画面を閉じる
     //   TAB   -> メイン画面にフォーカスを戻す
     //   ESC   -> メイン画面にフォーカスを戻し、自画面を閉じる
     @FXML
     private void onKeyPressed(KeyEvent event){
         switch (event.getCode()) {
             case ENTER:
-                mainControllerInterface.hideReservedWordStage();
+                mainControllerInterface.hideAutoCompleteStage();
                 selected();
                 break;
 
@@ -173,18 +173,18 @@ public class ReservedWordController extends SubController implements Initializab
                 break;
 
             case ESCAPE:
-                mainControllerInterface.hideReservedWordStage();
+                mainControllerInterface.hideAutoCompleteStage();
                 mainControllerInterface.requestFocusToMainController();
                 break;
         }
     }
 
-    // 予約語表示用ListViewのマウスイベントハンドラ
+    // 入力補完表示用ListViewのマウスイベントハンドラ
     // プライマリボタン（左ボタン）のダブルクリック時に選択した予約語をメイン画面に通知して自画面を閉じる
     @FXML
     private void onMouseClicked(MouseEvent event){
         if (event.getClickCount()>=2 && event.getButton()== MouseButton.PRIMARY) {
-            mainControllerInterface.hideReservedWordStage();
+            mainControllerInterface.hideAutoCompleteStage();
             selected();
         }
     }
