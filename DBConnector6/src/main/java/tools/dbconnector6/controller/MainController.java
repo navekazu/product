@@ -1001,7 +1001,7 @@ public class MainController extends Application implements Initializable, MainCo
      * メイン画面にフォーカスを移動させる。<br>
      */
     @Override
-    public void mainControllerRequestFocus() {
+    public void requestFocusToMainController() {
         primaryStage.requestFocus();
     }
 

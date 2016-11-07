@@ -42,7 +42,7 @@ public interface MainControllerInterface {
     /**
      * メイン画面にフォーカスを移動させる。<br>
      */
-    public void mainControllerRequestFocus();
+    public void requestFocusToMainController();
 
     /**
      * 予約語選択画面を閉じる

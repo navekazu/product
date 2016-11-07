@@ -169,12 +169,12 @@ public class ReservedWordController extends SubController implements Initializab
                 break;
 
             case TAB:
-                mainControllerInterface.mainControllerRequestFocus();
+                mainControllerInterface.requestFocusToMainController();
                 break;
 
             case ESCAPE:
                 mainControllerInterface.hideReservedWordStage();
-                mainControllerInterface.mainControllerRequestFocus();
+                mainControllerInterface.requestFocusToMainController();
                 break;
         }
     }
