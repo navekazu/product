@@ -1212,6 +1212,9 @@ public class MainController extends Application implements Initializable, MainCo
      */
     @Override
     public boolean isConnectWithoutOutputMessage() {
+        if (connectPair==null) {
+            return false;
+        }
         return connectPair.controller.getConnect()==null? false: connectPair.controller.getDbConnection()!=null;
     }
 
