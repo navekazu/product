@@ -284,7 +284,7 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
                 endTime = System.currentTimeMillis();
                 if (!silentMode) {
                     DecimalFormat df = new DecimalFormat("#,##0");                          // ToDo:書式付き出力に置き換えたい
-                    mainControllerInterface.writeLog("Success. count: %s  recieved data time: %s sec",
+                    mainControllerInterface.writeLog("Success. count: %s  turn around time: %s sec",
                             df.format(rowCount), df.format(((double) (endTime - startTime)) / 1000.0));
                 }
             }
