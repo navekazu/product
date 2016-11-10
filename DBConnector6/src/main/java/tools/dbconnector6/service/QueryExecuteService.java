@@ -283,9 +283,10 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
                 update(new ArrayList<>(rowList));
                 endTime = System.currentTimeMillis();
                 if (!silentMode) {
-                    DecimalFormat df = new DecimalFormat("#,##0");                          // ToDo:書式付き出力に置き換えたい
+                    DecimalFormat df1 = new DecimalFormat("#,##0");                          // ToDo:書式付き出力に置き換えたい
+                    DecimalFormat df2 = new DecimalFormat("#,##0.000");                          // ToDo:書式付き出力に置き換えたい
                     mainControllerInterface.writeLog("Success. count: %s  turn around time: %s sec",
-                            df.format(rowCount), df.format(((double) (endTime - startTime)) / 1000.0));
+                            df1.format(rowCount), df2.format(((double) (endTime - startTime)) / 1000.0));
                 }
             }
         }
