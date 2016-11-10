@@ -123,7 +123,7 @@ public abstract class QueryResultCellValue<V> {
      */
     public static QueryResultCellValue createQueryResultCellValue(ResultSetMetaData meta, ResultSet resultSet, int column) throws SQLException {
         QueryResultCellValue queryResultCellValue = QueryResultCellValueCreator.createQueryResultCellValue(meta, column, resultSet);
-        System.out.println(String.format("%s.%s value:%s", meta.getTableName(column), meta.getColumnName(column), resultSet.getString(column)));
+//        System.out.println(String.format("%s.%s value:%s", meta.getTableName(column), meta.getColumnName(column), resultSet.getString(column)));
         queryResultCellValue.setValue(resultSet, column);
         return queryResultCellValue;
     }
