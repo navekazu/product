@@ -86,7 +86,15 @@
                                     </FlowPane>
                                  </top>
                                  <center>
-                                    <TreeView BorderPane.alignment="CENTER" />
+                                    <TableView BorderPane.alignment="CENTER">
+                                      <columns>
+                                        <TableColumn prefWidth="75.0" text="Tree" />
+                                        <TableColumn prefWidth="75.0" text="Comment" />
+                                          <TableColumn prefWidth="75.0" text="Date" />
+                                          <TableColumn prefWidth="75.0" text="Author" />
+                                          <TableColumn prefWidth="75.0" text="Commit" />
+                                      </columns>
+                                    </TableView>
                                  </center>
                               </BorderPane>
                            </children></AnchorPane>
