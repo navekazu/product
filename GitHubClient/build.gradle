@@ -4,13 +4,11 @@ sourceCompatibility = 1.8
 version = '1.0'
 
 repositories {
-    maven {
-        url "http://repo.mycompany.com/maven2"
-    }
     mavenCentral()
 }
 
 dependencies {
-    compile "org.projectlombok:lombok:"
+    compile "org.projectlombok:lombok:1.16.10"
+    compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"
     testCompile "junit:junit:4.11"
 }
