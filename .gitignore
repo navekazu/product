@@ -11,5 +11,9 @@
 target
 */testdb/
 
+# Gradle
+*/.gradle/
+*/build/
+
 # jar
 */*.jar
