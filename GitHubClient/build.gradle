@@ -3,6 +3,17 @@ apply plugin: 'java'
 sourceCompatibility = 1.8
 version = '1.0'
 
+// 以下、Doma2の要件
+// JavaクラスとSQLファイルの出力先ディレクトリを同じにする
+processResources.destinationDir = compileJava.destinationDir
+// コンパイルより前にSQLファイルを出力先ディレクトリにコピーするために依存関係を逆転する
+compileJava.dependsOn processResources
+// ここまで、Doma2の要件
+
+configurations {
+    domaGenRuntime
+}
+
 repositories {
     mavenCentral()
 }
@@ -10,5 +21,10 @@ repositories {
 dependencies {
     compile "org.projectlombok:lombok:1.16.10"
     compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"
+    compile "org.seasar.doma:doma:2.13.0"
+    compile "org.slf4j:slf4j-api:1.7.13"
+    compile "org.slf4j:slf4j-simple:1.7.13"
+    compile "com.h2database:h2:1.4.193"
     testCompile "junit:junit:4.11"
+    domaGenRuntime 'org.seasar.doma:doma-gen:2.13.0'
 }
