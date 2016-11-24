@@ -244,15 +244,17 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
                     colList.add(col);
                 }
                 prepareUpdate(colList);
+                resultDataTransfer.setHeader(colList);
+
+                // テーブルからデータが消えるまで待機
                 while (true) {
-                    mainControllerInterface.writeLog("queryResultTableView.getItems().size() %,3d",
-                            mainControllerInterface.getQueryParam().queryResultTableView.getItems().size());
+//                    mainControllerInterface.writeLog("queryResultTableView.getItems().size() %,3d",
+//                            mainControllerInterface.getQueryParam().queryResultTableView.getItems().size());
                     if (mainControllerInterface.getQueryParam().queryResultTableView.getItems().size()==0) {
                         break;
                     }
                     Thread.sleep(1);
                 }
-                resultDataTransfer.setHeader(colList);
 
                 if (task.isCancelled()) {
                     return;
