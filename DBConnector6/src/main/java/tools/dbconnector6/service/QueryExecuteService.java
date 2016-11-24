@@ -244,6 +244,8 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
                     colList.add(col);
                 }
                 prepareUpdate(colList);
+                mainControllerInterface.writeLog("queryResultTableView.getItems().size() %,3d",
+                        mainControllerInterface.getQueryParam().queryResultTableView.getItems().size());
                 resultDataTransfer.setHeader(colList);
 
                 if (task.isCancelled()) {
