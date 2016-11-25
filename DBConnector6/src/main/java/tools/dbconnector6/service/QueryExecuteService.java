@@ -289,6 +289,8 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
                 if (task.isCancelled()) {
                     return;
                 }
+                mainControllerInterface.writeLog("queryResultTableView.getItems().size() %,3d",
+                        mainControllerInterface.getQueryParam().queryResultTableView.getItems().size());
 
                 update(new ArrayList<>(rowList));
                 endTime = System.currentTimeMillis();
