@@ -29,7 +29,15 @@
             </MenuBar>
             <ToolBar prefHeight="40.0" prefWidth="200.0">
               <items>
-                <Button mnemonicParsing="false" />
+                <Button mnemonicParsing="false" text="Branch" />
+                  <Separator orientation="VERTICAL" />
+                  <Button mnemonicParsing="false" text="Commit" />
+                  <Button mnemonicParsing="false" text="Push" />
+                  <Button mnemonicParsing="false" text="Pull" />
+                  <Button mnemonicParsing="false" text="Fetch" />
+                  <Separator orientation="VERTICAL" />
+                  <Button mnemonicParsing="false" text="Branch" />
+                  <Button mnemonicParsing="false" text="Merge" />
                   <Separator orientation="VERTICAL" />
               </items>
             </ToolBar>
