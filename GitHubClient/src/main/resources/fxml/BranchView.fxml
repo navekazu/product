@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <TreeView BorderPane.alignment="CENTER" />
+   </center>
+   <top>
+      <FlowPane BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Branch" />
+         </children>
+      </FlowPane>
+   </top>
+</BorderPane>
