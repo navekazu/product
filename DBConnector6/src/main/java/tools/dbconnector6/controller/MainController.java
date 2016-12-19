@@ -975,8 +975,10 @@ public class MainController extends Application implements Initializable, MainCo
     public void writeLog(Throwable e) {
         ApplicationLogSerializer applicationLogSerializer = new ApplicationLogSerializer();
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+            String logText = sdf.format(new Date())+" " + e.toString();
             e.printStackTrace();
-            applicationLogSerializer.appendText(e.toString());
+            applicationLogSerializer.appendText(logText);
         } catch (IOException e1) {
             writeLog(e1.toString());
             e1.printStackTrace();
