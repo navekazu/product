@@ -42,8 +42,11 @@ public class QueryResultCellValueCreator {
 //                    return new QueryResultCellValueNumber();
 //                }
 //                return new QueryResultCellValueReal();
-                if (resultSet!=null && !resultSet.wasNull() && resultSet.getString(column).indexOf(".")==-1) {
-                    return new QueryResultCellValueNumber();
+                if (resultSet!=null) {
+                    String stringValue = resultSet.getString(column);
+                    if(stringValue!=null && stringValue.indexOf(".")==-1) {
+                        return new QueryResultCellValueNumber();
+                    }
                 }
                 return new QueryResultCellValueReal();
 
