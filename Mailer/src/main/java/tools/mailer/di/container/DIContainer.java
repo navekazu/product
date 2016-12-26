@@ -9,8 +9,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DIContainer {
     private static List<Plugin> pluginContainer;
@@ -24,10 +27,16 @@ public class DIContainer {
     public void loadPlugin() {
         pluginContainer = new ArrayList<>();
 
+        System.out.println(DIContainer.class.getClassLoader());
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        final URL root = classLoader.getResource("/");
+        System.out.println(System.getProperty("java.class.path"));
+/*
         Class[] cls = Plugin.class.getClasses();
         for (int i = 0; i < cls.length; i++) {
             System.out.println("aaa:"+cls[i]);
         }
+*/
 /*
         try {
             URL res = DIContainer.class.getResource("/");
@@ -46,5 +55,14 @@ public class DIContainer {
             e.printStackTrace();
         }
 */
+    }
+
+    List<String> getLoadedJarFiles() {
+        String property = System.getProperty("java.class.path");
+        String[] paths = property.split(System.getProperty("path.separator"));
+        return Arrays.asList(paths).stream()
+                .filter(path -> Files.exists(Paths.get(path)))
+                .filter(path -> !Files.isDirectory(Paths.get(path)))
+                .collect(Collectors.toList());
     }
 }

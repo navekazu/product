@@ -2,6 +2,8 @@ package tools.mailer.di.container;
 
 import org.junit.*;
 
+import java.util.List;
+
 import static org.junit.Assert.assertTrue;
 
 public class DIContainerTest {
@@ -25,6 +27,13 @@ public class DIContainerTest {
     public void test() throws Exception {
         DIContainer diContainer = new DIContainer();
         diContainer.loadPlugin();
+        assertTrue(true);
+    }
+    @Test
+    public void getLoadedJarFilesTest() throws Exception {
+        DIContainer diContainer = new DIContainer();
+        List<String> jars = diContainer.getLoadedJarFiles();
+        jars.forEach(System.out::println);
         assertTrue(true);
     }
 }
