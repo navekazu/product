@@ -13,9 +13,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
@@ -24,45 +22,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class DIContainer {
-    private static List<Plugin> pluginContainer;
-    public static void premain(String agentArgs, Instrumentation instrumentation) {
+    Map<String, Object> pluginContainer = new HashMap<>();
 
-        Class[] classes = instrumentation.getAllLoadedClasses();
-        for (Class cls : classes) {
-            System.out.println(cls);
-        }
-    }
     public void loadPlugin() {
-        pluginContainer = new ArrayList<>();
-
-        System.out.println(DIContainer.class.getClassLoader());
-        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        final URL root = classLoader.getResource("/");
-        System.out.println(System.getProperty("java.class.path"));
-/*
-        Class[] cls = Plugin.class.getClasses();
-        for (int i = 0; i < cls.length; i++) {
-            System.out.println("aaa:"+cls[i]);
-        }
-*/
-/*
-        try {
-            URL res = DIContainer.class.getResource("/");
-            Path classPath = new File(res.toURI()).toPath();
-            Files.walk(classPath)
-                        .forEach(name -> System.out.println(name));
-
-            DIContainer diContainer = new DIContainer();
-            ClassLoader cl = diContainer.getClass().getClassLoader();
-            cl.getResource("*");
-
-
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-*/
+        Class<? extends Annotation>[] targetAnnotations = new Class[]{Plugin.class};
+        getLoadedJarFiles().stream()
+                .forEach(jarFile -> {
+                    getClassFiles(jarFile).stream()
+                            .map(classFile -> toFqdnClassName(classFile))
+                            .filter(classFile -> isDeclaredAnnotations(classFile, targetAnnotations))
+                            .forEach(classFile -> registPlugin(classFile));
+                });
     }
 
     List<String> getLoadedJarFiles() {
@@ -70,7 +40,6 @@ public class DIContainer {
         String[] paths = property.split(System.getProperty("path.separator"));
         return Arrays.asList(paths).stream()
                 .filter(path -> Files.exists(Paths.get(path)))
-//                .filter(path -> !Files.isDirectory(Paths.get(path)))
                 .collect(Collectors.toList());
     }
 
@@ -176,4 +145,18 @@ public class DIContainer {
 
         return false;
     }
+
+    void registPlugin(String pluginClass) {
+        try {
+            Object instance = Class.forName(pluginClass).newInstance();
+            pluginContainer.put(pluginClass, instance);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

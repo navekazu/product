@@ -1,7 +1,16 @@
 package tools.mailer.plugin;
 
-import tools.mailer.di.anntation.Plugin;
+import tools.mailer.di.anntation.*;
+import tools.mailer.di.anntation.Process;
+import tools.mailer.processor.MailProcessor;
 
 @Plugin
 public class SendMailPlugin {
+    @Autowired
+    private MailProcessor mailProcessor;
+
+    @Process(processType = ProcessType.SEND_MAIL)
+    public void sendMail() {
+
+    }
 }

@@ -29,11 +29,14 @@ public class DIContainerTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void loadPluginTest() throws Exception {
         DIContainer diContainer = new DIContainer();
         diContainer.loadPlugin();
-        assertTrue(true);
+        assertEquals(2, diContainer.pluginContainer.size());
+        assertTrue(diContainer.pluginContainer.containsKey("tools.mailer.plugin.SendMailPlugin"));
+        assertTrue(diContainer.pluginContainer.containsKey("tools.mailer.processor.MailProcessor"));
     }
+
     @Test
     public void getLoadedJarFilesTest() throws Exception {
         DIContainer diContainer = new DIContainer();

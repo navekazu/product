@@ -6,6 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME) // アノテーションの情報をクラス・ファイルに出力し、実行時JVMにもロードされる。その為、リフレクションAPI経由でその情報にアクセスできる。
-@Target(ElementType.TYPE)           // クラス宣言、インタフェース宣言、アノテーション型宣言、enum宣言のみに使える
-public @interface Plugin {
+@Target(ElementType.FIELD)          // フィールド宣言、enum宣言
+public @interface Autowired {
 }
