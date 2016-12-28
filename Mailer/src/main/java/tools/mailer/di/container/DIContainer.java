@@ -1,12 +1,17 @@
 package tools.mailer.di.container;
 
+import tools.mailer.di.anntation.Autowired;
 import tools.mailer.di.anntation.Plugin;
+import tools.mailer.di.anntation.Process;
+import tools.mailer.di.anntation.ProcessType;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
@@ -22,7 +27,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class DIContainer {
-    Map<String, Object> pluginContainer = new HashMap<>();
+    private static DIContainer diContainer = new DIContainer();
+    public static DIContainer getInstance() {
+        return diContainer;
+    }
+    private DIContainer() {
+    }
+
+    Map<Class, Object> pluginContainer = new HashMap<>();
 
     public void loadPlugin() {
         Class<? extends Annotation>[] targetAnnotations = new Class[]{Plugin.class};
@@ -33,6 +45,7 @@ public class DIContainer {
                             .filter(classFile -> isDeclaredAnnotations(classFile, targetAnnotations))
                             .forEach(classFile -> registPlugin(classFile));
                 });
+        autowired();
     }
 
     List<String> getLoadedJarFiles() {
@@ -148,8 +161,9 @@ public class DIContainer {
 
     void registPlugin(String pluginClass) {
         try {
-            Object instance = Class.forName(pluginClass).newInstance();
-            pluginContainer.put(pluginClass, instance);
+            Class clazz = Class.forName(pluginClass);
+            Object instance = clazz.newInstance();
+            pluginContainer.put(clazz, instance);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -157,6 +171,44 @@ public class DIContainer {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    void autowired() {
+        pluginContainer.keySet().stream()
+                .forEach(clazz -> {
+                    for (Field field: clazz.getDeclaredFields()) {
+                        if (!field.isAnnotationPresent(Autowired.class)) {
+                            continue;
+                        }
+                        field.setAccessible(true);
+                        try {
+                            field.set(pluginContainer.get(clazz), pluginContainer.get(field.getType()));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    public void fireEvent(ProcessType processType) {
+        pluginContainer.keySet().stream()
+                .forEach(clazz -> {
+
+                    for (Method method: clazz.getDeclaredMethods()) {
+                        if (!method.isAnnotationPresent(Process.class)) {
+                            continue;
+                        }
+/*
+                        field.setAccessible(true);
+                        try {
+                            field.set(pluginContainer.get(clazz), pluginContainer.get(field.getType()));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+*/
+                    }
+                });
+
     }
 
 }

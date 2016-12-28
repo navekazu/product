@@ -2,6 +2,8 @@ package tools.mailer.di.container;
 
 import org.junit.*;
 import tools.mailer.di.anntation.Plugin;
+import tools.mailer.plugin.SendMailPlugin;
+import tools.mailer.processor.MailProcessor;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -30,16 +32,25 @@ public class DIContainerTest {
 
     @Test
     public void loadPluginTest() throws Exception {
-        DIContainer diContainer = new DIContainer();
+        DIContainer diContainer = DIContainer.getInstance();
         diContainer.loadPlugin();
+
+        // 現在2つのプラグインがある
         assertEquals(2, diContainer.pluginContainer.size());
-        assertTrue(diContainer.pluginContainer.containsKey("tools.mailer.plugin.SendMailPlugin"));
-        assertTrue(diContainer.pluginContainer.containsKey("tools.mailer.processor.MailProcessor"));
+
+        // その2つのプラグインのクラスをチェック
+        assertTrue(diContainer.pluginContainer.containsKey(Class.forName("tools.mailer.plugin.SendMailPlugin")));
+        assertTrue(diContainer.pluginContainer.containsKey(Class.forName("tools.mailer.processor.MailProcessor")));
+
+        // Autowiredしたやつはちゃんとインスタンスがセットされているか？
+        SendMailPlugin sendMailPlugin = (SendMailPlugin)diContainer.pluginContainer.get(Class.forName("tools.mailer.plugin.SendMailPlugin"));
+        MailProcessor mailProcessor = (MailProcessor)diContainer.pluginContainer.get(Class.forName("tools.mailer.processor.MailProcessor"));
+        assertEquals(sendMailPlugin.mailProcessor, mailProcessor);
     }
 
     @Test
     public void getLoadedJarFilesTest() throws Exception {
-        DIContainer diContainer = new DIContainer();
+        DIContainer diContainer = DIContainer.getInstance();
         List<String> jars = diContainer.getLoadedJarFiles();
         jars.forEach(System.out::println);
         assertTrue(true);
@@ -47,7 +58,7 @@ public class DIContainerTest {
 
     @Test
     public void getClassFilesTest() throws Exception {
-        DIContainer diContainer = new DIContainer();
+        DIContainer diContainer = DIContainer.getInstance();
         List<String> jars = diContainer.getLoadedJarFiles();
         for (String jarFile: jars) {
             System.out.println("jarFile=>"+jarFile);
@@ -59,7 +70,7 @@ public class DIContainerTest {
 
     @Test
     public void toFqdnClassNameTest() throws Exception {
-        DIContainer diContainer = new DIContainer();
+        DIContainer diContainer = DIContainer.getInstance();
         assertEquals("ccc", diContainer.toFqdnClassName("ccc.class"));
         assertEquals("aaa.bbb.ccc", diContainer.toFqdnClassName("aaa/bbb/ccc.class"));
         assertEquals("aaa.bbb.ccc", diContainer.toFqdnClassName("/aaa/bbb/ccc.class"));
@@ -76,7 +87,7 @@ public class DIContainerTest {
 
     @Test
     public void isDeclaredAnnotationsTest() throws Exception {
-        DIContainer diContainer = new DIContainer();
+        DIContainer diContainer = DIContainer.getInstance();
         List<String> jars = diContainer.getLoadedJarFiles();
         List<String> classFiles = new ArrayList<>();
         for (String jarFile: jars) {

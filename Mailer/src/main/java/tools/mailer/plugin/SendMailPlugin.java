@@ -7,7 +7,7 @@ import tools.mailer.processor.MailProcessor;
 @Plugin
 public class SendMailPlugin {
     @Autowired
-    private MailProcessor mailProcessor;
+    public MailProcessor mailProcessor;
 
     @Process(processType = ProcessType.SEND_MAIL)
     public void sendMail() {
