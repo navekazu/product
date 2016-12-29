@@ -201,15 +201,17 @@ public class DIContainer {
                             continue;
                         }
                         Process processAnnotation =  method.getAnnotation(Process.class);
-                        if (processType==processAnnotation.processType()) {
-                            try {
-                                method.invoke(pluginContainer.get(clazz));
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            } catch (InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        };
+                        if (processType!=processAnnotation.processType()) {
+                            continue;
+                        }
+
+                        try {
+                            method.invoke(pluginContainer.get(clazz));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
 
