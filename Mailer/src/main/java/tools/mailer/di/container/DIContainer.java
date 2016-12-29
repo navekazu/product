@@ -200,17 +200,16 @@ public class DIContainer {
                         if (!method.isAnnotationPresent(Process.class)) {
                             continue;
                         }
-                        Arrays.asList(ProcessType.values()).stream()
-                                .filter(v -> v==processType)
-                                .forEach(v -> {
-                                    try {
-                                        method.invoke(pluginContainer.get(clazz));
-                                    } catch (IllegalAccessException e) {
-                                        e.printStackTrace();
-                                    } catch (InvocationTargetException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
+                        Process processAnnotation =  method.getAnnotation(Process.class);
+                        if (processType==processAnnotation.processType()) {
+                            try {
+                                method.invoke(pluginContainer.get(clazz));
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        };
                     }
                 });
 
