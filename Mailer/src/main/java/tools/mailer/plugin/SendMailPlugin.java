@@ -11,6 +11,13 @@ public class SendMailPlugin {
 
     @Process(processType = ProcessType.SEND_MAIL)
     public void sendMail() {
+        System.out.println("sendMail");
+
+    }
+
+    @Process(processType=ProcessType.RECV_MAIL)
+    public void mailRecv() {
+        System.out.println("mailRecv");
 
     }
 }

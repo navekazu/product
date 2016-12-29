@@ -8,12 +8,12 @@ import tools.mailer.di.anntation.ProcessType;
 public class ApplicationProcessor {
 
     @Process(processType= ProcessType.BOOT_APPLICATION)
-    private void boot() {
-
+    public void boot() {
+        System.out.println("boot");
     }
 
     @Process(processType= ProcessType.TERM_APPLICATION)
-    private void term() {
-
+    public void term() {
+        System.out.println("term");
     }
 }

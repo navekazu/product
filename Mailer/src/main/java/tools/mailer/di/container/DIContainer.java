@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -190,6 +191,7 @@ public class DIContainer {
                 });
     }
 
+
     public void fireEvent(ProcessType processType) {
         pluginContainer.keySet().stream()
                 .forEach(clazz -> {
@@ -198,14 +200,17 @@ public class DIContainer {
                         if (!method.isAnnotationPresent(Process.class)) {
                             continue;
                         }
-/*
-                        field.setAccessible(true);
-                        try {
-                            field.set(pluginContainer.get(clazz), pluginContainer.get(field.getType()));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-*/
+                        Arrays.asList(ProcessType.values()).stream()
+                                .filter(v -> v==processType)
+                                .forEach(v -> {
+                                    try {
+                                        method.invoke(pluginContainer.get(clazz));
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } catch (InvocationTargetException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
                     }
                 });
 
