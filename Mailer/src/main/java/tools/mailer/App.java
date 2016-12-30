@@ -8,5 +8,6 @@ public class App {
         DIContainer diContainer = DIContainer.getInstance();
         diContainer.loadPlugin();
         diContainer.fireEvent(ProcessType.BOOT_APPLICATION);
+        diContainer.fireEvent(ProcessType.STARTED_APPLICATION);
     }
 }
