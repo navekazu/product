@@ -10,4 +10,6 @@ public enum ProcessType {
     SEND_MAIL,
     RECV_MAIL,
 
+    //
+    REFRESH_LIST,
 }
