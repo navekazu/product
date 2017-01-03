@@ -12,4 +12,6 @@ public enum ProcessType {
 
     //
     REFRESH_LIST,
+    ACCOUTN_SETTING,
+    
 }
