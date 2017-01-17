@@ -14,5 +14,9 @@ import java.util.List;
 @Builder
 public class Data {
     public Font font;
+    public AddressPoint destinationPoint;
+    public AddressPoint senderPoint;
     public List<Address> addressList;
+    public Address sender;
+    public boolean printSender;
 }
