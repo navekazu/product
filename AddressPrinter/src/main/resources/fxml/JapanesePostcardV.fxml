@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="535.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tools.addressprinter.controller.JapanesePostcardVController">
+   <children>
+      <Label fx:id="zipNo" text="ZipNo" />
+      <Label fx:id="address1" text="Address1" />
+      <Label fx:id="address2" text="Address2" />
+      <Label fx:id="address3" text="Address3" />
+      <Label fx:id="familyName1" text="FamilyName1" />
+      <Label fx:id="name1" text="Name1" />
+      <Label fx:id="familyName2" text="FamilyName2" />
+      <Label fx:id="name2" text="Name2" />
+      <Label fx:id="familyName3" text="FamilyName3" />
+      <Label fx:id="name3" text="Name3" />
+      <Label fx:id="familyName4" text="FamilyName4" />
+      <Label fx:id="name4" text="Name4" />
+      <Label fx:id="familyName5" text="FamilyName5" />
+      <Label fx:id="name5" text="Name5" />
+      <Label fx:id="senderZipNo" text="SenderZipNo" />
+      <Label fx:id="senderAddress1" text="SenderAddress1" />
+      <Label fx:id="senderAddress2" text="SenderAddress2" />
+      <Label fx:id="senderAddress3" text="SenderAddress3" />
+      <Label fx:id="senderFamilyName1" text="SenderFamilyName1" />
+      <Label fx:id="senderName1" text="SenderName1" />
+   </children>
+</Pane>
