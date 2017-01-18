@@ -27,5 +27,9 @@
       <Label fx:id="senderAddress3" text="SenderAddress3" />
       <Label fx:id="senderFamilyName1" text="SenderFamilyName1" />
       <Label fx:id="senderName1" text="SenderName1" />
+      <Label fx:id="senderFamilyName2" text="SenderFamilyName2" />
+      <Label fx:id="senderName2" text="SenderName2" />
+      <Label fx:id="senderFamilyName3" text="SenderFamilyName3" />
+      <Label fx:id="senderName3" text="SenderName3" />
    </children>
 </Pane>

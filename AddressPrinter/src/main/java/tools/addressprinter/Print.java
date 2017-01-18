@@ -1,6 +1,7 @@
 package tools.addressprinter;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.print.JobSettings;
 import javafx.print.Paper;
@@ -9,9 +10,7 @@ import javafx.print.PrinterJob;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 import tools.addressprinter.controller.JapanesePostcardVController;
-import tools.addressprinter.entity.AddressPoint;
-import tools.addressprinter.entity.Data;
-import tools.addressprinter.entity.Point;
+import tools.addressprinter.entity.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,8 +28,59 @@ public class Print extends Application {
         data.destinationPoint = new AddressPoint();
         data.destinationPoint.zipNo = new Point();
         data.destinationPoint.zipNo.x = 0.4;
-        data.destinationPoint.zipNo.y = 0.1;
+        data.destinationPoint.zipNo.y = 0.05;
+        data.destinationPoint.addressUpper = new Point();
+        data.destinationPoint.addressUpper.x = 0.3;
+        data.destinationPoint.addressUpper.y = 0.3;
+        data.destinationPoint.addressLower = new Point();
+        data.destinationPoint.addressLower.x = 0.3;
+        data.destinationPoint.addressLower.y = 0.4;
+        data.destinationPoint.person = new Point();
+        data.destinationPoint.person.x = 0.3;
+        data.destinationPoint.person.y = 0.5;
+
+        data.senderPoint = new AddressPoint();
+        data.senderPoint.zipNo = new Point();
+        data.senderPoint.zipNo.x = 0.0;
+        data.senderPoint.zipNo.y = 0.85;
+        data.senderPoint.addressUpper = new Point();
+        data.senderPoint.addressUpper.x = 0.01;
+        data.senderPoint.addressUpper.y = 0.7;
+        data.senderPoint.addressLower = new Point();
+        data.senderPoint.addressLower.x = 0.01;
+        data.senderPoint.addressLower.y = 0.75;
+        data.senderPoint.person = new Point();
+        data.senderPoint.person.x = 0.01;
+        data.senderPoint.person.y = 0.8;
+
+        Address address = new Address();
+        address.zipNo = new ZipNo();
+        address.zipNo.sectionNo = "100";
+        address.zipNo.cityNo = "0001";
+        address.address1 = "東京都";
+        address.address2 = "千代田区1丁目";
+        address.address3 = "コープ千代千代101";
+        address.useFamilyNameForEveryone = false;
+
+        address.personList = new ArrayList<>();
+
+        Person person;
+        person = new Person();
+        person.familyName = "山田";
+        person.name = "太郎";
+        address.personList.add(person);
+
+        person = new Person();
+        person.familyName = "山田";
+        person.name = "花子";
+        address.personList.add(person);
+
+        data.addressList = new ArrayList<>();
+        data.addressList.add(address);
+
         print.print(data);
+
+        Platform.exit();
 
     }
 
@@ -71,7 +121,7 @@ public class Print extends Application {
         Node root = loader.load();
         root.autosize();
         JapanesePostcardVController controller = loader.getController();
-        controller.setData(data);
+        controller.setData(data, 0);
 
         PrinterJob job = PrinterJob.createPrinterJob();
         job.printPage(root);
