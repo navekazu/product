@@ -3,10 +3,7 @@ package tools.addressprinter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.print.JobSettings;
-import javafx.print.Paper;
-import javafx.print.Printer;
-import javafx.print.PrinterJob;
+import javafx.print.*;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 import tools.addressprinter.controller.JapanesePostcardVController;
@@ -41,16 +38,16 @@ public class Print extends Application {
 
         data.senderPoint = new AddressPoint();
         data.senderPoint.zipNo = new Point();
-        data.senderPoint.zipNo.x = 0.0;
+        data.senderPoint.zipNo.x = 0.05;
         data.senderPoint.zipNo.y = 0.85;
         data.senderPoint.addressUpper = new Point();
-        data.senderPoint.addressUpper.x = 0.01;
+        data.senderPoint.addressUpper.x = 0.1;
         data.senderPoint.addressUpper.y = 0.7;
         data.senderPoint.addressLower = new Point();
-        data.senderPoint.addressLower.x = 0.01;
+        data.senderPoint.addressLower.x = 0.1;
         data.senderPoint.addressLower.y = 0.75;
         data.senderPoint.person = new Point();
-        data.senderPoint.person.x = 0.01;
+        data.senderPoint.person.x = 0.1;
         data.senderPoint.person.y = 0.8;
 
         Address address = new Address();
@@ -119,11 +116,27 @@ public class Print extends Application {
     public void print(Data data) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/JapanesePostcardV.fxml"));
         Node root = loader.load();
-        root.autosize();
         JapanesePostcardVController controller = loader.getController();
-        controller.setData(data, 0);
 
         PrinterJob job = PrinterJob.createPrinterJob();
+        Printer printer = job.getPrinter();
+        JobSettings jobSettings = job.getJobSettings();
+        PageLayout pageLayout = printer.createPageLayout(Paper.JAPANESE_POSTCARD, PageOrientation.PORTRAIT, Printer.MarginType.HARDWARE_MINIMUM);
+        jobSettings.setPageLayout(pageLayout);
+//        pageLayout.
+//        jobSettings.set
+
+//        double h1 = pageLayout.getPrintableHeight();
+//        double h2 = root. .maxHeight();
+
+        root.resize(pageLayout.getPrintableWidth(), pageLayout.getPrintableHeight());
+//        root.maxHeight(pageLayout.getPrintableHeight());
+//        root.prefHeight(pageLayout.getPrintableHeight());
+//        root.maxWidth(pageLayout.getPrintableWidth());
+//        root.prefWidth(pageLayout.getPrintableWidth());
+//        root.autosize();
+        controller.setData(data, 0);
+
         job.printPage(root);
         job.endJob();
     }
