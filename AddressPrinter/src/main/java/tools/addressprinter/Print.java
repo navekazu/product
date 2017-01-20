@@ -21,60 +21,8 @@ public class Print extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Print print = new Print();
-        Data data = new Data();
-        data.destinationPoint = new AddressPoint();
-        data.destinationPoint.zipNo = new Point();
-        data.destinationPoint.zipNo.x = 0.4;
-        data.destinationPoint.zipNo.y = 0.05;
-        data.destinationPoint.addressUpper = new Point();
-        data.destinationPoint.addressUpper.x = 0.3;
-        data.destinationPoint.addressUpper.y = 0.3;
-        data.destinationPoint.addressLower = new Point();
-        data.destinationPoint.addressLower.x = 0.3;
-        data.destinationPoint.addressLower.y = 0.4;
-        data.destinationPoint.person = new Point();
-        data.destinationPoint.person.x = 0.3;
-        data.destinationPoint.person.y = 0.5;
 
-        data.senderPoint = new AddressPoint();
-        data.senderPoint.zipNo = new Point();
-        data.senderPoint.zipNo.x = 0.05;
-        data.senderPoint.zipNo.y = 0.85;
-        data.senderPoint.addressUpper = new Point();
-        data.senderPoint.addressUpper.x = 0.1;
-        data.senderPoint.addressUpper.y = 0.7;
-        data.senderPoint.addressLower = new Point();
-        data.senderPoint.addressLower.x = 0.1;
-        data.senderPoint.addressLower.y = 0.75;
-        data.senderPoint.person = new Point();
-        data.senderPoint.person.x = 0.1;
-        data.senderPoint.person.y = 0.8;
-
-        Address address = new Address();
-        address.zipNo = new ZipNo();
-        address.zipNo.sectionNo = "100";
-        address.zipNo.cityNo = "0001";
-        address.address1 = "東京都";
-        address.address2 = "千代田区1丁目";
-        address.address3 = "コープ千代千代101";
-        address.useFamilyNameForEveryone = false;
-
-        address.personList = new ArrayList<>();
-
-        Person person;
-        person = new Person();
-        person.familyName = "山田";
-        person.name = "太郎";
-        address.personList.add(person);
-
-        person = new Person();
-        person.familyName = "山田";
-        person.name = "花子";
-        address.personList.add(person);
-
-        data.addressList = new ArrayList<>();
-        data.addressList.add(address);
-
+        Data data = createSampleData();
         print.print(data);
 
         Platform.exit();
@@ -141,4 +89,61 @@ public class Print extends Application {
         job.endJob();
     }
 
+    Data createSampleData() {
+        Data data = new Data();
+        data.destinationPoint = new AddressPoint();
+        data.destinationPoint.zipNo = new Point();
+        data.destinationPoint.zipNo.x = 0.4;
+        data.destinationPoint.zipNo.y = 0.05;
+        data.destinationPoint.addressUpper = new Point();
+        data.destinationPoint.addressUpper.x = 0.3;
+        data.destinationPoint.addressUpper.y = 0.3;
+        data.destinationPoint.addressLower = new Point();
+        data.destinationPoint.addressLower.x = 0.3;
+        data.destinationPoint.addressLower.y = 0.4;
+        data.destinationPoint.person = new Point();
+        data.destinationPoint.person.x = 0.3;
+        data.destinationPoint.person.y = 0.5;
+
+        data.senderPoint = new AddressPoint();
+        data.senderPoint.zipNo = new Point();
+        data.senderPoint.zipNo.x = 0.05;
+        data.senderPoint.zipNo.y = 0.85;
+        data.senderPoint.addressUpper = new Point();
+        data.senderPoint.addressUpper.x = 0.1;
+        data.senderPoint.addressUpper.y = 0.7;
+        data.senderPoint.addressLower = new Point();
+        data.senderPoint.addressLower.x = 0.1;
+        data.senderPoint.addressLower.y = 0.75;
+        data.senderPoint.person = new Point();
+        data.senderPoint.person.x = 0.1;
+        data.senderPoint.person.y = 0.8;
+
+        Address address = new Address();
+        address.zipNo = new ZipNo();
+        address.zipNo.sectionNo = "100";
+        address.zipNo.cityNo = "0001";
+        address.address1 = "東京都";
+        address.address2 = "千代田区1丁目";
+        address.address3 = "コープ千代千代101";
+        address.useFamilyNameForEveryone = false;
+
+        address.personList = new ArrayList<>();
+
+        Person person;
+        person = new Person();
+        person.familyName = "山田";
+        person.name = "太郎";
+        address.personList.add(person);
+
+        person = new Person();
+        person.familyName = "山田";
+        person.name = "花子";
+        address.personList.add(person);
+
+        data.addressList = new ArrayList<>();
+        data.addressList.add(address);
+
+        return data;
+    }
 }

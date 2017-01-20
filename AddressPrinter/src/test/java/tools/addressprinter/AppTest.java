@@ -1,5 +1,6 @@
 package tools.addressprinter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.*;
@@ -68,5 +69,17 @@ public class AppTest {
         Data data2 = mapper.readValue(jsonValue, Data.class);
 
         assertEquals(data, data2);
+    }
+
+    @Test
+    public void createSampleDataTest() throws JsonProcessingException {
+        Print print = new Print();
+        Data data = print.createSampleData();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String jsonValue = mapper.writeValueAsString(data);
+
+        System.out.println(jsonValue);
     }
 }
