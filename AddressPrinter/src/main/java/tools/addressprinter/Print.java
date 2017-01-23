@@ -144,6 +144,8 @@ public class Print extends Application {
         data.addressList = new ArrayList<>();
         data.addressList.add(address);
 
+        data.font = new Font();
+
         return data;
     }
 }

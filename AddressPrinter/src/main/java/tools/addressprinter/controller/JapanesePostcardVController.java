@@ -9,6 +9,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import tools.addressprinter.entity.Address;
 import tools.addressprinter.entity.Data;
+import tools.addressprinter.entity.Font;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -40,8 +41,19 @@ public class JapanesePostcardVController implements Initializable {
     @FXML private Label senderFamilyName3;
     @FXML private Label senderName3;
 
+    private javafx.scene.text.Font baseFont;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        baseFont = javafx.scene.text.Font.font(zipNo.getFont().getName(), zipNo.getFont().getSize());
+    }
+
+    private javafx.scene.text.Font createFont(Data data, Font font) {
+        Font f = (font==null? (data.font==null? null: data.font): font);
+        if (f==null) {
+            return baseFont;
+        }
+        return javafx.scene.text.Font.font(f.name, f.size);
     }
 
     public void setData(Data data, int index) {
@@ -53,6 +65,7 @@ public class JapanesePostcardVController implements Initializable {
         zipNo.setText(address.zipNo.sectionNo+" "+address.zipNo.cityNo);
         zipNo.setLayoutX(width*data.destinationPoint.zipNo.x);
         zipNo.setLayoutY(height*data.destinationPoint.zipNo.y);
+        zipNo.setFont(createFont(data, data.destinationPoint.zipNo.font));
         address1.setText(address.address1);
         address1.setLayoutX(width*data.destinationPoint.addressUpper.x);
         address1.setLayoutY(width*data.destinationPoint.addressUpper.y);

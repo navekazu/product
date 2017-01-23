@@ -12,5 +12,5 @@ public class Font {
     public double size = 12.0;
     public boolean bold;
     public boolean italic;
-    public boolean unberline;
+    public boolean underline;
 }
