@@ -107,17 +107,25 @@ public class Print extends Application {
 
         data.senderPoint = new AddressPoint();
         data.senderPoint.zipNo = new Point();
-        data.senderPoint.zipNo.x = 0.05;
+        data.senderPoint.zipNo.x = 0.1;
         data.senderPoint.zipNo.y = 0.85;
+        data.senderPoint.zipNo.font = new Font();
+        data.senderPoint.zipNo.font.size = 8;
         data.senderPoint.addressUpper = new Point();
         data.senderPoint.addressUpper.x = 0.1;
         data.senderPoint.addressUpper.y = 0.7;
+        data.senderPoint.addressUpper.font = new Font();
+        data.senderPoint.addressUpper.font.size = 8;
         data.senderPoint.addressLower = new Point();
         data.senderPoint.addressLower.x = 0.1;
-        data.senderPoint.addressLower.y = 0.75;
+        data.senderPoint.addressLower.y = 0.73;
+        data.senderPoint.addressLower.font = new Font();
+        data.senderPoint.addressLower.font.size = 8;
         data.senderPoint.person = new Point();
         data.senderPoint.person.x = 0.1;
-        data.senderPoint.person.y = 0.8;
+        data.senderPoint.person.y = 0.76;
+        data.senderPoint.person.font = new Font();
+        data.senderPoint.person.font.size = 8;
 
         Address address = new Address();
         address.zipNo = new ZipNo();
@@ -145,6 +153,30 @@ public class Print extends Application {
         data.addressList.add(address);
 
         data.font = new Font();
+
+        address = new Address();
+        address.zipNo = new ZipNo();
+        address.zipNo.sectionNo = "100";
+        address.zipNo.cityNo = "0101";
+        address.address1 = "東京都";
+        address.address2 = "大島町元町1丁目";
+        address.address3 = "コープ元町201";
+        address.useFamilyNameForEveryone = false;
+
+        address.personList = new ArrayList<>();
+
+        person = new Person();
+        person.familyName = "宮川";
+        person.name = "大助";
+        address.personList.add(person);
+
+        person = new Person();
+        person.familyName = "宮川";
+        person.name = "花子";
+        address.personList.add(person);
+
+        data.sender = address;
+        data.printSender=true;
 
         return data;
     }

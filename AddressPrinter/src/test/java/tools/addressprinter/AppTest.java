@@ -3,8 +3,10 @@ package tools.addressprinter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import javafx.scene.text.*;
 import org.junit.*;
 import tools.addressprinter.entity.*;
+import tools.addressprinter.entity.Font;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class AppTest {
         data.font.size = 1;
         data.font.bold = true;
         data.font.italic = false;
-        data.font.unberline = false;
+        data.font.underline = false;
 
         Address address = new Address();
         address.zipNo = new ZipNo();
@@ -81,5 +83,14 @@ public class AppTest {
         String jsonValue = mapper.writeValueAsString(data);
 
         System.out.println(jsonValue);
+    }
+
+    @Test
+    public void fontListTest() {
+        System.out.println("*** getFontNames");
+        javafx.scene.text.Font.getFontNames().stream().forEach(System.out::println);
+
+        System.out.println("*** getFamilies");
+        javafx.scene.text.Font.getFamilies().stream().forEach(System.out::println);
     }
 }
