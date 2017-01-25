@@ -35,12 +35,13 @@ public class DIContainerTest {
         DIContainer diContainer = DIContainer.getInstance();
         diContainer.loadPlugin();
 
-        // 現在2つのプラグインがある
-        assertEquals(2, diContainer.pluginContainer.size());
+        // 現在3つのプラグインがある
+        assertEquals(3, diContainer.pluginContainer.size());
 
-        // その2つのプラグインのクラスをチェック
+        // その3つのプラグインのクラスをチェック
         assertTrue(diContainer.pluginContainer.containsKey(Class.forName("tools.mailer.plugin.SendMailPlugin")));
         assertTrue(diContainer.pluginContainer.containsKey(Class.forName("tools.mailer.processor.MailProcessor")));
+        assertTrue(diContainer.pluginContainer.containsKey(Class.forName("tools.mailer.processor.ApplicationProcessor")));
 
         // Autowiredしたやつはちゃんとインスタンスがセットされているか？
         SendMailPlugin sendMailPlugin = (SendMailPlugin)diContainer.pluginContainer.get(Class.forName("tools.mailer.plugin.SendMailPlugin"));

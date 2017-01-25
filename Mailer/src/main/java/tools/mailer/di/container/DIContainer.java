@@ -192,29 +192,21 @@ public class DIContainer {
     }
 
 
-    public void fireEvent(ProcessType processType) {
+    public void fireEvent(ProcessType processType, Object... args) {
         pluginContainer.keySet().stream()
                 .forEach(clazz -> {
-
-                    for (Method method: clazz.getDeclaredMethods()) {
-                        if (!method.isAnnotationPresent(Process.class)) {
-                            continue;
-                        }
-                        Process processAnnotation =  method.getAnnotation(Process.class);
-                        if (processType!=processAnnotation.processType()) {
-                            continue;
-                        }
-
-                        try {
-                            method.invoke(pluginContainer.get(clazz));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    Arrays.asList(clazz.getDeclaredMethods()).stream()
+                            .filter(method -> method.isAnnotationPresent(Process.class))
+                            .filter(method -> method.getAnnotation(Process.class).processType()==processType)
+                            .forEach(method -> {
+                                try {
+                                    method.invoke(pluginContainer.get(clazz));
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                } catch (InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                            });
                 });
-
     }
-
 }
