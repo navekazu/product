@@ -12,6 +12,7 @@ import tools.mailer.di.anntation.Plugin;
 import tools.mailer.di.anntation.Process;
 import tools.mailer.di.anntation.ProcessType;
 import tools.mailer.di.container.DIContainer;
+import tools.mailer.entity.Account;
 
 @Plugin
 public class ApplicationProcessor extends Application {
@@ -24,7 +25,8 @@ public class ApplicationProcessor extends Application {
     @Process(processType= ProcessType.STARTED_APPLICATION)
     public void started() {
         System.out.println("started");
-        DIContainer.getInstance().fireEvent(ProcessType.RECV_MAIL);
+        Account account = new Account();
+        DIContainer.getInstance().fireEvent(ProcessType.RECV_MAIL, account);
     }
 
     @Process(processType= ProcessType.TERM_APPLICATION)

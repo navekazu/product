@@ -196,11 +196,21 @@ public class DIContainer {
         pluginContainer.keySet().stream()
                 .forEach(clazz -> {
                     Arrays.asList(clazz.getDeclaredMethods()).stream()
-                            .filter(method -> method.isAnnotationPresent(Process.class))
-                            .filter(method -> method.getAnnotation(Process.class).processType()==processType)
+                            .filter(method -> method.isAnnotationPresent(Process.class))                        // アノテーションが合っているか？
+                            .filter(method -> method.getAnnotation(Process.class).processType()==processType)   // processTypeが合っているか？
+                            .filter(method -> method.getParameterCount()==args.length)                          // メソッドの引数の数は合っているか？
+                            .filter(method -> {                                                                 // メソッドの引数の型は合っているか？
+                                int count = method.getParameterCount();
+                                for (int i=0; i<count; i++) {
+                                    if (!method.getParameterTypes()[i].getName().equals(args[i].getClass().getName())) {
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            })
                             .forEach(method -> {
                                 try {
-                                    method.invoke(pluginContainer.get(clazz));
+                                    method.invoke(pluginContainer.get(clazz), args);
                                 } catch (IllegalAccessException e) {
                                     e.printStackTrace();
                                 } catch (InvocationTargetException e) {
