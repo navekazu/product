@@ -18,7 +18,7 @@ public class ApplicationProcessor extends Application {
 
     @Process(processType= ProcessType.BOOT_APPLICATION)
     public void boot() {
-        Application.launch(null);
+        Application.launch(new String[]{});
     }
 
     @Process(processType= ProcessType.STARTED_APPLICATION)

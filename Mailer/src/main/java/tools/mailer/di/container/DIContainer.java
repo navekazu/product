@@ -38,7 +38,7 @@ public class DIContainer {
     Map<Class, Object> pluginContainer = new HashMap<>();
 
     public void loadPlugin() {
-        Class<? extends Annotation>[] targetAnnotations = new Class[]{Plugin.class};
+        Class[] targetAnnotations = new Class[]{Plugin.class};
         getLoadedJarFiles().stream()
                 .forEach(jarFile -> {
                     getClassFiles(jarFile).stream()
@@ -133,7 +133,7 @@ public class DIContainer {
         return classFile;
     }
 
-    boolean isDeclaredAnnotations(String className, Class<? extends Annotation>[] targetAnnotations) {
+    boolean isDeclaredAnnotations(String className, Class[] targetAnnotations) {
 //        ClassLoader loader = DIContainer.class.getClassLoader();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Class clazz = null;
@@ -150,7 +150,7 @@ public class DIContainer {
 //        System.out.println("*****"+className+"*****");
 //        Arrays.asList(annotations).stream().forEach(System.out::println);
         for (Annotation annotation: annotations) {
-            for (Class<? extends Annotation> targetAnnotation: targetAnnotations) {
+            for (Class targetAnnotation: targetAnnotations) {
                 if (annotation.annotationType().equals(targetAnnotation)) {
                     return true;
                 }

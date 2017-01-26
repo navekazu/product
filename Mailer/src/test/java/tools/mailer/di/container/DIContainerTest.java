@@ -95,7 +95,7 @@ public class DIContainerTest {
             classFiles.addAll(diContainer.getClassFiles(jarFile));
         }
 
-        Class<? extends Annotation>[] targetAnnotations = new Class[]{Plugin.class};
+        Class[] targetAnnotations = new Class[]{Plugin.class};
 
         List<String> annotationClasses = classFiles.stream()
                 .map(diContainer::toFqdnClassName)
