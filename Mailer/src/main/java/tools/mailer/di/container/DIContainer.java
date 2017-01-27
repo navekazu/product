@@ -202,7 +202,7 @@ public class DIContainer {
                             .filter(method -> {                                                                 // メソッドの引数の型は合っているか？
                                 int count = method.getParameterCount();
                                 for (int i=0; i<count; i++) {
-                                    if (!method.getParameterTypes()[i].getName().equals(args[i].getClass().getName())) {
+                                    if (!isMatchType(method.getParameterTypes()[i], args[i].getClass())) {      // スーパークラスの型もたどって確認する
                                         return false;
                                     }
                                 }
@@ -218,5 +218,15 @@ public class DIContainer {
                                 }
                             });
                 });
+    }
+    private boolean isMatchType(Class clazz1, Class clazz2) {
+        if (!clazz1.getName().equals(clazz2.getName())) {
+            Class clazz3 = clazz2.getSuperclass();
+            if (clazz3==null) {
+                return false;
+            }
+            return isMatchType(clazz1, clazz3);
+        }
+        return true;
     }
 }

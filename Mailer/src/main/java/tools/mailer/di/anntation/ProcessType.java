@@ -10,6 +10,10 @@ public enum ProcessType {
     SEND_MAIL,
     RECV_MAIL,
 
+    // Persistence event
+    SAVE_MAIL,
+    LOAD_MAIL,
+
     //
     REFRESH_LIST,
     ACCOUNT_SETTING,

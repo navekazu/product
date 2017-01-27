@@ -3,7 +3,9 @@ package tools.mailer.plugin;
 import com.sun.mail.pop3.POP3Store;
 import tools.mailer.di.anntation.*;
 import tools.mailer.di.anntation.Process;
+import tools.mailer.di.container.DIContainer;
 import tools.mailer.entity.Account;
+import tools.mailer.entity.MailAddress;
 import tools.mailer.entity.Message;
 import tools.mailer.processor.MailProcessor;
 
@@ -71,8 +73,9 @@ public class SendMailPlugin {
 
             javax.mail.Message[] messages = folder.getMessages();
             System.out.println("Message count:"+messages.length);
-            for (javax.mail.Message message: messages) {
-                System.out.println("Subject:"+message.getSubject());
+            for (javax.mail.Message javaMessage: messages) {
+                DIContainer.getInstance().fireEvent(ProcessType.SAVE_MAIL, account, javaMessage);
+                System.out.println("Subject:"+javaMessage.getSubject());
             }
 
         } catch (javax.mail.NoSuchProviderException e) {

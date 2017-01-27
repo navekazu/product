@@ -1,6 +1,7 @@
 package tools.mailer.plugin;
 
 import org.junit.*;
+import tools.mailer.di.container.DIContainer;
 import tools.mailer.entity.Account;
 import tools.mailer.entity.MailAddress;
 import tools.mailer.entity.Message;
@@ -11,6 +12,8 @@ import java.util.Date;
 public class SendMailPluginTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
+        DIContainer diContainer = DIContainer.getInstance();
+        diContainer.loadPlugin();
     }
 
     @AfterClass
@@ -26,7 +29,7 @@ public class SendMailPluginTest {
     }
 
     @Test
-    public void mailRecvTest() throws Exception {
+    public void recvMailTest() throws Exception {
         SendMailPlugin sendMailPlugin = new SendMailPlugin();
         Account account = Account.builder()
                 .accountName("Test")
