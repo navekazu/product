@@ -23,6 +23,7 @@ dependencies {
     compile "org.projectlombok:lombok:1.14.0"
 //    compile 'javamail:javamail:1.3.3'
     compile 'javax.mail:mail:1.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
     testCompile "junit:junit:4.11"
 }
 allprojects {
