@@ -18,11 +18,12 @@ public class PersistencePlugin {
     @Process(processType= ProcessType.SAVE_MAIL)
     public void saveMail(Account account, javax.mail.Message message) {
         try (FileOutputStream out = new FileOutputStream("c:\\message.mail")) {
-            InputStream in = message.getInputStream();
-            int data;
-            while ((data=in.read())!=-1) {
-                out.write(data);
-            }
+//            InputStream in = message.getInputStream();
+//            int data;
+//            while ((data=in.read())!=-1) {
+//                out.write(data);
+//            }
+            message.writeTo(out);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
