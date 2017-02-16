@@ -880,6 +880,21 @@ public class MainController extends Application implements Initializable, MainCo
         }
     }
 
+    // AltキーのPressイベントでメニューにフォーカスが当たるのが非常に使い勝手を下げるので、
+    // Altキー単体のイベントを無効にする
+    @FXML
+    private void onRootKeyPressed(KeyEvent event) {
+        if (event.getCode()== KeyCode.ALT &&
+                event.isAltDown() &&
+                !event.isControlDown() &&
+                !event.isMetaDown() &&
+                !event.isShiftDown() &&
+                !event.isShortcutDown()
+                ) {
+            event.consume();
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // queryResultTableView event
 
