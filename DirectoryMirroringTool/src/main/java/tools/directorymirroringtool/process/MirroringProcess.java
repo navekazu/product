@@ -20,6 +20,7 @@ public class MirroringProcess implements Runnable {
         compareSourceToSink();
         compareSinkToSource();
         sync();
+        logger.info("execute finish {} {}", sourcePath.toString(), sinkPath.toString());
         return 0;
     }
 
@@ -32,7 +33,11 @@ public class MirroringProcess implements Runnable {
     }
 
     void sync() {
-
+        try {
+            Thread.sleep(10_000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
