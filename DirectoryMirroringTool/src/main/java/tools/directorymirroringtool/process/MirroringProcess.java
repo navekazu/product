@@ -45,6 +45,9 @@ public class MirroringProcess implements Runnable {
         logger.info("run {} {}", sourcePath.toString(), sinkPath.toString());
         compareSourceToSink();
         compareSinkToSource();
-        sync();
+        while (true) {
+            logger.info("sync {} {}", sourcePath.toString(), sinkPath.toString());
+            sync();
+        }
     }
 }
