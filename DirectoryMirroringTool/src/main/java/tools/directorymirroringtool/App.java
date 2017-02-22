@@ -10,8 +10,8 @@ public class App {
     public static void main(String[] args) {
         MirroringManager mirroringManager = new MirroringManager();
         mirroringManager.createMirroringProcess(Paths.get("D:\\work\\test01\\source"), Paths.get("D:\\work\\test01\\sink"));
-        mirroringManager.createMirroringProcess(Paths.get("D:\\work\\test02\\source"), Paths.get("D:\\work\\test02\\sink"));
-        mirroringManager.createMirroringProcess(Paths.get("D:\\work\\test03\\source"), Paths.get("D:\\work\\test03\\sink"));
+//        mirroringManager.createMirroringProcess(Paths.get("D:\\work\\test02\\source"), Paths.get("D:\\work\\test02\\sink"));
+//        mirroringManager.createMirroringProcess(Paths.get("D:\\work\\test03\\source"), Paths.get("D:\\work\\test03\\sink"));
 
     }
 
