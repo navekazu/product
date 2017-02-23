@@ -1,27 +1,36 @@
 package tools.directorymirroringtool.process;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
 public class MirroringManager {
-    ExecutorService executorService;
-    List<CompletableFuture> completableFutureList;
+    private static final Logger logger = LoggerFactory.getLogger(MirroringManager.class);
+
+    List<MirroringProcess> mirroringProcessList;
     ConcurrentLinkedQueue<MirroringProcess> reserver;
 
     public MirroringManager() {
-        executorService = Executors.newFixedThreadPool(10);
-        completableFutureList = new ArrayList<>();
+        mirroringProcessList = new ArrayList<>();
         reserver = new ConcurrentLinkedQueue<>();
 
         Thread thread = new Thread(new ReserverObserver());
         thread.start();
     }
 
+    public List<MirroringProcess> getMirroringProcessList() {
+        return mirroringProcessList;
+    }
+
     public void createMirroringProcess(Path sourcePath, Path sinkPath) {
         synchronized (reserver) {
-            reserver.add(new MirroringProcess(sourcePath, sinkPath));
+            MirroringProcess mirroringProcess = new MirroringProcess(sourcePath, sinkPath, 60*60*1000);
+            mirroringProcessList.add(mirroringProcess);
+            reserver.add(mirroringProcess);
             reserver.notify();
         }
     }
@@ -31,7 +40,6 @@ public class MirroringManager {
         public void run() {
             while (true) {
                 synchronized (reserver) {
-                    System.out.println("ReserverObserver run");
                     if (reserver.size() == 0) {
                         try {
                             reserver.wait();
@@ -45,7 +53,6 @@ public class MirroringManager {
                     thread.start();
                 }
             }
-            System.out.println("ReserverObserver run finish");
         }
     }
 

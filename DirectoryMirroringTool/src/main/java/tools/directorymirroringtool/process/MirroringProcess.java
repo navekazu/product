@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,22 +14,14 @@ public class MirroringProcess implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MirroringProcess.class);
     Path sourcePath;
     Path sinkPath;
+    long syncInterval = 60*60*1000;
 
-    public MirroringProcess(Path sourcePath, Path sinkPath) {
+    public MirroringProcess(Path sourcePath, Path sinkPath, long syncInterval) {
         this.sourcePath = sourcePath;
         this.sinkPath = sinkPath;
+        this.syncInterval = syncInterval;
     }
 
-/*
-    public int execute() throws IOException, InterruptedException {
-        logger.info("execute {} {}", sourcePath.toString(), sinkPath.toString());
-        compareSourceToSink();
-        compareSinkToSource();
-        sync();
-        logger.info("execute finish {} {}", sourcePath.toString(), sinkPath.toString());
-        return 0;
-    }
-*/
     void compareSourceToSink() throws IOException {
         Files.walkFileTree(sourcePath, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new MirroringFileVisitor(sourcePath, sinkPath, Mode.ADD));
     }
@@ -122,7 +113,30 @@ public class MirroringProcess implements Runnable {
                 for (WatchEvent<?> ev: key.pollEvents()) {
                     WatchEvent<Path> event = (WatchEvent<Path>)ev;
                     Path name = event.context();
-                    logger.info("sync key:{} name:{}", key.toString(), name.toString());
+
+                    // フルパスを作成
+                    Path path = null;
+                    for (Map.Entry<Path, WatchKey> entry: watchTargetMap.entrySet()) {
+                        if (entry.getValue().equals(key)) {
+                            path = entry.getKey();
+                            break;
+                        }
+                    }
+                    Path fullPath = path.resolve(name);
+
+
+                    if (Files.isDirectory(fullPath) &&
+                            (event.kind()==StandardWatchEventKinds.ENTRY_CREATE || event.kind()==StandardWatchEventKinds.ENTRY_DELETE)) {
+                        // ディレクトリの作成・削除はWatchServiceを作り直す
+                        logger.info("sync update fullPath:{} event.kind:{}", fullPath.toString(), event.kind().name());
+                        updateAllSubDirectory(watchTargetMap, sourcePath, watchService);
+                    } else {
+                        if (!Files.isDirectory(fullPath)) {
+                            // それ以外のファイルはキューに入れて通知をしたら監視を続行（ディレクトリの変更は無視）
+                            logger.info("sync enqueue fullPath:{} event.kind:{}", fullPath.toString(), event.kind().name());
+                        }
+                    }
+
                 }
                 key.reset();
             }
@@ -130,14 +144,23 @@ public class MirroringProcess implements Runnable {
     }
 
     private void updateAllSubDirectory(Map<Path, WatchKey> watchTargetMap, Path path, WatchService watchService) throws IOException {
-        watchTargetMap.values().stream().forEach(watchKey -> {
-            watchKey.cancel();
-        });
-        watchTargetMap.clear();
 
+        // 存在しないディレクトリはwatchTargetMapから除外
+        watchTargetMap.entrySet().stream()
+                .filter(entry -> !Files.exists(entry.getKey()))
+                .forEach(entry -> {
+                    entry.getValue().cancel();
+                    watchTargetMap.remove(entry.getKey());
+                });
+
+        // 監視対象に含まれていないディレクトリを監視対象に
         Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                if (watchTargetMap.containsKey(dir)) {
+                    return FileVisitResult.CONTINUE;
+                }
+
                 WatchKey watchKey = dir.register(watchService, new WatchEvent.Kind[]{
                                 StandardWatchEventKinds.ENTRY_CREATE,
                                 StandardWatchEventKinds.ENTRY_MODIFY,
@@ -154,17 +177,39 @@ public class MirroringProcess implements Runnable {
     @Override
     public void run() {
         logger.info("run {} {}", sourcePath.toString(), sinkPath.toString());
-        try {
-            compareSourceToSink();
-            compareSinkToSource();
-            while (true) {
-                logger.info("sync {} {}", sourcePath.toString(), sinkPath.toString());
-                sync();
+        // リアルタイムに同期を取ろうとしたが、ファイル監視するとそのフォルダが消せなくなるので定期実行に切り替える
+//        try {
+//            compareSourceToSink();
+//            compareSinkToSource();
+//            sync();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+        // 定期実行
+        while (true) {
+            try {
+                compareSourceToSink();
+                compareSinkToSource();
+//                Thread.sleep(syncInterval);
+                Thread.sleep(10*1000);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
+    }
+
+    public Path getSourcePath() {
+        return sourcePath;
+    }
+    public Path getSinkPath() {
+        return sinkPath;
+    }
+    public long getSyncInterval() {
+        return syncInterval;
     }
 }
