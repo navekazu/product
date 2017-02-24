@@ -314,7 +314,8 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
      * @return 分割したクエリ
      */
     protected String[] splitQuery(String sql) {
-        String[] split = sql.trim().split("(;\n|/\n)");
+//        String[] split = sql.trim().split("(;\n|/\n)");
+        String[] split = sql.trim().split("(;\\s*\n|/\\s*\n)");
         return Arrays.stream(split)
                 .map(s -> s.trim())
                 .map(s -> s.endsWith(";")? s.substring(0, s.length()-1): s)
