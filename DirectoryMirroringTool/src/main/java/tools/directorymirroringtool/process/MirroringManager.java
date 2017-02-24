@@ -28,7 +28,14 @@ public class MirroringManager {
 
     public void createMirroringProcess(Path sourcePath, Path sinkPath) {
         synchronized (reserver) {
-            MirroringProcess mirroringProcess = new MirroringProcess(sourcePath, sinkPath, 60*60*1000);
+            MirroringProcess mirroringProcess = new MirroringProcess(
+                    MirroringParameter.builder()
+                            .sourcePath(sourcePath)
+                            .sinkPath(sinkPath)
+                            .status(MirroringStatus.WAITING)
+//                            .syncInterval(60)
+                            .syncInterval(90)
+                            .build());
             mirroringProcessList.add(mirroringProcess);
             reserver.add(mirroringProcess);
             reserver.notify();

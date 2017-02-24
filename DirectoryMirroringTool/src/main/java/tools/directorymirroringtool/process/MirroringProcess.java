@@ -6,28 +6,30 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MirroringProcess implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MirroringProcess.class);
-    Path sourcePath;
-    Path sinkPath;
-    long syncInterval = 60*60*1000;
+    MirroringParameter param;
+    MirroringNotify mirroringNotify;
+    boolean immediateExecuteFlag;
+    boolean emergencyStopFlag;
 
-    public MirroringProcess(Path sourcePath, Path sinkPath, long syncInterval) {
-        this.sourcePath = sourcePath;
-        this.sinkPath = sinkPath;
-        this.syncInterval = syncInterval;
+    public MirroringProcess(MirroringParameter param) {
+        this.param = param;
+        this.mirroringNotify = null;
+        this.immediateExecuteFlag = false;
+        this.emergencyStopFlag = false;
     }
 
     void compareSourceToSink() throws IOException {
-        Files.walkFileTree(sourcePath, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new MirroringFileVisitor(sourcePath, sinkPath, Mode.ADD));
+        Files.walkFileTree(param.getSourcePath(), EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
+                new MirroringFileVisitor(param.getSourcePath(), param.getSinkPath(), Mode.ADD));
     }
 
     void compareSinkToSource() throws IOException {
-        Files.walkFileTree(sinkPath, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new MirroringFileVisitor(sinkPath, sourcePath, Mode.DEL));
+        Files.walkFileTree(param.getSinkPath(), EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
+                new MirroringFileVisitor(param.getSinkPath(), param.getSourcePath(), Mode.DEL));
     }
 
     enum Mode {
@@ -46,6 +48,7 @@ public class MirroringProcess implements Runnable {
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            if (emergencyStopFlag) return FileVisitResult.TERMINATE;
             if (mode!=Mode.ADD) return FileVisitResult.CONTINUE;
 
             // sourcePathにあってsinkPathにないディレクトリをsinkPathに作成する
@@ -64,6 +67,8 @@ public class MirroringProcess implements Runnable {
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            if (emergencyStopFlag) return FileVisitResult.TERMINATE;
+
             Path relativized = sourcePath.relativize(file);
             Path target = sinkPath.resolve(relativized);
 
@@ -89,6 +94,7 @@ public class MirroringProcess implements Runnable {
         @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
             if(e!=null) throw e;
+            if (emergencyStopFlag) return FileVisitResult.TERMINATE;
             if (mode!=Mode.DEL) return FileVisitResult.CONTINUE;
 
             // sourcePathにあってsinkPathにないディレクトリをsourcePathから削除する
@@ -107,7 +113,7 @@ public class MirroringProcess implements Runnable {
 
         try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
             Map<Path, WatchKey> watchTargetMap = new HashMap<>();
-            updateAllSubDirectory(watchTargetMap, sourcePath, watchService);
+            updateAllSubDirectory(watchTargetMap, param.getSourcePath(), watchService);
             while (true) {
                 WatchKey key = watchService.take();
                 for (WatchEvent<?> ev: key.pollEvents()) {
@@ -129,7 +135,7 @@ public class MirroringProcess implements Runnable {
                             (event.kind()==StandardWatchEventKinds.ENTRY_CREATE || event.kind()==StandardWatchEventKinds.ENTRY_DELETE)) {
                         // ディレクトリの作成・削除はWatchServiceを作り直す
                         logger.info("sync update fullPath:{} event.kind:{}", fullPath.toString(), event.kind().name());
-                        updateAllSubDirectory(watchTargetMap, sourcePath, watchService);
+                        updateAllSubDirectory(watchTargetMap, param.getSourcePath(), watchService);
                     } else {
                         if (!Files.isDirectory(fullPath)) {
                             // それ以外のファイルはキューに入れて通知をしたら監視を続行（ディレクトリの変更は無視）
@@ -176,7 +182,7 @@ public class MirroringProcess implements Runnable {
 
     @Override
     public void run() {
-        logger.info("run {} {}", sourcePath.toString(), sinkPath.toString());
+        logger.info("run {} {}", param.getSourcePath().toString(), param.getSinkPath().toString());
         // リアルタイムに同期を取ろうとしたが、ファイル監視するとそのフォルダが消せなくなるので定期実行に切り替える
 //        try {
 //            compareSourceToSink();
@@ -191,10 +197,36 @@ public class MirroringProcess implements Runnable {
         // 定期実行
         while (true) {
             try {
-                compareSourceToSink();
-                compareSinkToSource();
+                switch (param.getStatus()) {
+                    case WAITING:
+                        if (param.getLastBackupDate()==null ||
+                                isTimeToBackup() ||
+                                immediateExecuteFlag) {
+                            immediateExecuteFlag = false;
+                            param.setStatus(MirroringStatus.RUNNING);
+                            if (mirroringNotify!=null) {
+                                mirroringNotify.requestUpdateUi();
+                            }
+
+                            compareSourceToSink();
+                            compareSinkToSource();
+                            param.setStatus(MirroringStatus.WAITING);
+                            param.setLastBackupDate(new Date());
+                            updateNextBackupDate();
+
+                            if (mirroringNotify!=null) {
+                                mirroringNotify.requestUpdateUi();
+                            }
+                        }
+                        break;
+                    case RUNNING:
+                        break;
+                    case STOP:
+                        break;
+                }
 //                Thread.sleep(syncInterval);
-                Thread.sleep(10*1000);
+                emergencyStopFlag = false;
+                Thread.sleep(1000);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -203,13 +235,42 @@ public class MirroringProcess implements Runnable {
         }
     }
 
-    public Path getSourcePath() {
-        return sourcePath;
+    private boolean isTimeToBackup() {
+        Calendar now = Calendar.getInstance();
+        Calendar nextBackupDate = Calendar.getInstance();
+        nextBackupDate.setTime(param.getNextBackupDate());
+//        logger.info("isTimeToBackup {} now:{} nextBackupDate:{} after:{} before:{}", now.compareTo(nextBackupDate), now, nextBackupDate, now.after(nextBackupDate), now.before(nextBackupDate));
+        return now.compareTo(nextBackupDate)>=0;
     }
-    public Path getSinkPath() {
-        return sinkPath;
+
+    public void updateNextBackupDate() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(param.getLastBackupDate());
+        cal.add(Calendar.MINUTE, param.getSyncInterval());
+        param.setNextBackupDate(cal.getTime());
     }
-    public long getSyncInterval() {
-        return syncInterval;
+
+    public MirroringParameter getParam() {
+        return param;
+    }
+
+    public void changeRegularlyExecute() {
+        if (param.getStatus()==MirroringStatus.WAITING) {
+            param.setStatus(MirroringStatus.STOP);
+        } else
+        if (param.getStatus()==MirroringStatus.STOP) {
+            param.setStatus(MirroringStatus.WAITING);
+        }
+    }
+
+    public void setMirroringNotify(MirroringNotify mirroringNotify) {
+        this.mirroringNotify = mirroringNotify;
+    }
+
+    public void immediateExecute() {
+        this.immediateExecuteFlag = true;
+    }
+    public void emergencyStop() {
+        this.emergencyStopFlag = true;
     }
 }
