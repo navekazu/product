@@ -11,6 +11,7 @@ import java.util.concurrent.*;
 public class MirroringManager {
     private static final Logger logger = LoggerFactory.getLogger(MirroringManager.class);
 
+    ReserverObserver reserverObserver;
     List<MirroringProcess> mirroringProcessList;
     ConcurrentLinkedQueue<MirroringProcess> reserver;
 
@@ -18,8 +19,10 @@ public class MirroringManager {
         mirroringProcessList = new ArrayList<>();
         reserver = new ConcurrentLinkedQueue<>();
 
-        Thread thread = new Thread(new ReserverObserver());
+        reserverObserver = new ReserverObserver();
+        Thread thread = new Thread(reserverObserver);
         thread.start();
+
     }
 
     public List<MirroringProcess> getMirroringProcessList() {
@@ -43,24 +46,33 @@ public class MirroringManager {
     }
 
     class ReserverObserver implements Runnable {
+        public boolean shutdown = false;
+
         @Override
         public void run() {
-            while (true) {
+            while (!shutdown) {
                 synchronized (reserver) {
                     if (reserver.size() == 0) {
                         try {
-                            reserver.wait();
+                            reserver.wait(1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                             break;
                         }
+                    } else {
+                        MirroringProcess mirroringProcess = reserver.poll();
+                        Thread thread = new Thread(mirroringProcess);
+                        thread.start();
                     }
-                    MirroringProcess mirroringProcess = reserver.poll();
-                    Thread thread = new Thread(mirroringProcess);
-                    thread.start();
                 }
             }
+
+            mirroringProcessList.parallelStream().forEach(mirroringProcess -> mirroringProcess.shutdown());
+            System.out.println(shutdown);
         }
     }
 
+    public void shutdown() {
+        reserverObserver.shutdown = true;
+    }
 }

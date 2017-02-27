@@ -1,17 +1,22 @@
 package tools.directorymirroringtool;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import tools.directorymirroringtool.controller.MainController;
+import tools.directorymirroringtool.controller.SystemTrayController;
 import tools.directorymirroringtool.process.MirroringManager;
 
 import java.nio.file.Paths;
 
-public class App extends Application {
+public class App extends Application implements SystemTrayEvent {
     static MirroringManager mirroringManager = new MirroringManager();
+    static SystemTrayController systemTrayController = new SystemTrayController();
 
     public static MirroringManager getMirroringManager() {
         return mirroringManager;
@@ -28,6 +33,7 @@ public class App extends Application {
 //        getMirroringManager().createMirroringProcess(Paths.get("D:\\work\\test05\\source"), Paths.get("D:\\work\\test05\\sink"));
 //        getMirroringManager().createMirroringProcess(Paths.get("D:\\work\\test06\\source"), Paths.get("D:\\work\\test06\\sink"));
 
+        systemTrayController.startOnTray(this);
         Application.launch(App.class, args);
     }
 
@@ -46,5 +52,24 @@ public class App extends Application {
         primaryStage.setTitle(MainController.WINDOW_TITLE);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                exit();
+            }
+        });
+    }
+
+    @Override
+    public void showWindow() {
+
+    }
+
+    @Override
+    public void exit() {
+        systemTrayController.shutdown();
+        mirroringManager.shutdown();
+        Platform.exit();
     }
 }

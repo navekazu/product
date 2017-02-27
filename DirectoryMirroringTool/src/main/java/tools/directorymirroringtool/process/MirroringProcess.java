@@ -14,6 +14,7 @@ public class MirroringProcess implements Runnable {
     MirroringNotify mirroringNotify;
     boolean immediateExecuteFlag;
     boolean emergencyStopFlag;
+    boolean shutdown = false;
 
     public MirroringProcess(MirroringParameter param) {
         this.param = param;
@@ -195,7 +196,7 @@ public class MirroringProcess implements Runnable {
 //        }
 
         // 定期実行
-        while (true) {
+        while (!shutdown) {
             try {
                 switch (param.getStatus()) {
                     case WAITING:
@@ -233,6 +234,7 @@ public class MirroringProcess implements Runnable {
                 e.printStackTrace();
             }
         }
+        logger.info("shutdown.");
     }
 
     private boolean isTimeToBackup() {
@@ -272,5 +274,8 @@ public class MirroringProcess implements Runnable {
     }
     public void emergencyStop() {
         this.emergencyStopFlag = true;
+    }
+    public void shutdown() {
+        shutdown = true;
     }
 }

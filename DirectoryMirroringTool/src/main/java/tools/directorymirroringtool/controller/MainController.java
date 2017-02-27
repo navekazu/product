@@ -24,6 +24,7 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         MirroringManager mirroringManager = App.getMirroringManager();
         mirroringManager.getMirroringProcessList().stream().forEach(this::addMirroringRow);
+
     }
 
     void addMirroringRow(MirroringProcess mirroringProcess) {
