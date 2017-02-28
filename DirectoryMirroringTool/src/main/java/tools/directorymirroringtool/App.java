@@ -1,5 +1,8 @@
 package tools.directorymirroringtool;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -12,7 +15,12 @@ import tools.directorymirroringtool.controller.MainController;
 import tools.directorymirroringtool.controller.SystemTrayController;
 import tools.directorymirroringtool.process.MirroringManager;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class App extends Application implements SystemTrayEvent {
     static MirroringManager mirroringManager = new MirroringManager();
@@ -35,6 +43,28 @@ public class App extends Application implements SystemTrayEvent {
 
         systemTrayController.startOnTray(this);
         Application.launch(App.class, args);
+
+
+
+
+        // test
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        byte[] jsonData = new byte[0];
+        try {
+            jsonData = mapper.writeValueAsBytes(getMirroringManager().getMirroringProcessList());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        Path path = Paths.get("c:\\test.json");
+        try {
+            try (OutputStream out = Files.newOutputStream(path
+                    , StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)){
+                out.write(jsonData);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

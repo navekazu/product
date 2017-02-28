@@ -20,6 +20,7 @@ dependencies {
     compile 'org.slf4j:slf4j-simple:1.7.21'
     compile 'ch.qos.logback:logback-classic:1.0.12'
     compile "org.projectlombok:lombok:1.14.0"
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
 
     testCompile 'junit:junit:4.12'
 }
