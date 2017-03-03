@@ -43,10 +43,13 @@ public class App extends Application implements SystemTrayEvent {
 
         systemTrayController.startOnTray(this);
         Application.launch(App.class, args);
+    }
 
+    void readMirroringProcess() throws IOException {
 
+    }
 
-
+    void writeMirroringProcess() throws IOException {
         // test
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
