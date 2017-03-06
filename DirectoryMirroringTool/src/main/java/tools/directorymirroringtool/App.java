@@ -45,31 +45,6 @@ public class App extends Application implements SystemTrayEvent {
         Application.launch(App.class, args);
     }
 
-    void readMirroringProcess() throws IOException {
-
-    }
-
-    void writeMirroringProcess() throws IOException {
-        // test
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        byte[] jsonData = new byte[0];
-        try {
-            jsonData = mapper.writeValueAsBytes(getMirroringManager().getMirroringProcessList());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        Path path = Paths.get("c:\\test.json");
-        try {
-            try (OutputStream out = Files.newOutputStream(path
-                    , StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)){
-                out.write(jsonData);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public static void main(String[] args) {
         App app = new App();
