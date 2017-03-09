@@ -1,19 +1,19 @@
 package tools.reader.reader;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ReaderFactory {
-    private static Map<String, Class> FACTORY_STORAGE = new HashMap<>();
+    private static List<Reader> FACTORY_STORAGE = new ArrayList<>();
     static {
-        FACTORY_STORAGE.put(AtomReader.getAcceptableMime(), AtomReader.class);
-        FACTORY_STORAGE.put(RssReader.getAcceptableMime(), RssReader.class);
+        FACTORY_STORAGE.add(new AtomReader());
+        FACTORY_STORAGE.add(new RssReader());
     }
+    private static Reader EMPTY_READER = new EmptyReader();
 
     public static Reader createReader(String mime) throws IllegalAccessException, InstantiationException {
-        if (!FACTORY_STORAGE.containsKey(mime)) {
-            throw new IllegalArgumentException();
-        }
-        return (Reader)FACTORY_STORAGE.get(mime).newInstance();
+        Optional<Reader> reader = FACTORY_STORAGE.stream()
+                .filter(r -> r.isAcceptableMime(mime))
+                .findFirst();
+        return reader.orElse(EMPTY_READER).getClass().newInstance();
     }
 }
