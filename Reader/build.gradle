@@ -1,0 +1,34 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+version = '1.0'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+//    jcenter()
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes("Main-Class": "tools.reader.App")
+    }
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.slf4j:slf4j-simple:1.7.21'
+    compile 'ch.qos.logback:logback-classic:1.0.12'
+    compile "org.projectlombok:lombok:1.14.0"
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
+
+    testCompile 'junit:junit:4.12'
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
