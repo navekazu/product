@@ -13,6 +13,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 public class MirroringProcessSerializer {
+    private static final String CONFIG_FILE_NAME = ".directoryMirroringTool.json";
+
     void readMirroringProcess() throws IOException {
 
     }
@@ -27,7 +29,8 @@ public class MirroringProcessSerializer {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        Path path = Paths.get("c:\\test.json");
+
+        Path path = Paths.get(System.getProperty("user.home"), CONFIG_FILE_NAME);
         try {
             try (OutputStream out = Files.newOutputStream(path
                     , StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)){
