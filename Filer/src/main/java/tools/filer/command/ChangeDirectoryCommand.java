@@ -1,5 +1,6 @@
 package tools.filer.command;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -11,21 +12,32 @@ public class ChangeDirectoryCommand implements Command {
     }
 
     @Override
-    public void checkParameter(String[] parameters) throws FilerException {
+    public void checkParameter(CommandParameter commandParameter) throws FilerException {
         // パラメータは1つだけ
-        if (parameters.length!=1) {
+        if (commandParameter.getParameterList().size()!=1) {
             throw new FilerException("パラメータが多すぎます。");
         }
     }
 
-    @Override
-    public List<FilerPath> prepare(Path currentDirectory, List<FilerPath> filerPathList, String[] parameters) throws FilerException {
-        Path path = Paths.get(currentDirectory.toString(), parameters[0]);
-        return null;
+    private Path getPath(CommandParameter commandParameter) throws FilerException {
+        Path path = Paths.get(commandParameter.getCurrentDirectory().toString(), commandParameter.getParameterList().get(0));
+
+        if (!Files.exists(path)) {
+            throw new FilerException("フォルダが見つかりません。");
+        }
+
+        return path;
     }
 
     @Override
-    public List<FilerPath> execute(Path currentDirectory, List<FilerPath> filerPathList, String[] parameters) throws FilerException {
-        return null;
+    public void prepare(CommandParameter commandParameter) throws FilerException {
+        getPath(commandParameter);
+    }
+
+    @Override
+    public void execute(CommandParameter commandParameter) throws FilerException {
+        Path path = getPath(commandParameter);
+
+        commandParameter.setCurrentDirectory(path);
     }
 }

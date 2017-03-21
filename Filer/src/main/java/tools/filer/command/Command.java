@@ -5,7 +5,8 @@ import java.util.List;
 
 public interface Command {
     public COMMAND_KIND getKind();
-    public void checkParameter(String[] parameters) throws FilerException;
-    public List<FilerPath> prepare(Path currentDirectory, List<FilerPath> filerPathList, String[] parameters) throws FilerException;
-    public List<FilerPath> execute(Path currentDirectory, List<FilerPath> filerPathList, String[] parameters) throws FilerException;
+    public String getCommand();
+    public void checkParameter(CommandParameter commandParameter) throws FilerException;
+    public void prepare(CommandParameter commandParameter) throws FilerException;
+    public void execute(CommandParameter commandParameter) throws FilerException;
 }

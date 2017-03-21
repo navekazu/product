@@ -10,17 +10,17 @@ public class MoveCommand implements Command {
     }
 
     @Override
-    public void checkParameter(String[] parameters) throws FilerException {
+    public void checkParameter(CommandParameter commandParameter) throws FilerException {
 
     }
 
     @Override
-    public List<FilerPath> prepare(Path currentDirectory, List<FilerPath> filerPathList, String[] parameters) throws FilerException {
-        return null;
+    public void prepare(CommandParameter commandParameter) throws FilerException {
+
     }
 
     @Override
-    public List<FilerPath> execute(Path currentDirectory, List<FilerPath> filerPathList, String[] parameters) throws FilerException {
-        return null;
+    public void execute(CommandParameter commandParameter) throws FilerException {
+
     }
 }
