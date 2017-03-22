@@ -20,6 +20,7 @@ public class CommandHandlerTest {
     @Test
     public void getCommandTest() throws Exception {
         CommandHandler handler = new CommandHandler();
+        assertEquals("cd", handler.getCommand("cd"));
         assertEquals("cd", handler.getCommand("cd *"));
     }
 }
