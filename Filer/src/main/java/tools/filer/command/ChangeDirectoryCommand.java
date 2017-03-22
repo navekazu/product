@@ -12,6 +12,11 @@ public class ChangeDirectoryCommand implements Command {
     }
 
     @Override
+    public String getCommand() {
+        return null;
+    }
+
+    @Override
     public void checkParameter(CommandParameter commandParameter) throws FilerException {
         // パラメータは1つだけ
         if (commandParameter.getParameterList().size()!=1) {

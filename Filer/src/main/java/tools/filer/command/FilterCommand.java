@@ -10,6 +10,11 @@ public class FilterCommand implements Command {
     }
 
     @Override
+    public String getCommand() {
+        return null;
+    }
+
+    @Override
     public void checkParameter(CommandParameter commandParameter) throws FilerException {
 
     }
