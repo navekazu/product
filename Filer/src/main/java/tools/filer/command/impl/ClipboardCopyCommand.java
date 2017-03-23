@@ -1,12 +1,14 @@
-package tools.filer.command;
+package tools.filer.command.impl;
 
-import java.nio.file.Path;
-import java.util.List;
+import tools.filer.command.COMMAND_KIND;
+import tools.filer.command.Command;
+import tools.filer.command.CommandParameter;
+import tools.filer.command.FilerException;
 
-public class MoveCommand implements Command {
+public class ClipboardCopyCommand implements Command {
     @Override
     public COMMAND_KIND getKind() {
-        return COMMAND_KIND.TERMINAL_OPERATIONS;
+        return null;
     }
 
     @Override
