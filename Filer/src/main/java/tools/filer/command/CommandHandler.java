@@ -3,6 +3,7 @@ package tools.filer.command;
 import tools.filer.command.impl.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandHandler {
@@ -32,6 +33,14 @@ public class CommandHandler {
         String[] commands = command.split("|");
 
         List<Command> list = new ArrayList<>();
+
+        for (String cmd: commands) {
+            for (Command commandInstance: commandInstanceList) {
+                if (cmd.equals(commandInstance.getCommand())) {
+
+                }
+            }
+        }
 
         return list;
     }
