@@ -13,6 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CommandParameter {
+    private String command;
+    private List<String> commandParameterList;
+
     private Path currentDirectory;
     private List<FilerPath> filerPathList;
     private List<String> parameterList;

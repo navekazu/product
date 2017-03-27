@@ -29,20 +29,29 @@ public class CommandHandler {
         commandInstanceList.add(new ChangeDirectoryCommand());
     }
 
-    List<Command> parseCommand(String command) {
+    List<Command> parseCommand(String command) throws FilerException {
         String[] commands = command.split("|");
 
         List<Command> list = new ArrayList<>();
 
         for (String cmd: commands) {
-            for (Command commandInstance: commandInstanceList) {
-                if (cmd.equals(commandInstance.getCommand())) {
-
-                }
+            Command commandInstance = getCommandInstance(cmd);
+            if (commandInstance==null) {
+                throw new FilerException();
             }
+            list.add(commandInstance);
         }
 
         return list;
+    }
+
+    private Command getCommandInstance(String command) {
+        for (Command commandInstance: commandInstanceList) {
+            if (command.equals(commandInstance.getCommand())) {
+                return commandInstance;
+            }
+        }
+        return null;
     }
 
     String getCommand(String command) {
