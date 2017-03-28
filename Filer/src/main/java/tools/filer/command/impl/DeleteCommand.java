@@ -16,7 +16,7 @@ public class DeleteCommand implements Command {
 
     @Override
     public String getCommand() {
-        return null;
+        return "rm";
     }
 
     @Override

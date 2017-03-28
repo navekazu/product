@@ -30,19 +30,18 @@ public class CommandHandler {
     }
 
     List<Command> parseCommand(String command) throws FilerException {
-        String[] commands = command.split("|");
+        List<CommandParameter> commandParameterList = CommandParser.parse(command);
+        List<Command> commandList = new ArrayList<>();
 
-        List<Command> list = new ArrayList<>();
-
-        for (String cmd: commands) {
-            Command commandInstance = getCommandInstance(cmd);
+        for (CommandParameter param: commandParameterList) {
+            Command commandInstance = getCommandInstance(param.getCommand());
             if (commandInstance==null) {
                 throw new FilerException();
             }
-            list.add(commandInstance);
+            commandList.add(commandInstance);
         }
 
-        return list;
+        return commandList;
     }
 
     private Command getCommandInstance(String command) {
@@ -54,24 +53,9 @@ public class CommandHandler {
         return null;
     }
 
-    String getCommand(String command) {
-        // 小文字に
-        command = command.toLowerCase();
-
-        // スペースがあれば、その手前までをコマンドとする
-        String[] spaces = new String[]{" ", "　", "\t"};
-        for (String space: spaces) {
-            int index = command.indexOf(space);
-            if (index!=-1) {
-                return command.substring(0, index);
-            }
+    void prepare(List<Command> commandList) {
+        for (Command command: commandList) {
+//            command.prepare();
         }
-
-        // スペースが無ければそのまま
-        return command;
-    }
-
-    void prepare(String command) {
-
     }
 }

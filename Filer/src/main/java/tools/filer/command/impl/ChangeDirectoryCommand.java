@@ -18,7 +18,7 @@ public class ChangeDirectoryCommand implements Command {
 
     @Override
     public String getCommand() {
-        return null;
+        return "cd";
     }
 
     @Override

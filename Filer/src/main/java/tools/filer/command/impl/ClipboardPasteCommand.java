@@ -13,7 +13,7 @@ public class ClipboardPasteCommand implements Command {
 
     @Override
     public String getCommand() {
-        return null;
+        return "pas";
     }
 
     @Override

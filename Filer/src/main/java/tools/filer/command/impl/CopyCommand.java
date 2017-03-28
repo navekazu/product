@@ -16,7 +16,7 @@ public class CopyCommand implements Command {
 
     @Override
     public String getCommand() {
-        return null;
+        return "cp";
     }
 
     @Override

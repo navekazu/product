@@ -9,18 +9,21 @@ import static org.junit.Assert.assertEquals;
 public class CommandHandlerTest {
     @Test
     public void parseCommandTest() throws Exception {
-/*        CommandHandler handler = new CommandHandler();
+        CommandHandler handler = new CommandHandler();
         List<Command> list;
 
-        list = handler.parseCommand("cd");
-        assertEquals(1, list.size());
-*/
+        list = handler.parseCommand("cd c:\\test1 | fil *.txt *.docx \"hello world.xlsx\" | sel * | cp c:\\test2");
+        assertEquals(4, list.size());
     }
 
     @Test
-    public void getCommandTest() throws Exception {
+    public void prepareTest() throws Exception {
         CommandHandler handler = new CommandHandler();
-        assertEquals("cd", handler.getCommand("cd"));
-        assertEquals("cd", handler.getCommand("cd *"));
+        List<Command> list;
+
+        list = handler.parseCommand("cd c:\\test1 | fil *.txt *.docx \"hello world.xlsx\" | sel * | cp c:\\test2");
+        handler.prepare(list);
     }
+
+
 }

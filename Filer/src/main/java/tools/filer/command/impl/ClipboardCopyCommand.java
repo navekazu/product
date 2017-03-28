@@ -13,7 +13,7 @@ public class ClipboardCopyCommand implements Command {
 
     @Override
     public String getCommand() {
-        return null;
+        return "ccp";
     }
 
     @Override

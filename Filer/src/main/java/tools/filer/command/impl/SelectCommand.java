@@ -16,7 +16,7 @@ public class SelectCommand implements Command {
 
     @Override
     public String getCommand() {
-        return null;
+        return "sel";
     }
 
     @Override
