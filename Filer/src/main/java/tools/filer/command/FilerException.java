@@ -12,4 +12,8 @@ public class FilerException extends Exception {
     public FilerException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public FilerException(Exception e) {
+        super(e);
+    }
 }

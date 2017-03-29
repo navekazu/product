@@ -49,6 +49,7 @@ public class CommandParser {
                     .commandParameterList(getCommandParameterList(aCommand))
                     .startCommandLineIndex(start)
                     .endCommandLineIndex(i)
+                    .filerPathList(new ArrayList<>())
                     .build();
             list.add(param);
             start = i+1;

@@ -1,15 +1,19 @@
 package tools.filer.command;
 
+import tools.filer.FilerInterface;
 import tools.filer.command.impl.*;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class CommandHandler {
+    private FilerInterface filerInterface;
     private List<Command> commandInstanceList;
 
-    public CommandHandler() {
+    public CommandHandler(FilerInterface filerInterface) {
+        this.filerInterface = filerInterface;
         initCommandInstanceList();
     }
 
@@ -29,19 +33,18 @@ public class CommandHandler {
         commandInstanceList.add(new ChangeDirectoryCommand());
     }
 
-    List<Command> parseCommand(String command) throws FilerException {
+    List<CommandParameter> parseCommand(String command) throws FilerException {
         List<CommandParameter> commandParameterList = CommandParser.parse(command);
-        List<Command> commandList = new ArrayList<>();
 
         for (CommandParameter param: commandParameterList) {
             Command commandInstance = getCommandInstance(param.getCommand());
             if (commandInstance==null) {
                 throw new FilerException();
             }
-            commandList.add(commandInstance);
+            param.setCommandInstance(commandInstance);
         }
 
-        return commandList;
+        return commandParameterList;
     }
 
     private Command getCommandInstance(String command) {
@@ -53,9 +56,15 @@ public class CommandHandler {
         return null;
     }
 
-    void prepare(List<Command> commandList) {
-        for (Command command: commandList) {
-//            command.prepare();
+    void prepare(List<CommandParameter> CommandParameterList) throws FilerException {
+        Path currentDirectory = filerInterface.getCurrentDirectory();
+
+        for (CommandParameter param: CommandParameterList) {
+            param.setCurrentDirectory(currentDirectory);
+            param.getCommandInstance().checkParameter(param);
+            param.getCommandInstance().prepare(param);
+            currentDirectory = param.getCurrentDirectory();
+//            filerInterface.setCurrentDirectory(currentDirectory);
         }
     }
 }

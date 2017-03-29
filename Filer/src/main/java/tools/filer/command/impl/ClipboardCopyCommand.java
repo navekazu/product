@@ -5,7 +5,7 @@ import tools.filer.command.Command;
 import tools.filer.command.CommandParameter;
 import tools.filer.command.FilerException;
 
-public class ClipboardCopyCommand implements Command {
+public class ClipboardCopyCommand extends CommandBase implements Command {
     @Override
     public COMMAND_KIND getKind() {
         return null;

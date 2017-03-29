@@ -8,7 +8,7 @@ import tools.filer.command.FilerException;
 import java.nio.file.Path;
 import java.util.List;
 
-public class DeleteCommand implements Command {
+public class DeleteCommand extends CommandBase implements Command {
     @Override
     public COMMAND_KIND getKind() {
         return COMMAND_KIND.TERMINAL_OPERATIONS;

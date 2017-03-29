@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,6 +15,7 @@ import java.util.List;
 @Builder
 public class CommandParameter {
     private String command;
+    private Command commandInstance;
     private List<String> commandParameterList;
     private int startCommandLineIndex;
     private int endCommandLineIndex;
