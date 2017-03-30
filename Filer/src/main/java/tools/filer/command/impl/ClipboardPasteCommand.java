@@ -1,9 +1,6 @@
 package tools.filer.command.impl;
 
-import tools.filer.command.COMMAND_KIND;
-import tools.filer.command.Command;
-import tools.filer.command.CommandParameter;
-import tools.filer.command.FilerException;
+import tools.filer.command.*;
 
 public class ClipboardPasteCommand extends CommandBase implements Command {
     @Override

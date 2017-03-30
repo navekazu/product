@@ -1,4 +1,4 @@
-package tools.filer.command.impl;
+package tools.filer.command;
 
 import tools.filer.command.Command;
 import tools.filer.command.FilerException;

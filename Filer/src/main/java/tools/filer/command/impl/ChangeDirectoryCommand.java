@@ -1,14 +1,9 @@
 package tools.filer.command.impl;
 
-import tools.filer.command.COMMAND_KIND;
-import tools.filer.command.Command;
-import tools.filer.command.CommandParameter;
-import tools.filer.command.FilerException;
+import tools.filer.command.*;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 public class ChangeDirectoryCommand extends CommandBase implements Command {
     @Override

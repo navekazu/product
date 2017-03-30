@@ -1,12 +1,6 @@
 package tools.filer.command.impl;
 
-import tools.filer.command.COMMAND_KIND;
-import tools.filer.command.Command;
-import tools.filer.command.CommandParameter;
-import tools.filer.command.FilerException;
-
-import java.nio.file.Path;
-import java.util.List;
+import tools.filer.command.*;
 
 public class DeleteCommand extends CommandBase implements Command {
     @Override
