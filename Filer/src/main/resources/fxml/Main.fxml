@@ -57,13 +57,13 @@
               </rowConstraints>
                <children>
                   <Label text="Command" />
-                  <TextField promptText="Command" GridPane.columnIndex="1" />
+                  <TextField fx:id="commandField" promptText="Command" GridPane.columnIndex="1" />
                </children>
             </GridPane>
          </children>
       </VBox>
    </top>
    <center>
-      <TabPane tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+      <TabPane fx:id="filerTab" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
