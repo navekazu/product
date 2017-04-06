@@ -43,8 +43,8 @@
                   <Button mnemonicParsing="false" text="→" GridPane.columnIndex="1" />
                   <Button mnemonicParsing="false" text="↑" GridPane.columnIndex="2" />
                   <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="3" />
-                  <TextField promptText="Address" GridPane.columnIndex="4" />
-                  <TextField promptText="Filter" GridPane.columnIndex="5" />
+                  <TextField fx:id="addressField" promptText="Address" GridPane.columnIndex="4" />
+                  <TextField fx:id="filterField" promptText="Filter" GridPane.columnIndex="5" />
                </children>
             </GridPane>
             <GridPane hgap="2.0">
