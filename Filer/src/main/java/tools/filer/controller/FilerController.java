@@ -11,6 +11,7 @@ import tools.filer.command.CommandHandler;
 
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class FilerController implements FilerInterface, CommandInputEvent, Initializable {
@@ -33,6 +34,16 @@ public class FilerController implements FilerInterface, CommandInputEvent, Initi
 
     @Override
     public void setCurrentDirectory(Path path) {
+
+    }
+
+    @Override
+    public void selectFile(List<Path> list) {
+        
+    }
+
+    @Override
+    public void filterFile(List<Path> list) {
 
     }
 
