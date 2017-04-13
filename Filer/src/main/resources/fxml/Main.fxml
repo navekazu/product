@@ -21,9 +21,6 @@
                   <Separator orientation="VERTICAL" />
                   <Button mnemonicParsing="false" text="Select all" />
                   <Button mnemonicParsing="false" text="Select change" />
-                  <Separator orientation="VERTICAL" />
-                  <Separator orientation="VERTICAL" />
-                  <Separator orientation="VERTICAL" />
               </items>
             </ToolBar>
             <GridPane hgap="2.0">
