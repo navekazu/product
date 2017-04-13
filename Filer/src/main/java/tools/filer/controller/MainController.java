@@ -1,9 +1,13 @@
 package tools.filer.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 
-public class MainController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class MainController implements Initializable {
     @FXML
     private TextField addressField;
 
@@ -13,4 +17,8 @@ public class MainController {
     @FXML
     private TextField commandField;
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        
+    }
 }
