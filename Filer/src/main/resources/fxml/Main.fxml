@@ -11,8 +11,8 @@
          <children>
             <ToolBar prefHeight="40.0" prefWidth="200.0">
               <items>
-                <Button mnemonicParsing="false" text="Undo" />
-                  <Button mnemonicParsing="false" text="Redo" />
+                <Button fx:id="undoButton" mnemonicParsing="false" text="Undo" />
+                  <Button fx:id="redoButton" mnemonicParsing="false" text="Redo" />
                   <Separator orientation="VERTICAL" />
                   <Button mnemonicParsing="false" text="Cut" />
                   <Button mnemonicParsing="false" text="Copy" />
