@@ -15,9 +15,9 @@
                   <Button fx:id="redoButton" mnemonicParsing="false" text="Redo" />
                   <Separator orientation="VERTICAL" />
                   <Button fx:id="cutButton" mnemonicParsing="false" text="Cut" />
-                  <Button mnemonicParsing="false" text="Copy" />
-                  <Button mnemonicParsing="false" text="Paste" />
-                  <Button mnemonicParsing="false" text="Shortcut" />
+                  <Button fx:id="copyButton" mnemonicParsing="false" text="Copy" />
+                  <Button fx:id="pasteButton" mnemonicParsing="false" text="Paste" />
+                  <Button fx:id="shortcutButton" mnemonicParsing="false" text="Shortcut" />
                   <Separator orientation="VERTICAL" />
                   <Button mnemonicParsing="false" text="Select all" />
                   <Button mnemonicParsing="false" text="Select change" />
