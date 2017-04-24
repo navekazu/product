@@ -22,7 +22,7 @@
                   <Button fx:id="selectAllButton" mnemonicParsing="false" text="Select all" />
                   <Button fx:id="selectChangeButton" mnemonicParsing="false" text="Select change" />
                   <Separator orientation="VERTICAL" />
-                  <Button mnemonicParsing="false" text="Property" />
+                  <Button fx:id="propertyButton" mnemonicParsing="false" text="Property" />
                   <ChoiceBox fx:id="newChoiceBox" prefWidth="150.0" />
               </items>
             </ToolBar>
