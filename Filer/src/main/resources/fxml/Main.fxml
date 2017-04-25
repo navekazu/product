@@ -40,7 +40,7 @@
               </rowConstraints>
                <children>
                   <Button fx:id="prevButton" mnemonicParsing="false" text="←" />
-                  <Button mnemonicParsing="false" text="→" GridPane.columnIndex="1" />
+                  <Button fx:id="fowardButton" mnemonicParsing="false" text="→" GridPane.columnIndex="1" />
                   <Button mnemonicParsing="false" text="↑" GridPane.columnIndex="2" />
                   <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="3" />
                   <TextField fx:id="addressField" promptText="Address" GridPane.columnIndex="4" />
