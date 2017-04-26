@@ -15,6 +15,7 @@ target
 */.gradle/
 */gradle/
 */build/
+*/gradlew
 
 # jar
 */*.jar
