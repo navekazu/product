@@ -1,4 +1,4 @@
 package tools.githubcontributewatcher;
 
-public class TwitterHandler {
+public class GitHubHandlerTest {
 }
