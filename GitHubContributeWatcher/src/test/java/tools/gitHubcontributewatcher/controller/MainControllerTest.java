@@ -5,8 +5,4 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class MainControllerTest {
-    @Test
-    public void getContributeListTest() throws Exception {
-
-    }
 }
