@@ -6,6 +6,6 @@ import tools.githubcontributewatcher.service.GitHubService;
 
 @Controller
 public class MainController {
-    @Autowired 
+    @Autowired
     private GitHubService gitHubService;
 }
