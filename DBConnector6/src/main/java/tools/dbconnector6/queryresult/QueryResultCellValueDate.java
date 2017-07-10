@@ -28,7 +28,8 @@ public class QueryResultCellValueDate extends QueryResultCellValue<Date> {
      */
     @Override
     protected void setValue(ResultSet resultSet, int column) throws SQLException {
-        value = resultSet.getDate(column);
+//        value = resultSet.getDate(column);
+        value = resultSet.getTimestamp(column);
     }
 
     /**
