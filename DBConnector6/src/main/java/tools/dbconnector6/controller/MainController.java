@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
 import javafx.scene.text.Text;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -281,6 +282,7 @@ public class MainController extends Application implements Initializable, MainCo
         } catch(IOException e) {
             e.printStackTrace();
         }
+
     }
 
     // データベース接続画面を表示する
@@ -794,6 +796,8 @@ public class MainController extends Application implements Initializable, MainCo
                         controller.appConfigEditor.setEditorPath(appConfigEditor.getEditorPath());
                     }
                 }
+
+                controller.queryTextArea.setFont(Font.font("游ゴシック", 13));
 
                 // 作業中クエリの復元
                 WorkingQuerySerializer workingQuerySerializer = new WorkingQuerySerializer();
