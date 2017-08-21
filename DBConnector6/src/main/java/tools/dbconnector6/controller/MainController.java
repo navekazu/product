@@ -377,6 +377,14 @@ public class MainController extends Application implements Initializable, MainCo
             KeyCode.UP, KeyCode.DOWN,
     };
 
+    // 改行をされた場合は true、それ以外は false を返す
+    private boolean isNewLineEvent(KeyEvent event) {
+        return Arrays.stream(NEW_LINE_CODES).anyMatch(c -> c == event.getCode());
+    }
+    private static final KeyCode[] NEW_LINE_CODES = new KeyCode[] {
+            KeyCode.ENTER,
+    };
+
     /**
      * クエリ入力欄のキャレット位置の、次もしくは前の空行までのキャレット位置を返す<br>
      * @param text クエリ入力欄の入力内容
@@ -708,6 +716,11 @@ public class MainController extends Application implements Initializable, MainCo
             int caret = queryTextArea.getCaretPosition();
             int direction = event.getCode()==KeyCode.UP? -1: 1;     // 上キーならマイナス方向、下ならプラス方向
             queryTextArea.selectRange(anchor, getNextEmptyLineCaretPosition(queryTextArea.getText(), caret, direction)-direction);
+        }
+
+        // 改行したなら自動インデント
+        if (isNewLineEvent(event)) {
+
         }
     }
 
