@@ -633,6 +633,46 @@ public class MainController extends Application implements Initializable, MainCo
         ISOLATIONS.put(Connection.TRANSACTION_NONE, "NONE");
     }
 
+    // メニュー「Database > Change to READ UNCOMMITTED」のアクションイベントハンドラ
+    // 現在のトランザクション分離レベルをREAD_UNCOMMITTEDに変更する
+    @FXML
+    private void onChangeToReadUncommitted(ActionEvent event) throws SQLException {
+        changeIsolationLevel(Connection.TRANSACTION_READ_UNCOMMITTED);
+        onCheckIsolation(null);
+    }
+
+    // メニュー「Database > Change to READ COMMITTED」のアクションイベントハンドラ
+    // 現在のトランザクション分離レベルをREAD_COMMITTEDに変更する
+    @FXML
+    private void onChangeToReadCommitted(ActionEvent event) throws SQLException {
+        changeIsolationLevel(Connection.TRANSACTION_READ_COMMITTED);
+        onCheckIsolation(null);
+    }
+
+    // メニュー「Database > Change to REPEATABLE READ」のアクションイベントハンドラ
+    // 現在のトランザクション分離レベルをREPEATABLE_READに変更する
+    @FXML
+    private void onChangeToRepeatableRead(ActionEvent event) throws SQLException {
+        changeIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ);
+        onCheckIsolation(null);
+    }
+
+    // メニュー「Database > Change to SERIALIZABLE」のアクションイベントハンドラ
+    // 現在のトランザクション分離レベルをSERIALIZABLEに変更する
+    @FXML
+    private void onChangeToSerializable(ActionEvent event) throws SQLException {
+        changeIsolationLevel(Connection.TRANSACTION_SERIALIZABLE);
+        onCheckIsolation(null);
+    }
+
+    // 指定された隔離レベルに変更する
+    private void changeIsolationLevel(int level) throws SQLException {
+        if (!isConnect()) {
+            return ;
+        }
+        connectPair.controller.getDbConnection().setTransactionIsolation(level);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // DB structure event
 
