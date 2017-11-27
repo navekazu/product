@@ -850,7 +850,7 @@ public class MainController extends Application implements Initializable, MainCo
                     }
                 }
 
-                controller.queryTextArea.setFont(Font.font("游ゴシック", 13));
+//                controller.queryTextArea.setFont(Font.font("游ゴシック", 13));
 
                 // 作業中クエリの復元
                 WorkingQuerySerializer workingQuerySerializer = new WorkingQuerySerializer();
