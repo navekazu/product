@@ -91,7 +91,12 @@ public class DbStructureUpdateService implements BackgroundServiceInterface<Void
     @Override
     public void update(final DbStructureTreeItem updateParam) throws Exception {
         Platform.runLater(() -> {
-            mainControllerInterface.getDbStructureParam().dbStructureRootItem.setValue(mainControllerInterface.getDbStructureParam().dbStructureRootItem.getItemType().getName());
+            // ルートのラベルに接続先情報を載せる
+            mainControllerInterface.getDbStructureParam().dbStructureRootItem.setValue(
+                    mainControllerInterface.getDbStructureParam().dbStructureRootItem.getItemType().getName() + " -> " +
+                            mainControllerInterface.getConnectParam().getUser() + " - " +
+                            mainControllerInterface.getConnectParam().getUrl()
+            );
             ObservableList<TreeItem<String>> subList = mainControllerInterface.getDbStructureParam().dbStructureRootItem.getChildren();
             subList.add(updateParam);
             FXCollections.sort(subList, new Comparator<TreeItem<String>>() {
