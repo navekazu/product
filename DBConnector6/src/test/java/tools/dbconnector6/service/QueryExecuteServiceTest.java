@@ -57,6 +57,7 @@ public class QueryExecuteServiceTest {
         assertEquals("select * from bar", splitSql[1]);
 
         // 2つのSQL(スラッシュ区切り)
+/*
         splitSql = service.splitQuery("select * from foo/\nselect * from bar/\n");
         assertEquals(2, splitSql.length);
         assertEquals("select * from foo", splitSql[0]);
@@ -71,7 +72,7 @@ public class QueryExecuteServiceTest {
         assertEquals(2, splitSql.length);
         assertEquals("select * from foo", splitSql[0]);
         assertEquals("select * from bar", splitSql[1]);
-
+*/
         // 改行が混じった2つのSQL(セミコロン区切り)
         splitSql = service.splitQuery("select *\nfrom foo;\nselect *\nfrom bar;\n");
         assertEquals(2, splitSql.length);

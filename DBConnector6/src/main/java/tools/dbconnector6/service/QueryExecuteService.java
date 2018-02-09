@@ -315,11 +315,12 @@ public class QueryExecuteService implements BackgroundServiceInterface<List<Tabl
      */
     protected String[] splitQuery(String sql) {
 //        String[] split = sql.trim().split("(;\n|/\n)");
-        String[] split = sql.trim().split("(;\\s*\n|/\\s*\n)");
+//        String[] split = sql.trim().split("(;\\s*\n|/\\s*\n)");
+        String[] split = sql.trim().split("(;\\s*\n)");             // 「/」を分割文字に入れると、割り算するときに影響があったので、一時的にコメントアウト
         return Arrays.stream(split)
                 .map(s -> s.trim())
                 .map(s -> s.endsWith(";")? s.substring(0, s.length()-1): s)
-                .map(s -> s.endsWith("/")? s.substring(0, s.length()-1): s)
+//                .map(s -> s.endsWith("/")? s.substring(0, s.length()-1): s)
                 .map(s -> s.trim())
                 .map(s -> isOneWord(s)? String.format("select * from %s", s): s)
                 .filter(s -> s.length() >= 1)
