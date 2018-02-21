@@ -385,6 +385,19 @@ public class MainController extends Application implements Initializable, MainCo
             KeyCode.ENTER,
     };
 
+    // 修飾キーなしにTabを押下された場合は true、それ以外は false を返す
+    private boolean isIndentEvent(KeyEvent event) {
+        return Arrays.stream(INDENT_CODES)
+                .filter(c -> !event.isAltDown())
+                .filter(c -> !event.isControlDown())
+                .filter(c -> !event.isMetaDown())
+                .filter(c -> !event.isShiftDown())
+                .anyMatch(c -> c == event.getCode());
+    }
+    private static final KeyCode[] INDENT_CODES = new KeyCode[] {
+            KeyCode.TAB,
+    };
+
     /**
      * クエリ入力欄のキャレット位置の、次もしくは前の空行までのキャレット位置を返す<br>
      * @param text クエリ入力欄の入力内容
@@ -761,6 +774,14 @@ public class MainController extends Application implements Initializable, MainCo
         // 改行したなら自動インデント
         if (isNewLineEvent(event)) {
 
+        }
+
+        // タブ文字は空白に置き換え
+        if (isIndentEvent(event)) {
+            // 本当は行頭からの文字数で空白文字数を指定するべきだが、まずはタブ1文字を空白4文字に置き換える
+            int caret = queryTextArea.getCaretPosition();
+            queryTextArea.insertText(caret, "    ");
+            event.consume();
         }
     }
 
