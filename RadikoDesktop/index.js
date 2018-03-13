@@ -17,8 +17,6 @@ app.on('ready', function() {
   mainWindow = new BrowserWindow({width: 800, height: 600});
   mainWindow.loadURL('http://radiko.jp/');
 
-  Menu.setApplicationMenu(Menu.buildFromTemplate());
-
   mainWindow.on('closed', function() {
     mainWindow = null;
   });
