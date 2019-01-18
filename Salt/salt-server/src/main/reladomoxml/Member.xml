@@ -1,0 +1,19 @@
+
+<MithraObject objectType="transactional"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+
+    <PackageName>tools.salt.domain</PackageName>
+    <ClassName>Member</ClassName>
+    <DefaultTable>member</DefaultTable>
+
+    <Attribute name="memberId"              javaType="int"        columnName="member_id"        nullable="false"  primaryKey="true"/>
+    <Attribute name="name"                  javaType="String"     columnName="name"             nullable="false"  maxLength="100"/>
+    <Attribute name="loginId"               javaType="String"     columnName="login_id"         nullable="false"  maxLength="100"/>
+    <Attribute name="password"              javaType="String"     columnName="password"         nullable="false"  maxLength="100"/>
+    <Attribute name="mailAddress"           javaType="String"     columnName="mail_address"     nullable="false"  maxLength="100"/>
+    <Attribute name="kind"                  javaType="int"        columnName="kind"             nullable="false"/>
+    <Attribute name="status"                javaType="int"        columnName="status"           nullable="false"/>
+
+</MithraObject>
+

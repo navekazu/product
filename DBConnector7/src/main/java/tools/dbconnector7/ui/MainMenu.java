@@ -13,11 +13,19 @@ import tools.dbconnector7.NoticeInterface;
 
 public class MainMenu extends JMenuBar {
     private NoticeInterface uiUpdateNotice;
+    private NoticeInterface connectNotice;
+    private NoticeInterface disconnectNotice;
 
-    public MainMenu(NoticeInterface uiUpdateNotice) {
+    public MainMenu(NoticeInterface uiUpdateNotice
+            , NoticeInterface connectNotice
+            , NoticeInterface disconnectNotice) {
         this.uiUpdateNotice = uiUpdateNotice;
+        this.connectNotice = connectNotice;
+        this.disconnectNotice = disconnectNotice;
+
         this.add(createFileMenu());
         this.add(createEditMenu());
+        this.add(createDatabaseMenu());
         this.add(createMiscMenu());
 	}
 
@@ -32,10 +40,56 @@ public class MainMenu extends JMenuBar {
         return menu;
     }
 
+    private JMenu createDatabaseMenu() {
+        JMenu menu = new JMenu("Database");
+        JMenuItem item;
+
+        menu.add(createMenuItem("Connect", connectNotice));
+        menu.add(createMenuItem("Disconnect", disconnectNotice));
+        menu.addSeparator();
+        menu.add(createMenuItem("Execute query", null));
+        menu.add(createMenuItem("Cancel query", null));
+        menu.add(createMenuItem("Query script", null));
+        menu.addSeparator();
+        menu.add(createMenuItem("Commit", null));
+        menu.add(createMenuItem("Rollback", null));
+        menu.addSeparator();
+        menu.add(createIsolationMenu());
+
+        return menu;
+    }
+
+    private JMenu createIsolationMenu() {
+        JMenu menu = new JMenu("Isolation");
+
+        menu.add(createMenuItem("Change isolation", null));
+        menu.addSeparator();
+        menu.add(createMenuItem("Change to READ UNCOMMITTED", null));
+        menu.add(createMenuItem("Change to READ COMMITTED", null));
+        menu.add(createMenuItem("Change to REPEATABLE READ", null));
+        menu.add(createMenuItem("Change to SERIALIZABLE", null));
+
+        return menu;
+    }
+
     private JMenu createMiscMenu() {
         JMenu menu = new JMenu("MISC");
         menu.add(createLookAndFeelMenu());
         return menu;
+    }
+
+    private JMenuItem createMenuItem(String label, NoticeInterface notice) {
+        JMenuItem item = new JMenuItem(label);
+
+        if (notice!=null) {
+            item.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent event) {
+                    notice.notice();
+                }
+            });
+        }
+
+        return item;
     }
 
     private JMenu createLookAndFeelMenu() {

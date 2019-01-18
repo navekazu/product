@@ -61,7 +61,18 @@ public class MainFrame extends JFrame {
                 SwingUtilities.updateComponentTreeUI(mainFrame);
             }
 
-        });
+        }, new NoticeInterface() {
+            @Override
+            public void notice() {
+            }
+
+        }, new NoticeInterface() {
+            @Override
+            public void notice() {
+            }
+
+        } );
+
         this.setJMenuBar(menu);
 
         pack();

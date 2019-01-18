@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.1.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>tools.salt</groupId>
+	<artifactId>salt-server</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>salt-server</name>
+	<description>Demo project for Spring Boot</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<!-- mysql  -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- springframework  -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jersey</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- doma  -->
+<!--
+		<dependency>
+			<groupId>org.seasar.doma.boot</groupId>
+			<artifactId>doma-spring-boot-starter</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+-->
+        <!-- reladomo  -->
+        <dependency>
+            <groupId>com.goldmansachs.reladomo</groupId>
+            <artifactId>reladomo</artifactId>
+            <version>17.0.2</version>
+        </dependency>
+		<dependency>
+		    <groupId>com.goldmansachs.reladomo</groupId>
+		    <artifactId>reladomogen</artifactId>
+		    <version>17.0.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.goldmansachs.reladomo</groupId>
+		    <artifactId>reladomo-serial</artifactId>
+		    <version>17.0.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.goldmansachs.reladomo</groupId>
+		    <artifactId>reladomo-gen-util</artifactId>
+		    <version>17.0.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.goldmansachs.reladomo</groupId>
+		    <artifactId>reladomo-test-util</artifactId>
+		    <version>17.0.2</version>
+		</dependency>
+        <dependency>
+            <groupId>com.goldmansachs</groupId>
+            <artifactId>gs-collections-api</artifactId>
+            <version>7.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.goldmansachs</groupId>
+            <artifactId>gs-collections</artifactId>
+            <version>7.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.goldmansachs</groupId>
+            <artifactId>gs-collections-testutils</artifactId>
+            <version>7.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.goldmansachs.reladomo</groupId>
+            <artifactId>reladomo-test-util</artifactId>
+            <version>17.0.2</version>
+        </dependency>
+
+		<!-- commons  -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+<!--
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant</artifactId>
+						<version>1.10.4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.seasar.doma</groupId>
+						<artifactId>doma-gen</artifactId>
+						<version>2.19.2</version>
+					</dependency>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>5.1.6</version>
+					</dependency>
+				</dependencies>
+
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<taskdef
+									resource="domagentask.properties"
+									classpathref="maven.runtime.classpath"
+									/>
+
+								<gen
+									url="jdbc:mysql://localhost:3306/salt_sys"
+									user="salt_browse"
+									password="b"
+									templatePrimaryDir="src/main/resources/doma_templates"
+							        ignoredTableNamePattern="src_.*"
+									dialectName="mysql"
+									>
+									<entityConfig
+										packageName="tools.salt.entity"
+										entityPropertyClassNamesFile="entityPropertyClassNames.properties"/>
+									<daoConfig
+										packageName="tools.salt.dao"/>
+							        <sqlConfig/>
+								</gen>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.10</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/target/generated-sources/reladomo/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>generateReladomo</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+                                <taskdef name="gen-reladomo" classpath="plugin_classpath"
+                                         classname="com.gs.fw.common.mithra.generator.MithraGenerator"/>
+                                <gen-reladomo xml="${project.basedir}/src/main/reladomoxml/SaltClassList.xml"
+                                              generateGscListMethod="true"
+                                              generatedDir="${project.build.directory}/generated-sources/reladomo"
+                                              nonGeneratedDir="${project.basedir}/src/main/java"
+                                        />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generateDatabase</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+                                <taskdef name="gen-reladomo-db" classpath="plugin_classpath"
+                                         classname="com.gs.fw.common.mithra.generator.dbgenerator.MithraDbDefinitionGenerator"/>
+                                <gen-reladomo-db
+                                        xml="${project.basedir}/src/main/reladomoxml/SaltClassList.xml"
+                                        generatedDir="${project.build.directory}/generated-resources/db"
+                                        databaseType="UDB82"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.goldmansachs.reladomo</groupId>
+                        <artifactId>reladomo</artifactId>
+                        <version>17.0.2</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.goldmansachs.reladomo</groupId>
+                        <artifactId>reladomogen</artifactId>
+                        <version>17.0.2</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.goldmansachs.reladomo</groupId>
+                        <artifactId>reladomo-gen-util</artifactId>
+                        <version>17.0.2</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+		</plugins>
+	</build>
+</project>
