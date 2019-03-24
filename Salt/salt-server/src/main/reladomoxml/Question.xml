@@ -1,0 +1,18 @@
+
+<MithraObject objectType="transactional"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+
+    <PackageName>tools.salt.domain</PackageName>
+    <ClassName>Question</ClassName>
+    <DefaultTable>question</DefaultTable>
+
+    <Attribute name="questionId"           javaType="int"        columnName="question_id"         nullable="false"  primaryKey="true"/>
+    <Attribute name="questionMasterId"     javaType="int"        columnName="question_master_id"  nullable="false"/>
+    <Attribute name="contents"             javaType="String"     columnName="contents"            nullable="false"  maxLength="1000"/>
+
+    <Relationship name="questions" relatedObject="QuestionMaster" cardinality="one-to-many" >
+        QuestionMaster.questionMasterId = this.questionMasterId
+    </Relationship>
+</MithraObject>
+

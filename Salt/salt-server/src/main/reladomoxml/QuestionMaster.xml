@@ -1,0 +1,15 @@
+
+<MithraObject objectType="transactional"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+
+    <PackageName>tools.salt.domain</PackageName>
+    <ClassName>QuestionMaster</ClassName>
+    <DefaultTable>question_master</DefaultTable>
+
+    <Attribute name="questionMasterId"      javaType="int"        columnName="question_master_id" nullable="false"  primaryKey="true"/>
+    <Attribute name="name"                  javaType="String"     columnName="name"               nullable="false"  maxLength="100"/>
+    <Attribute name="choiceCount"           javaType="int"        columnName="choice_count"       nullable="false"/>
+
+</MithraObject>
+

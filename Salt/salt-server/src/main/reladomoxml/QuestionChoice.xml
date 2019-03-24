@@ -1,0 +1,18 @@
+
+<MithraObject objectType="transactional"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+
+    <PackageName>tools.salt.domain</PackageName>
+    <ClassName>QuestionChoice</ClassName>
+    <DefaultTable>question_choice</DefaultTable>
+
+    <Attribute name="questionChoiceId"      javaType="int"        columnName="question_choice_id" nullable="false"  primaryKey="true"/>
+    <Attribute name="questionId"            javaType="int"        columnName="question_id"        nullable="false"/>
+    <Attribute name="correctFlag"           javaType="boolean"    columnName="correct_flag"       nullable="false"/>
+
+    <Relationship name="questionChoices" relatedObject="Question" cardinality="one-to-many" >
+        Question.questionId = this.questionId
+    </Relationship>
+</MithraObject>
+

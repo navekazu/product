@@ -1,4 +1,9 @@
 <Mithra xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="mithraobject.xsd">
     <MithraObjectResource name="Member"/>
+    <MithraObjectResource name="QuestionMaster"/>
+    <MithraObjectResource name="Question"/>
+    <MithraObjectResource name="QuestionChoice"/>
+    <MithraObjectResource name="AnswerMaster"/>
+    <MithraObjectResource name="Answer"/>
 </Mithra>

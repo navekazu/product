@@ -1,0 +1,15 @@
+
+<MithraObject objectType="transactional"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="mithraobject.xsd">
+
+    <PackageName>tools.salt.domain</PackageName>
+    <ClassName>AnswerMaster</ClassName>
+    <DefaultTable>answer_master</DefaultTable>
+
+    <Attribute name="answerMasterId"        javaType="int"        columnName="answer_master_id"   nullable="false"  primaryKey="true"/>
+    <Attribute name="memberId"              javaType="int"        columnName="member_id"          nullable="false"/>
+    <Attribute name="questionMasterId"      javaType="int"        columnName="question_master_id" nullable="false"/>
+
+</MithraObject>
+
