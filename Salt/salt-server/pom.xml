@@ -244,7 +244,7 @@
                                 <gen-reladomo-db
                                         xml="${project.basedir}/src/main/reladomoxml/SaltClassList.xml"
                                         generatedDir="${project.build.directory}/generated-resources/db"
-                                        databaseType="UDB82"/>
+                                        databaseType="postgres"/>
                             </tasks>
                         </configuration>
                     </execution>
