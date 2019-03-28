@@ -3,13 +3,13 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema salt_sys
+-- Schema studyup_sys
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `salt_sys` ;
+DROP SCHEMA IF EXISTS `studyup_sys` ;
 
-CREATE SCHEMA IF NOT EXISTS `salt_sys`
+CREATE SCHEMA IF NOT EXISTS `studyup_sys`
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
-USE `salt_sys` ;
+USE `studyup_sys` ;
 
 SET SQL_SAFE_UPDATES = 0;
 SET DEFAULT_STORAGE_ENGINE = InnoDB;
@@ -30,8 +30,8 @@ GRANT SELECT
     , INSERT
     , UPDATE
     , DELETE
-ON    `salt_sys`.*
-TO    `salt_user`
+ON    `studyup_sys`.*
+TO    `studyup_user`
 IDENTIFIED BY 'p';
 
 FLUSH PRIVILEGES;
@@ -57,8 +57,8 @@ GRANT SELECT
     , TRIGGER
     , CREATE TEMPORARY TABLES
     , LOCK TABLES
-ON    `salt_sys`.*
-TO    `salt_admin`
+ON    `studyup_sys`.*
+TO    `studyup_admin`
 IDENTIFIED BY 'padmin';
 
 FLUSH PRIVILEGES;
@@ -67,8 +67,8 @@ FLUSH PRIVILEGES;
 -- 閲覧ユーザー
 -- -----------------------------------------------------
 GRANT SELECT
-ON    `salt_sys`.*
-TO    `salt_browse`
+ON    `studyup_sys`.*
+TO    `studyup_browse`
 IDENTIFIED BY 'b';
 
 FLUSH PRIVILEGES;
@@ -76,24 +76,24 @@ FLUSH PRIVILEGES;
 -- =============================================================================
 -- テーブル定義
 -- =============================================================================
-source salt_sys_create_table.sql
+-- source studyup_sys_create_table.sql
 
 -- =============================================================================
 -- 初期値投入
 -- =============================================================================
--- source salt_sys_initial_data.sql
+-- source studyup_sys_initial_data.sql
 
 
 
 
 -- -----------------------------------------------------
--- Schema salt_test
+-- Schema studyup_test
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `salt_test` ;
+DROP SCHEMA IF EXISTS `studyup_test` ;
 
-CREATE SCHEMA IF NOT EXISTS `salt_test`
+CREATE SCHEMA IF NOT EXISTS `studyup_test`
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
-USE `salt_test` ;
+USE `studyup_test` ;
 
 SET SQL_SAFE_UPDATES = 0;
 SET DEFAULT_STORAGE_ENGINE = InnoDB;
@@ -114,8 +114,8 @@ GRANT SELECT
     , INSERT
     , UPDATE
     , DELETE
-ON    `salt_test`.*
-TO    `salt_user`
+ON    `studyup_test`.*
+TO    `studyup_user`
 IDENTIFIED BY 'p';
 
 FLUSH PRIVILEGES;
@@ -141,8 +141,8 @@ GRANT SELECT
     , TRIGGER
     , CREATE TEMPORARY TABLES
     , LOCK TABLES
-ON    `salt_test`.*
-TO    `salt_admin`
+ON    `studyup_test`.*
+TO    `studyup_admin`
 IDENTIFIED BY 'padmin';
 
 FLUSH PRIVILEGES;
@@ -151,8 +151,8 @@ FLUSH PRIVILEGES;
 -- 閲覧ユーザー
 -- -----------------------------------------------------
 GRANT SELECT
-ON    `salt_test`.*
-TO    `salt_browse`
+ON    `studyup_test`.*
+TO    `studyup_browse`
 IDENTIFIED BY 'b';
 
 FLUSH PRIVILEGES;
@@ -160,9 +160,9 @@ FLUSH PRIVILEGES;
 -- =============================================================================
 -- テーブル定義
 -- =============================================================================
-source salt_sys_create_table.sql
+-- source studyup_sys_create_table.sql
 
 -- =============================================================================
 -- 初期値投入
 -- =============================================================================
--- source salt_sys_initial_data.sql
+-- source studyup_sys_initial_data.sql
