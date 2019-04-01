@@ -22,7 +22,7 @@ public class ConnectionManager implements SourcelessConnectionManager {
     private final String serverName = "studyup-rds-instance.c9hbdsmfn2w8.ap-northeast-1.rds.amazonaws.com";
     private final String resourceName = "studyup_sys";
     private final String userName = "studyup_user";
-    private final String password = "p";
+    private final String password = "";
 
     private XAConnectionManager xaConnectionManager;
 
