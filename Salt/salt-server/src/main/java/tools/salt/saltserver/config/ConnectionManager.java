@@ -19,9 +19,9 @@ public class ConnectionManager implements SourcelessConnectionManager {
     private static final TimeZone TIMEZONE = TimeZone.getTimeZone("Asia/Tokyo");
 
     private final String driverClassname = "com.mysql.jdbc.Driver";
-    private final String serverName = "studyup-rds-instance.c9hbdsmfn2w8.ap-northeast-1.rds.amazonaws.com";
-    private final String resourceName = "studyup_sys";
-    private final String userName = "studyup_user";
+    private final String serverName = "";
+    private final String resourceName = "";
+    private final String userName = "";
     private final String password = "";
 
     private XAConnectionManager xaConnectionManager;
