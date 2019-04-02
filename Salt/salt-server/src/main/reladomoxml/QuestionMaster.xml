@@ -12,5 +12,8 @@
     <Attribute name="name"                  javaType="String"     columnName="name"               nullable="false"  maxLength="100"/>
     <Attribute name="choiceCount"           javaType="int"        columnName="choice_count"       nullable="false"/>
 
+    <Relationship name="questions" relatedObject="Question" cardinality="one-to-many" >
+        this.questionMasterId = Question.questionMasterId
+    </Relationship>
 </MithraObject>
 

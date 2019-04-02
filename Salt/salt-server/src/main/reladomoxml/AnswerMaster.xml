@@ -12,5 +12,8 @@
     <Attribute name="memberId"              javaType="int"        columnName="member_id"          nullable="false"/>
     <Attribute name="questionMasterId"      javaType="int"        columnName="question_master_id" nullable="false"/>
 
+    <Relationship name="answers" relatedObject="Answer" cardinality="one-to-many" >
+        this.answerMasterId = Answer.answerMasterId
+    </Relationship>
 </MithraObject>
 
