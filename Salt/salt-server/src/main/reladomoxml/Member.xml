@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="mithraobject.xsd">
 
-    <PackageName>tools.salt.domain</PackageName>
+    <PackageName>info.studyup.domain</PackageName>
     <ClassName>Member</ClassName>
     <DefaultTable>member</DefaultTable>
 

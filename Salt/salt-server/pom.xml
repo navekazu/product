@@ -8,8 +8,8 @@
 		<version>2.1.1.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>tools.salt</groupId>
-	<artifactId>salt-server</artifactId>
+	<groupId>info.studyup</groupId>
+	<artifactId>studyup-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>salt-server</name>
 	<description>Demo project for Spring Boot</description>
@@ -230,7 +230,7 @@
                                 <property name="plugin_classpath" refid="maven.plugin.classpath"/>
                                 <taskdef name="gen-reladomo" classpath="plugin_classpath"
                                          classname="com.gs.fw.common.mithra.generator.MithraGenerator"/>
-                                <gen-reladomo xml="${project.basedir}/src/main/reladomoxml/SaltClassList.xml"
+                                <gen-reladomo xml="${project.basedir}/src/main/reladomoxml/MithraClassList.xml"
                                               generateGscListMethod="true"
                                               generatedDir="${project.build.directory}/generated-sources/reladomo"
                                               nonGeneratedDir="${project.basedir}/src/main/java"
@@ -250,7 +250,7 @@
                                 <taskdef name="gen-reladomo-db" classpath="plugin_classpath"
                                          classname="com.gs.fw.common.mithra.generator.dbgenerator.MithraDbDefinitionGenerator"/>
                                 <gen-reladomo-db
-                                        xml="${project.basedir}/src/main/reladomoxml/SaltClassList.xml"
+                                        xml="${project.basedir}/src/main/reladomoxml/MithraClassList.xml"
                                         generatedDir="${project.build.directory}/generated-resources/db"
                                         databaseType="postgres"/>
                             </tasks>
