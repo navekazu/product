@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SaltServerApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+	    ReladomoInitializer.init();
 		SpringApplication.run(SaltServerApplication.class, args);
 	}
 

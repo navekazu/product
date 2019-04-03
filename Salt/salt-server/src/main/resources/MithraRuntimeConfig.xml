@@ -1,10 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <MithraRuntime>
    <ConnectionManager className="info.studyup.studyupserver.config.ConnectionManager">
-           <MithraObjectConfiguration className="info.studyup.domain.Answer" cacheType="partial"/>
-           <MithraObjectConfiguration className="info.studyup.domain.AnswerMaster" cacheType="partial"/>
-           <MithraObjectConfiguration className="info.studyup.domain.Member" cacheType="partial"/>
-           <MithraObjectConfiguration className="info.studyup.domain.Question" cacheType="partial"/>
-           <MithraObjectConfiguration className="info.studyup.domain.QuestionChoice" cacheType="partial"/>
-           <MithraObjectConfiguration className="info.studyup.domain.QuestionMaster" cacheType="partial"/>
+       <MithraObjectConfiguration cacheType="partial" className="info.studyup.domain.Answer"/>
+       <MithraObjectConfiguration cacheType="partial" className="info.studyup.domain.AnswerMaster"/>
+       <MithraObjectConfiguration cacheType="partial" className="info.studyup.domain.Member"/>
+       <MithraObjectConfiguration cacheType="partial" className="info.studyup.domain.Question"/>
+       <MithraObjectConfiguration cacheType="partial" className="info.studyup.domain.QuestionChoice"/>
+       <MithraObjectConfiguration cacheType="partial" className="info.studyup.domain.QuestionMaster"/>
     </ConnectionManager>
 </MithraRuntime>
