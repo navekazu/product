@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <MithraRuntime>
-   <ConnectionManager className="info.studyup.studyupserver.config.ConnectionManager">
+   <ConnectionManager className="info.studyup.studyupserver.config.ConnectionManagerProduct">
        <MithraObjectConfiguration cacheType="partial" className="info.studyup.domain.Answer"/>
        <MithraObjectConfiguration cacheType="partial" className="info.studyup.domain.AnswerMaster"/>
        <MithraObjectConfiguration cacheType="partial" className="info.studyup.domain.Member"/>
