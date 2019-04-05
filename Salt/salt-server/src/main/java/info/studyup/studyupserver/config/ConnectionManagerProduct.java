@@ -23,6 +23,7 @@ public class ConnectionManagerProduct implements SourcelessConnectionManager {
     private final String resourceName = "";
     private final String userName = "";
     private final String password = "";
+    private final int port = -1;
 
     private XAConnectionManager xaConnectionManager;
 
@@ -45,6 +46,7 @@ public class ConnectionManagerProduct implements SourcelessConnectionManager {
         xaConnectionManager.setDefaultSchemaName(resourceName);
         xaConnectionManager.setJdbcUser(userName);
         xaConnectionManager.setJdbcPassword(password);
+        xaConnectionManager.setPort(port);
         xaConnectionManager.setPoolName("connection pool");
         xaConnectionManager.setInitialSize(1);
         xaConnectionManager.setPoolSize(DEFAULT_POOL_SIZE);
