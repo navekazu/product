@@ -18,7 +18,7 @@ public class ConnectionManagerProduct implements SourcelessConnectionManager {
     protected static final int DEFAULT_POOL_SIZE = 10;
     private static final TimeZone TIMEZONE = TimeZone.getTimeZone("Asia/Tokyo");
 
-    private final String driverClassname = "com.mysql.jdbc.Driver";
+    private final String driverClassname = "org.postgresql.Driver";
     private final String serverName = "";
     private final String resourceName = "";
     private final String userName = "";
@@ -48,7 +48,6 @@ public class ConnectionManagerProduct implements SourcelessConnectionManager {
         xaConnectionManager.setPoolName("connection pool");
         xaConnectionManager.setInitialSize(1);
         xaConnectionManager.setPoolSize(DEFAULT_POOL_SIZE);
-        xaConnectionManager.setUseStatementPooling(true); // Only good for DB2
         xaConnectionManager.initialisePool();
         return xaConnectionManager;
     }

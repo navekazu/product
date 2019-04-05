@@ -10,9 +10,9 @@ import com.gs.fw.common.mithra.connectionmanager.XAConnectionManager;
 import com.gs.fw.common.mithra.databasetype.DatabaseType;
 import com.gs.fw.common.mithra.databasetype.MariaDatabaseType;
 
-public class ConnectionManager implements SourcelessConnectionManager {
+public class ConnectionManagerTest implements SourcelessConnectionManager {
 
-    protected static ConnectionManager instance;
+    protected static ConnectionManagerTest instance;
     protected static final String MAX_POOL_SIZE_KEY = "maxPoolSize";
     protected final int DEFAULT_MAX_WAIT = 500;
     protected static final int DEFAULT_POOL_SIZE = 10;
@@ -26,14 +26,14 @@ public class ConnectionManager implements SourcelessConnectionManager {
 
     private XAConnectionManager xaConnectionManager;
 
-    public static synchronized ConnectionManager getInstance() {
+    public static synchronized ConnectionManagerTest getInstance() {
         if (instance == null) {
-            instance = new ConnectionManager();
+            instance = new ConnectionManagerTest();
         }
         return instance;
     }
 
-    protected ConnectionManager() {
+    protected ConnectionManagerTest() {
         this.createConnectionManager();
     }
 
