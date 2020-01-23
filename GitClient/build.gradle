@@ -15,7 +15,7 @@ plugins {
 }
 
 // Define the main class for the application
-mainClassName = 'App'
+mainClassName = 'tools.gitclient.App';
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
