@@ -19,11 +19,11 @@ public class ConnectionManagerTest implements SourcelessConnectionManager {
     private static final TimeZone TIMEZONE = TimeZone.getTimeZone("Asia/Tokyo");
 
     private final String driverClassname = "org.postgresql.Driver";
-    private final String serverName = "";
-    private final String resourceName = "";
-    private final String userName = "";
-    private final String password = "";
-    private final int port = -1;
+    private final String serverName = "studyup-rds-instance.c9hbdsmfn2w8.ap-northeast-1.rds.amazonaws.com";
+    private final String resourceName = "studyup_rds_instance";
+    private final String userName = "studyup_rds_instance_admin";
+    private final String password = "studyup_rds_instance_password_01!";
+    private final int port = 3306;
 
     private XAConnectionManager xaConnectionManager;
 

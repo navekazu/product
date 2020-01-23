@@ -1,0 +1,8 @@
+root : 
+    layout : Border
+    contents : 
+    -   parts : Tree
+    -   parts : Tree
+        label : 
+
+
