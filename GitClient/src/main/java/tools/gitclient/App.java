@@ -1,11 +1,6 @@
 package tools.gitclient;
 
-import java.io.File;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
+import javax.swing.JFrame;
 
 import tools.gitclient.ui.MainFrame;
 
@@ -15,6 +10,7 @@ import tools.gitclient.ui.MainFrame;
 public class App {
     public void openMainFrame() {
         MainFrame mainFrame = new MainFrame();
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
         mainFrame.show();
     }
