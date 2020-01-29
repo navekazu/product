@@ -15,15 +15,16 @@ public class MainFrame extends JFrame {
     }
 
     private void createContents() {
-        tab = new JTabbedPane();
+        tab = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 
         Container root = getRootPane();
         root.setLayout(new BorderLayout());
         root.add(tab, BorderLayout.CENTER);
 
-
-        tab.addTab("Tab", new JLabel("aaaaa"));
-        tab.addTab("Tab2", null);
+        addNewTab();
     }
 
+    private void addNewTab() {
+        tab.addTab("＋", new NewTab());
+    }
 }
