@@ -14,8 +14,13 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import tools.gitclient.OperationMessage;
+
 public class NewTab extends Container {
-    public NewTab() {
+    private OperationMessage operationMessage;
+
+    public NewTab(OperationMessage operationMessage) {
+        this.operationMessage = operationMessage;
         createContents();
     }
 
@@ -34,6 +39,7 @@ public class NewTab extends Container {
         setDefaultBorder(panel);
 
         JButton openButton = new JButton("Open a repository");
+        setDefaultBorder(openButton);
         openButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 onOpenRepository();
@@ -42,6 +48,7 @@ public class NewTab extends Container {
         panel.add(openButton);
 
         JButton cloneButton = new JButton("Clone a repository");
+        setDefaultBorder(cloneButton);
         cloneButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 onCloneRepository();
@@ -50,6 +57,7 @@ public class NewTab extends Container {
         panel.add(cloneButton);
 
         JButton startButton = new JButton("Start a local repository");
+        setDefaultBorder(startButton);
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 onStartLocalRepository();
@@ -77,14 +85,18 @@ public class NewTab extends Container {
     }
 
     private void onOpenRepository() {
+        
 
     }
+
     private void onCloneRepository() {
 
     }
+
     private void onStartLocalRepository() {
 
     }
+
     private void onRecentRepository(int index) {
     }
 }

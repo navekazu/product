@@ -4,13 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
+
+import tools.gitclient.OperationMessage;
 
 public class MainFrame extends JFrame {
     private JTabbedPane tab;
+    private OperationMessage operationMessage;
 
-    public MainFrame() {
+    public MainFrame(OperationMessage operationMessage) {
+        this.operationMessage = operationMessage;
         createContents();
     }
 
@@ -25,6 +28,6 @@ public class MainFrame extends JFrame {
     }
 
     private void addNewTab() {
-        tab.addTab("＋", new NewTab());
+        tab.addTab("＋", new NewTab(operationMessage));
     }
 }
