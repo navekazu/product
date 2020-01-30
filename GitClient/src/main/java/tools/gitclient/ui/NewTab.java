@@ -4,15 +4,21 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import tools.gitclient.OperationMessage;
 
@@ -85,7 +91,21 @@ public class NewTab extends Container {
     }
 
     private void onOpenRepository() {
-        
+        JFileChooser filechooser = new JFileChooser();
+        filechooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        int selected = filechooser.showSaveDialog(this);
+        if (selected == JFileChooser.APPROVE_OPTION){
+            File file = filechooser.getSelectedFile();
+            try {
+                Repository existingRepo = new FileRepositoryBuilder()
+                        .setGitDir(file)
+                        .build();
+            } catch (IOException e) {
+                // TODO 自動生成された catch ブロック
+                e.printStackTrace();
+            }
+        }
 
     }
 

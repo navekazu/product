@@ -19,7 +19,7 @@ public class App implements OperationMessage {
         MainFrame mainFrame = new MainFrame(this);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
-        mainFrame.show();
+        mainFrame.setVisible(true);
     }
 
     public static void main(String[] args) throws Exception {
