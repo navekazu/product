@@ -29,5 +29,6 @@ public class MainFrame extends JFrame {
 
     private void addNewTab() {
         tab.addTab("＋", new NewTab(operationMessage));
+        tab.addTab("Repo", new RepositoryTab(operationMessage));
     }
 }
