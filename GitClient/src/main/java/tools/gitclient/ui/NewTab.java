@@ -5,7 +5,6 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -16,9 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import tools.gitclient.OperationMessage;
 
@@ -97,14 +93,7 @@ public class NewTab extends Container {
         int selected = filechooser.showSaveDialog(this);
         if (selected == JFileChooser.APPROVE_OPTION){
             File file = filechooser.getSelectedFile();
-            try {
-                Repository existingRepo = new FileRepositoryBuilder()
-                        .setGitDir(file)
-                        .build();
-            } catch (IOException e) {
-                // TODO 自動生成された catch ブロック
-                e.printStackTrace();
-            }
+            operationMessage.openRepository(file);
         }
 
     }
