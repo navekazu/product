@@ -2,10 +2,13 @@ package tools.gitclient;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import tools.gitclient.config.RecentRepositoryConfigManager;
 import tools.gitclient.ui.MainFrame;
 import tools.gitclient.ui.theme.DefaultTheme;
 
@@ -58,5 +61,37 @@ public class App implements OperationMessage {
     @Override
     public void startLocalRepository(File local) {
     }
+
+    @Override
+    public void addRecentOpenRepository(File local) {
+        RecentRepositoryConfigManager config = new RecentRepositoryConfigManager();
+        config.addConfig(local.getPath());
+    }
+
+    @Override
+    public File getRecentOpenRepository() {
+        List<File> list = getRecentOpenRepositoryList();
+
+        if (list==null) {
+            return null;
+        }
+
+        return list.get(list.size()-1);
+    }
+
+    @Override
+    public List<File> getRecentOpenRepositoryList() {
+        RecentRepositoryConfigManager config = new RecentRepositoryConfigManager();
+        List<String> list = config.readConfig();
+
+        if (list==null) {
+            return null;
+        }
+
+        return list.stream()
+                .map(f -> new File(f))
+                .collect(Collectors.toList());
+    }
+
 
 }

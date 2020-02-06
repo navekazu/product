@@ -49,6 +49,7 @@ public class RepositoryTab extends Container {
             repository = new FileRepositoryBuilder()
                     .setGitDir(local)
                     .build();
+            operationMessage.addRecentOpenRepository(local);
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();

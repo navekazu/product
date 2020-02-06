@@ -90,6 +90,11 @@ public class NewTab extends Container {
         JFileChooser filechooser = new JFileChooser();
         filechooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
+        File recent = operationMessage.getRecentOpenRepository();
+        if (recent!=null) {
+            filechooser.setCurrentDirectory(recent);
+        }
+
         int selected = filechooser.showSaveDialog(this);
         if (selected == JFileChooser.APPROVE_OPTION){
             File file = filechooser.getSelectedFile();
