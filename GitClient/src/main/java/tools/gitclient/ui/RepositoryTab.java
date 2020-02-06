@@ -39,7 +39,15 @@ public class RepositoryTab extends Container {
         return new JPanel();
     }
 
+    public void reopenRepository(File local) {
+        openRepository(local, false);
+    }
+
     public void openRepository(File local) {
+        openRepository(local, true);
+    }
+
+    private void openRepository(File local, boolean addOpeningRepository) {
         if (GIT_CONF_DIR.equals(local.getName())) {
             local = new File(local, GIT_CONF_DIR);
         }
@@ -49,7 +57,12 @@ public class RepositoryTab extends Container {
             repository = new FileRepositoryBuilder()
                     .setGitDir(local)
                     .build();
+
             operationMessage.addRecentOpenRepository(local);
+
+            if (addOpeningRepository) {
+                operationMessage.addOpeningRepository(local);
+            }
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();

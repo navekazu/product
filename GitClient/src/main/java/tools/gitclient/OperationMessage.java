@@ -12,4 +12,7 @@ public interface OperationMessage {
     public void addRecentOpenRepository(File local);
     public File getRecentOpenRepository();
     public List<File> getRecentOpenRepositoryList();
+
+    public void addOpeningRepository(File local);
+    public List<File> getOpeningOpenRepositoryList();
 }

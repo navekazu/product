@@ -3,6 +3,7 @@ package tools.gitclient.ui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.io.File;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -26,6 +27,20 @@ public class MainFrame extends JFrame {
         root.add(tab, BorderLayout.CENTER);
 
         addNewTab();
+
+        List<File> list = operationMessage.getOpeningOpenRepositoryList();
+        if (list!=null) {
+            list.stream()
+                .forEach(f -> {
+                    RepositoryTab repositoryTab = new RepositoryTab(operationMessage);
+
+                    repositoryTab.reopenRepository(f);
+                    String repositoryName = repositoryTab.getRepositoryName();
+
+                    tab.addTab(repositoryName, repositoryTab);
+                });
+        }
+
     }
 
     private void addNewTab() {

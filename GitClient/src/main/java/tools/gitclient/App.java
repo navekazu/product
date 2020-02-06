@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.swing.JFrame;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import tools.gitclient.config.OpeningRepositoryConfigManager;
 import tools.gitclient.config.RecentRepositoryConfigManager;
 import tools.gitclient.ui.MainFrame;
 import tools.gitclient.ui.theme.DefaultTheme;
@@ -82,8 +83,22 @@ public class App implements OperationMessage {
     @Override
     public List<File> getRecentOpenRepositoryList() {
         RecentRepositoryConfigManager config = new RecentRepositoryConfigManager();
-        List<String> list = config.readConfig();
+        return stringListToFileList(config.readConfig());
+    }
 
+    @Override
+    public void addOpeningRepository(File local) {
+        OpeningRepositoryConfigManager config = new OpeningRepositoryConfigManager();
+        config.addConfig(local.getPath());
+    }
+
+    @Override
+    public List<File> getOpeningOpenRepositoryList() {
+        OpeningRepositoryConfigManager config = new OpeningRepositoryConfigManager();
+        return stringListToFileList(config.readConfig());
+    }
+
+    private List<File> stringListToFileList(List<String> list) {
         if (list==null) {
             return null;
         }
@@ -92,6 +107,5 @@ public class App implements OperationMessage {
                 .map(f -> new File(f))
                 .collect(Collectors.toList());
     }
-
 
 }
