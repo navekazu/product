@@ -1,10 +1,10 @@
 package tools.gitclient.jgit;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,41 +13,34 @@ public class JGitTest {
 
     @Before
     public void before() throws IOException {
-        Path localRepositoryDir = Paths.get(TEST_REPOSITORY);
+        File localRepositoryDir = new File(TEST_REPOSITORY);
         deleteFile(localRepositoryDir);
-        Files.createDirectories(localRepositoryDir);
+        localRepositoryDir.mkdir();
     }
 
-    public void deleteFile(Path path) throws IOException {
-        if (!Files.exists(path)) {
+    public void deleteFile(File path) throws IOException {
+        if (!path.exists()) {
             return;
         }
 
-        if (!Files.isDirectory(path)) {
-            Files.deleteIfExists(path);
-            return;
+        for (File f: path.listFiles()) {
+            if (f.isDirectory()) {
+                deleteFile(f);
+            } else {
+                f.delete();
+            }
         }
-
-        // ディレクトリ内を再帰
-        Files.list(path)
-            .forEach(p -> {
-                try {
-                    deleteFile(p);
-                } catch (IOException e) {
-                    // TODO 自動生成された catch ブロック
-                    e.printStackTrace();
-                }
-            });
-
-        // ディレクトリを削除
-        Files.deleteIfExists(path);
+        path.delete();
     }
 
     @Test
-    public void createLocalRepositoryTest() {
-//        Repository repository = = new FileRepositoryBuilder()
-//                .setGitDir(local)
-//                .build();
+    public void createLocalRepositoryTest() throws IOException {
+        File repoDir = new File(new File(TEST_REPOSITORY, "test01"), ".git");
+        repoDir.mkdirs();
+        Repository newlyCreatedRepo = FileRepositoryBuilder.create(repoDir);
+        //Repository repository = new FileRepositoryBuilder()
+        //        .setGitDir(repoDir)
+        //        .build();
     }
 
 }
