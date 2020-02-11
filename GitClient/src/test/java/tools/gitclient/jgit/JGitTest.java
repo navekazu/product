@@ -87,10 +87,6 @@ public class JGitTest {
         assertThat(call.get(1).getName(), is("refs/heads/feature/some_feature01"));
         assertThat(call.get(2).getName(), is("refs/heads/master"));
         assertThat(call.get(3).getName(), is("refs/heads/release"));
-
-        //Repository repository = new FileRepositoryBuilder()
-        //        .setGitDir(repoDir)
-        //        .build();
     }
 
 }

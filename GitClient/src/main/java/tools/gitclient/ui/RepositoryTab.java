@@ -2,9 +2,12 @@ package tools.gitclient.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
@@ -17,6 +20,8 @@ public class RepositoryTab extends Container {
     private OperationMessage operationMessage;
     private Repository repository;
     private File repositoryPath;
+    private JLabel repositoryNameLabel;
+    private JLabel repositoryPathLabel;
 
     private static final String GIT_CONF_DIR = ".git";
 
@@ -28,11 +33,30 @@ public class RepositoryTab extends Container {
     private void createContents() {
         setLayout(new BorderLayout());
 
+        add(createRepositoryLabel(), BorderLayout.NORTH);
+
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 createBranchPanel(), createBranchPanel());
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation(150);
+
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    private Container createRepositoryLabel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        repositoryNameLabel = new JLabel();
+        panel.add(repositoryNameLabel);
+
+        repositoryPathLabel = new JLabel();
+        panel.add(repositoryPathLabel);
+        Font font = repositoryPathLabel.getFont();
+        font = new Font(font.getFontName(), Font.PLAIN, font.getSize());
+        repositoryPathLabel.setFont(font);
+
+        return panel;
     }
 
     private Container createBranchPanel() {
@@ -52,6 +76,7 @@ public class RepositoryTab extends Container {
             local = new File(local, GIT_CONF_DIR);
         }
         repositoryPath = local;
+        setRepositoryLabel(local);
 
         try {
             repository = new FileRepositoryBuilder()
@@ -68,6 +93,14 @@ public class RepositoryTab extends Container {
             e.printStackTrace();
         }
 
+    }
+
+    private void setRepositoryLabel(File local) {
+        if (GIT_CONF_DIR.equals(local.getName())) {
+            local = local.getParentFile();
+        }
+        repositoryNameLabel.setText(local.getName());
+        repositoryPathLabel.setText(local.getPath());
     }
 
     public String getRepositoryName() {
