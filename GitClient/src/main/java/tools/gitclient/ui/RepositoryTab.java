@@ -181,12 +181,25 @@ public class RepositoryTab extends Container {
     }
 
     private void onAddAllButton() {
+/*
         Git git = new Git(repository);
         AddCommand add = git.add();
-        add.addFilepattern(".");
+        add.addFilepattern("*");
 
         try {
             add.call();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
+*/
+        try (Git git = Git.open(new File(repositoryPathLabel.getText()))) {
+            AddCommand add = git.add();
+            add.addFilepattern(".").call();
+
+        } catch (IOException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
         } catch (GitAPIException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
@@ -197,18 +210,19 @@ public class RepositoryTab extends Container {
         String message = summaryField.getText();
 
         if (descriptionField.getText().length()!=0) {
-            message += "\n";
+            message += "\n\n";
             message += descriptionField.getText();
         }
 
-        Git git = new Git(repository);
-        CommitCommand commit = git.commit();
-        commit.setAll(true).setMessage(message);
-        try {
-            commit.call();
+        try (Git git = Git.open(new File(repositoryPathLabel.getText()))) {
+            CommitCommand commit = git.commit();
+            commit.setMessage(message).call();
         } catch (GitAPIException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
+        } catch (IOException e1) {
+            // TODO 自動生成された catch ブロック
+            e1.printStackTrace();
         }
 
     }
