@@ -4,13 +4,22 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
+import org.eclipse.jgit.api.AddCommand;
+import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
@@ -22,6 +31,14 @@ public class RepositoryTab extends Container {
     private File repositoryPath;
     private JLabel repositoryNameLabel;
     private JLabel repositoryPathLabel;
+
+    // stage
+    private JButton addAllButton;
+
+    // commit
+    private JTextField summaryField;
+    private JTextArea descriptionField;
+    private JButton commitButton;
 
     private static final String GIT_CONF_DIR = ".git";
 
@@ -36,7 +53,7 @@ public class RepositoryTab extends Container {
         add(createRepositoryLabel(), BorderLayout.NORTH);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                createBranchPanel(), createBranchPanel());
+                createBranchPanel(), createMainPanel());
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation(150);
 
@@ -61,6 +78,45 @@ public class RepositoryTab extends Container {
 
     private Container createBranchPanel() {
         return new JPanel();
+    }
+
+    private Container createMainPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        addAllButton = new JButton("Add all");
+        addAllButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                onAddAllButton();
+            }
+        });
+        panel.add(addAllButton, BorderLayout.NORTH);
+
+        panel.add(createCommitPanel(), BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private Container createCommitPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        summaryField = new JTextField();
+        panel.add(summaryField, BorderLayout.NORTH);
+
+        descriptionField = new JTextArea();
+        descriptionField.setRows(5);
+        panel.add(descriptionField, BorderLayout.CENTER);
+
+        commitButton = new JButton("Commit");
+        commitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                onCommitButton();
+            }
+        });
+        panel.add(commitButton, BorderLayout.SOUTH);
+
+        return panel;
     }
 
     public void reopenRepository(File local) {
@@ -122,5 +178,38 @@ public class RepositoryTab extends Container {
         }
 
         return repositoryPath.getName();
+    }
+
+    private void onAddAllButton() {
+        Git git = new Git(repository);
+        AddCommand add = git.add();
+        add.addFilepattern(".");
+
+        try {
+            add.call();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
+    }
+
+    private void onCommitButton() {
+        String message = summaryField.getText();
+
+        if (descriptionField.getText().length()!=0) {
+            message += "\n";
+            message += descriptionField.getText();
+        }
+
+        Git git = new Git(repository);
+        CommitCommand commit = git.commit();
+        commit.setAll(true).setMessage(message);
+        try {
+            commit.call();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
+
     }
 }
