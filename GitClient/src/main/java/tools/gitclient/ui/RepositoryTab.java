@@ -20,7 +20,9 @@ import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.UserConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import tools.gitclient.OperationMessage;
@@ -209,14 +211,19 @@ public class RepositoryTab extends Container {
     private void onCommitButton() {
         String message = summaryField.getText();
 
+
         if (descriptionField.getText().length()!=0) {
             message += "\n\n";
             message += descriptionField.getText();
         }
 
         try (Git git = Git.open(new File(repositoryPathLabel.getText()))) {
+            Config config = git.getRepository().getConfig();
+            String authorName = config.get(UserConfig.KEY).getAuthorName();
+            String authorEmail = config.get(UserConfig.KEY).getAuthorEmail();
+
             CommitCommand commit = git.commit();
-            commit.setMessage(message).call();
+            commit.setMessage(message).setAuthor(authorName, authorEmail).call();
         } catch (GitAPIException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();

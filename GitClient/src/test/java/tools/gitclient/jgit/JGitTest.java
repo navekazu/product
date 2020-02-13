@@ -6,11 +6,14 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.UserConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,4 +92,48 @@ public class JGitTest {
         assertThat(call.get(3).getName(), is("refs/heads/release"));
     }
 
+    @Test
+    public void configTest() throws IOException {
+        File repoDir = new File(new File(TEST_REPOSITORY, "test01"), ".git");
+        repoDir.mkdirs();
+
+        // リポジトリ作成
+        Repository newlyCreatedRepo = FileRepositoryBuilder.create(repoDir);
+        newlyCreatedRepo.create();
+
+        // config
+        Config config = newlyCreatedRepo.getConfig();
+        String value;
+        Set<String> sections = config.getSections();
+        for (String section: sections) {
+//            value = config.getString(section, null, null);
+//            System.out.println("section:"+section+" subsection:"+null+" name:"+null+" value:"+value);
+
+            Set<String> subsections = config.getSubsections(section);
+            for (String subsection: subsections) {
+//                value = config.getString(section, subsection, null);
+//                System.out.println("section:"+section+" subsection:"+subsection+" name:"+null+" value:"+value);
+
+                Set<String> names = config.getNames(subsection);
+                for (String name: names) {
+                    value = config.getString(section, subsection, name);
+                    System.out.println("section:"+section+" subsection:"+subsection+" name:"+name+" value:"+value);
+                }
+            }
+        }
+
+        String name = config.getString("user", null, "name");
+        String name2 = config.get(UserConfig.KEY).getAuthorName();
+        String name3 = config.get(UserConfig.KEY).getCommitterName();
+        assertThat(name.length(), is(not(0)));
+        assertThat(name, is(name2));
+        assertThat(name, is(name3));
+
+        String email = config.getString("user", null, "email");
+        String email2 = config.get(UserConfig.KEY).getAuthorEmail();
+        String email3 = config.get(UserConfig.KEY).getCommitterEmail();
+        assertThat(email.length(), is(not(0)));
+        assertThat(email, is(email2));
+        assertThat(email, is(email3));
+    }
 }
