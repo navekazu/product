@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Ref;
@@ -165,5 +166,36 @@ public class JGitTest {
         assertThat(list.get(1).getName(), is("refs/heads/feature/some_feature01"));
         assertThat(list.get(2).getName(), is("refs/heads/master"));
         assertThat(list.get(3).getName(), is("refs/heads/release"));
+    }
+
+    @Test
+    public void statusCommandTest() throws IOException, GitAPIException {
+        File repoDir = new File(new File(TEST_REPOSITORY, "test01"), ".git");
+        repoDir.mkdirs();
+
+        // リポジトリ作成
+        Repository newlyCreatedRepo = FileRepositoryBuilder.create(repoDir);
+        newlyCreatedRepo.create();
+
+        try (Git git = Git.open(repoDir.getParentFile())) {
+            Status status = git.status().call();
+
+            // 追加
+            Set<String> added = status.getAdded();
+            assertThat(added.size(), is(0));
+
+            File newFile = new File(new File(TEST_REPOSITORY, "test01"), "test01");
+            newFile.createNewFile();
+
+            status = git.status().call();
+            added = status.getAdded();
+//            assertThat(added.size(), is(1));
+//            assertThat(added.iterator(), is("test01"));
+
+            // 変更
+            Set<String> changed = status.getChanged();
+            assertThat(changed.size(), is(0));
+
+        }
     }
 }

@@ -38,3 +38,15 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
+
+jar {
+  doFirst {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } } 
+  }
+  exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+  manifest {
+    attributes "Main-Class" : "tools.gitclient.App"
+  }
+//  from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+  from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
