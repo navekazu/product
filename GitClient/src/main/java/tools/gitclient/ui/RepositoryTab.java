@@ -8,19 +8,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Config;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.UserConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -33,6 +39,9 @@ public class RepositoryTab extends Container {
     private File repositoryPath;
     private JLabel repositoryNameLabel;
     private JLabel repositoryPathLabel;
+    private JTree branchTree;
+    private DefaultMutableTreeNode localBranchNode;
+    private DefaultMutableTreeNode remoteBranchNode;
 
     // stage
     private JButton addAllButton;
@@ -43,6 +52,8 @@ public class RepositoryTab extends Container {
     private JButton commitButton;
 
     private static final String GIT_CONF_DIR = ".git";
+    private static final String LOCAL_BRANCH_PREFIX = "refs/heads/";
+    private static final String REMOTE_BRANCH_PREFIX = "refs/remotes/origin/";
 
     public RepositoryTab(OperationMessage operationMessage) {
         this.operationMessage = operationMessage;
@@ -79,7 +90,23 @@ public class RepositoryTab extends Container {
     }
 
     private Container createBranchPanel() {
-        return new JPanel();
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("root");
+        branchTree = new JTree(rootNode);
+//        branchTree.setRootVisible(false);
+
+        localBranchNode = new DefaultMutableTreeNode("Local branch");
+        rootNode.add(localBranchNode);
+
+        remoteBranchNode = new DefaultMutableTreeNode("Remote branch");
+        rootNode.add(remoteBranchNode);
+
+        JScrollPane scroll = new JScrollPane(branchTree);
+        panel.add(scroll, BorderLayout.CENTER);
+
+        return panel;
     }
 
     private Container createMainPanel() {
@@ -131,15 +158,18 @@ public class RepositoryTab extends Container {
 
     private void openRepository(File local, boolean addOpeningRepository) {
         if (GIT_CONF_DIR.equals(local.getName())) {
-            local = new File(local, GIT_CONF_DIR);
+            local = local.getParentFile();
         }
         repositoryPath = local;
         setRepositoryLabel(local);
 
         try {
             repository = new FileRepositoryBuilder()
-                    .setGitDir(local)
+                    .setGitDir(new File(local, GIT_CONF_DIR))
                     .build();
+
+            updateLocalBranchList();
+            updateRemoteBranchList();
 
             operationMessage.addRecentOpenRepository(local);
 
@@ -149,14 +179,49 @@ public class RepositoryTab extends Container {
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
         }
 
     }
 
-    private void setRepositoryLabel(File local) {
-        if (GIT_CONF_DIR.equals(local.getName())) {
-            local = local.getParentFile();
+    private void updateLocalBranchList() throws IOException, GitAPIException {
+        try (Git git = Git.open(repositoryPath)) {
+            List<Ref> list = git.branchList().call();
+
+            removeAllClidNode(localBranchNode);
+
+            for (Ref ref: list) {
+                String name = ref.getName();
+                name = name.substring(LOCAL_BRANCH_PREFIX.length());
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
+                localBranchNode.add(node);
+            }
         }
+    }
+    private void updateRemoteBranchList() throws IOException, GitAPIException {
+        try (Git git = Git.open(repositoryPath)) {
+            List<Ref> list = git.branchList().setListMode(ListMode.REMOTE).call();
+
+            removeAllClidNode(remoteBranchNode);
+
+            for (Ref ref: list) {
+                String name = ref.getName();
+                name = name.substring(REMOTE_BRANCH_PREFIX.length());
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
+                remoteBranchNode.add(node);
+            }
+        }
+    }
+
+    private void removeAllClidNode(DefaultMutableTreeNode node) {
+        while (node.getChildCount()!=0) {
+            node.remove(0);
+        }
+    }
+
+    private void setRepositoryLabel(File local) {
         repositoryNameLabel.setText(local.getName());
         repositoryPathLabel.setText(local.getPath());
     }

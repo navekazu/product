@@ -136,4 +136,34 @@ public class JGitTest {
         assertThat(email, is(email2));
         assertThat(email, is(email3));
     }
+
+
+    @Test
+    public void listBranchCommandTest() throws IOException, GitAPIException {
+        File repoDir = new File(new File(TEST_REPOSITORY, "test01"), ".git");
+        repoDir.mkdirs();
+
+        // リポジトリ作成
+        Repository newlyCreatedRepo = FileRepositoryBuilder.create(repoDir);
+        newlyCreatedRepo.create();
+
+        // initial commit
+        // コミットしないとmasterブランチがない
+        // masterブランチがないと別のブランチが作れない
+        Git git = new Git(newlyCreatedRepo);
+        git.commit().setMessage("initial commit").call();
+
+        // git-flowブランチを作成
+        git.branchCreate().setName("release").call();
+        git.branchCreate().setName("develop").call();
+        git.branchCreate().setName("feature/some_feature01").call();
+
+        // ローカルブランチリスト取得
+        List<Ref> list = git.branchList().call();
+        assertThat(list.size(), is(4));
+        assertThat(list.get(0).getName(), is("refs/heads/develop"));
+        assertThat(list.get(1).getName(), is("refs/heads/feature/some_feature01"));
+        assertThat(list.get(2).getName(), is("refs/heads/master"));
+        assertThat(list.get(3).getName(), is("refs/heads/release"));
+    }
 }
