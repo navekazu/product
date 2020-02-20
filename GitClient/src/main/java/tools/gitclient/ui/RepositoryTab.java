@@ -17,19 +17,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
+import org.eclipse.jgit.api.PullCommand;
+import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.UserConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import tools.gitclient.OperationMessage;
 
@@ -42,6 +48,7 @@ public class RepositoryTab extends Container {
     private JTree branchTree;
     private DefaultMutableTreeNode localBranchNode;
     private DefaultMutableTreeNode remoteBranchNode;
+    private CredentialsProvider credentialsProvider;
 
     // stage
     private JButton addAllButton;
@@ -57,13 +64,15 @@ public class RepositoryTab extends Container {
 
     public RepositoryTab(OperationMessage operationMessage) {
         this.operationMessage = operationMessage;
+        this.credentialsProvider = null;
         createContents();
     }
 
     private void createContents() {
         setLayout(new BorderLayout());
 
-        add(createRepositoryLabel(), BorderLayout.NORTH);
+        createRepositoryLabel();
+        add(createToolbar(), BorderLayout.NORTH);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 createBranchPanel(), createMainPanel());
@@ -85,6 +94,52 @@ public class RepositoryTab extends Container {
         Font font = repositoryPathLabel.getFont();
         font = new Font(font.getFontName(), Font.PLAIN, font.getSize());
         repositoryPathLabel.setFont(font);
+
+        return panel;
+    }
+
+    private Container createToolbar() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        JToolBar toolBar = new JToolBar();
+        panel.add(toolBar);
+
+        JButton fetchButton = new JButton("FETCH");
+        toolBar.add(fetchButton);
+        fetchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                onFetchButton();
+            }
+        });
+
+        JButton pullButton = new JButton("PULL");
+        toolBar.add(pullButton);
+        pullButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                onPullButton();
+            }
+        });
+
+        toolBar.addSeparator();
+
+        JButton pushButton = new JButton("PUSH");
+        toolBar.add(pushButton);
+        pushButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                onPushButton();
+            }
+        });
+
+        toolBar.addSeparator();
+
+        JButton configButton = new JButton("CONF");
+        toolBar.add(configButton);
+        pushButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                onConfigButton();
+            }
+        });
 
         return panel;
     }
@@ -260,7 +315,7 @@ public class RepositoryTab extends Container {
             e.printStackTrace();
         }
 */
-        try (Git git = Git.open(new File(repositoryPathLabel.getText()))) {
+        try (Git git = Git.open(repositoryPath)) {
             AddCommand add = git.add();
             add.addFilepattern(".").call();
 
@@ -282,7 +337,7 @@ public class RepositoryTab extends Container {
             message += descriptionField.getText();
         }
 
-        try (Git git = Git.open(new File(repositoryPathLabel.getText()))) {
+        try (Git git = Git.open(repositoryPath)) {
             Config config = git.getRepository().getConfig();
             String authorName = config.get(UserConfig.KEY).getAuthorName();
             String authorEmail = config.get(UserConfig.KEY).getAuthorEmail();
@@ -297,5 +352,53 @@ public class RepositoryTab extends Container {
             e1.printStackTrace();
         }
 
+    }
+
+    private void onFetchButton() {
+        try (Git git = Git.open(repositoryPath)) {
+            CredentialsProvider cp = new UsernamePasswordCredentialsProvider("foo", "bar");
+            FetchCommand fetch = git.fetch();
+            fetch.setCredentialsProvider(cp).call();
+
+        } catch (IOException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
+    }
+
+    private void onPullButton() {
+        try (Git git = Git.open(repositoryPath)) {
+            CredentialsProvider cp = new UsernamePasswordCredentialsProvider("foo", "bar");
+            PullCommand pull = git.pull();
+            pull.setCredentialsProvider(cp).call();
+
+        } catch (IOException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
+    }
+
+    private void onPushButton() {
+        try (Git git = Git.open(repositoryPath)) {
+            CredentialsProvider cp = new UsernamePasswordCredentialsProvider("foo", "bar");
+            PushCommand push = git.push();
+            push.setCredentialsProvider(cp).call();
+
+        } catch (IOException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
+    }
+
+    private void onConfigButton() {
     }
 }

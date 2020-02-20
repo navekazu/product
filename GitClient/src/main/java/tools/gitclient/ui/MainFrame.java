@@ -6,6 +6,8 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import tools.gitclient.OperationMessage;
@@ -24,6 +26,7 @@ public class MainFrame extends JFrame {
 
         Container root = getRootPane();
         root.setLayout(new BorderLayout());
+        root.add(createMenubar(), BorderLayout.NORTH);
         root.add(tab, BorderLayout.CENTER);
 
         addNewTab();
@@ -41,6 +44,15 @@ public class MainFrame extends JFrame {
                 });
         }
 
+    }
+
+    private Container createMenubar() {
+        JPanel panel = new JPanel();
+
+        JMenuBar menuBar = new JMenuBar();
+        panel.add(menuBar);
+
+        return panel;
     }
 
     private void addNewTab() {
