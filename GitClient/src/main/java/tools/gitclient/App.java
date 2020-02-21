@@ -1,5 +1,6 @@
 package tools.gitclient;
 
+import java.awt.Frame;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -106,6 +107,11 @@ public class App implements OperationMessage {
         return list.stream()
                 .map(f -> new File(f))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Frame getMainFrame() {
+        return mainFrame;
     }
 
 }

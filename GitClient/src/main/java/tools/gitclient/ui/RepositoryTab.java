@@ -35,7 +35,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.UserConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import tools.gitclient.OperationMessage;
 
@@ -135,7 +134,7 @@ public class RepositoryTab extends Container {
 
         JButton configButton = new JButton("CONF");
         toolBar.add(configButton);
-        pushButton.addActionListener(new ActionListener() {
+        configButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 onConfigButton();
             }
@@ -356,9 +355,8 @@ public class RepositoryTab extends Container {
 
     private void onFetchButton() {
         try (Git git = Git.open(repositoryPath)) {
-            CredentialsProvider cp = new UsernamePasswordCredentialsProvider("foo", "bar");
             FetchCommand fetch = git.fetch();
-            fetch.setCredentialsProvider(cp).call();
+            fetch.setCredentialsProvider(credentialsProvider).call();
 
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
@@ -371,9 +369,8 @@ public class RepositoryTab extends Container {
 
     private void onPullButton() {
         try (Git git = Git.open(repositoryPath)) {
-            CredentialsProvider cp = new UsernamePasswordCredentialsProvider("foo", "bar");
             PullCommand pull = git.pull();
-            pull.setCredentialsProvider(cp).call();
+            pull.setCredentialsProvider(credentialsProvider).call();
 
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
@@ -386,9 +383,8 @@ public class RepositoryTab extends Container {
 
     private void onPushButton() {
         try (Git git = Git.open(repositoryPath)) {
-            CredentialsProvider cp = new UsernamePasswordCredentialsProvider("foo", "bar");
             PushCommand push = git.push();
-            push.setCredentialsProvider(cp).call();
+            push.setCredentialsProvider(credentialsProvider).call();
 
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
@@ -400,5 +396,12 @@ public class RepositoryTab extends Container {
     }
 
     private void onConfigButton() {
+        ConfigDialog dialog = new ConfigDialog(operationMessage);
+        dialog.pack();
+        dialog.setVisible(true);
+
+        if (dialog.getConfigResult().isOK) {
+            credentialsProvider = dialog.getConfigResult().credentialsProvider;
+        }
     }
 }

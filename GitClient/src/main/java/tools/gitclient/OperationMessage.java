@@ -1,5 +1,6 @@
 package tools.gitclient;
 
+import java.awt.Frame;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -15,4 +16,6 @@ public interface OperationMessage {
 
     public void addOpeningRepository(File local);
     public List<File> getOpeningOpenRepositoryList();
+
+    public Frame getMainFrame();
 }
