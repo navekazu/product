@@ -31,7 +31,7 @@ public class MainFrame extends JFrame {
 
         addNewTab();
 
-        List<File> list = operationMessage.getOpeningOpenRepositoryList();
+        List<File> list = operationMessage.getOpeningRepositoryList();
         if (list!=null) {
             list.stream()
                 .forEach(f -> {

@@ -15,7 +15,7 @@ public interface OperationMessage {
     public List<File> getRecentOpenRepositoryList();
 
     public void addOpeningRepository(File local);
-    public List<File> getOpeningOpenRepositoryList();
+    public List<File> getOpeningRepositoryList();
 
     public Frame getMainFrame();
 }

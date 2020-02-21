@@ -94,7 +94,7 @@ public class App implements OperationMessage {
     }
 
     @Override
-    public List<File> getOpeningOpenRepositoryList() {
+    public List<File> getOpeningRepositoryList() {
         OpeningRepositoryConfigManager config = new OpeningRepositoryConfigManager();
         return stringListToFileList(config.readConfig());
     }
