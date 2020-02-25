@@ -28,6 +28,9 @@ dependencies {
 
     compile 'org.slf4j:slf4j-log4j12:1.7.30'
 
+    // https://mvnrepository.com/artifact/commons-codec/commons-codec
+    compile 'commons-codec:commons-codec:1.5'
+
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
 }
@@ -41,7 +44,7 @@ repositories {
 
 jar {
   doFirst {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } } 
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
   }
   exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
   manifest {
