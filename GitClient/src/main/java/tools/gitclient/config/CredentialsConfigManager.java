@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import javax.crypto.spec.IvParameterSpec;
-
 
 public class CredentialsConfigManager extends ConfigManagerBase {
 
@@ -14,18 +12,12 @@ public class CredentialsConfigManager extends ConfigManagerBase {
         return "Credentials";
     }
 
-    private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
-    private static final String INIT_VECTOR = "INIT_VECTOR";
-    private IvParameterSpec iv = new IvParameterSpec(INIT_VECTOR.getBytes());
-
     public Credentials deserialize(String data) {
-        Credentials credentials = new Credentials();
-        return credentials;
+        return base64ToCredentials(data);
     }
 
     public String serialize(Credentials credentials) {
-
-        return "";
+        return credentialsToBase64(credentials);
     }
 
     public static class Credentials {
@@ -50,7 +42,7 @@ public class CredentialsConfigManager extends ConfigManagerBase {
 
     public static Credentials base64ToCredentials(String value) {
         Credentials credentials = new Credentials();
-        String values[] = split(value, ",");
+        String values[] = split(value, ',');
         credentials.no = Integer.parseInt(values[0]);
         credentials.name = base64Decode(values[1]);
         credentials.type = Credentials.Type.valueOf(values[2]);
@@ -60,7 +52,7 @@ public class CredentialsConfigManager extends ConfigManagerBase {
         return credentials;
     }
 
-    public static String[] split(String value, String delimiter) {
+    public static String[] split(String value, char delimiter) {
         if (value.length()==0) {
             return new String[0];
         }
@@ -75,7 +67,14 @@ public class CredentialsConfigManager extends ConfigManagerBase {
             } else {
                 to = value.indexOf(delimiter, to);
             }
-            list.add(value.substring(from, to));
+
+            String data = value.substring(from, to);
+            if (data.length()==1 && data.charAt(0)==delimiter) {
+                data = "";
+                to--;
+            }
+
+            list.add(data);
             from = to+1;
             to = from+1;
         }

@@ -1,13 +1,14 @@
 package tools.gitclient.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.io.File;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
+import javax.swing.JMenuItem;
+import javax.swing.JRootPane;
 import javax.swing.JTabbedPane;
 
 import tools.gitclient.OperationMessage;
@@ -24,10 +25,11 @@ public class MainFrame extends JFrame {
     private void createContents() {
         tab = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 
-        Container root = getRootPane();
+
+        JRootPane root = getRootPane();
         root.setLayout(new BorderLayout());
-        root.add(createMenubar(), BorderLayout.NORTH);
         root.add(tab, BorderLayout.CENTER);
+        setJMenuBar(createMenubar());
 
         addNewTab();
 
@@ -43,16 +45,18 @@ public class MainFrame extends JFrame {
                     tab.addTab(repositoryName, repositoryTab);
                 });
         }
-
     }
 
-    private Container createMenubar() {
-        JPanel panel = new JPanel();
-
+    public JMenuBar createMenubar() {
         JMenuBar menuBar = new JMenuBar();
-        panel.add(menuBar);
 
-        return panel;
+        JMenu fileMenu = new JMenu("File");
+        menuBar.add(fileMenu);
+
+        JMenuItem credentialManagerMenu = new JMenuItem("Credential Manager");
+        fileMenu.add(credentialManagerMenu);
+
+        return menuBar;
     }
 
     private void addNewTab() {
