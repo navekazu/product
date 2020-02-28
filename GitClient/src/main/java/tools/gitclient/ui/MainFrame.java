@@ -1,6 +1,8 @@
 package tools.gitclient.ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 
@@ -8,7 +10,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JRootPane;
 import javax.swing.JTabbedPane;
 
 import tools.gitclient.OperationMessage;
@@ -26,9 +27,11 @@ public class MainFrame extends JFrame {
         tab = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 
 
-        JRootPane root = getRootPane();
-        root.setLayout(new BorderLayout());
-        root.add(tab, BorderLayout.CENTER);
+//        JRootPane root = getRootPane();
+//        root.setLayout(new BorderLayout());
+//        root.add(tab, BorderLayout.CENTER);
+        setLayout(new BorderLayout());
+        add(tab, BorderLayout.CENTER);
         setJMenuBar(createMenubar());
 
         addNewTab();
@@ -54,6 +57,13 @@ public class MainFrame extends JFrame {
         menuBar.add(fileMenu);
 
         JMenuItem credentialManagerMenu = new JMenuItem("Credential Manager");
+        credentialManagerMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onCredentialManagerMenu();
+            }
+
+        });
         fileMenu.add(credentialManagerMenu);
 
         return menuBar;
@@ -72,4 +82,12 @@ public class MainFrame extends JFrame {
         tab.addTab(repositoryName, repositoryTab);
         tab.setSelectedIndex(tab.getTabCount()-1);
     }
+
+    private void onCredentialManagerMenu() {
+        CredentialManagerDialog dialog = new CredentialManagerDialog(operationMessage);
+        dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
 }
