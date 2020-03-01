@@ -9,11 +9,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 import tools.gitclient.OperationMessage;
 
 public class CredentialManagerDialog extends JDialog {
     private OperationMessage operationMessage;
+    private JTable credentialTable;
 
     public CredentialManagerDialog(OperationMessage operationMessage) {
         super(operationMessage.getMainFrame(), "Credential Manager", true);
@@ -30,6 +33,10 @@ public class CredentialManagerDialog extends JDialog {
     private Container createCredentialList() {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
+
+        credentialTable = new JTable();
+        panel.add(new JScrollPane(credentialTable), BorderLayout.CENTER);
+
         return panel;
     }
 
