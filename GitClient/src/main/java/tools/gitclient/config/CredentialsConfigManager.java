@@ -25,7 +25,7 @@ public class CredentialsConfigManager extends ConfigManagerBase {
             NONE,
             USER_PASSWORD,
         }
-        public int no;
+        public long no;
         public String name;
         public Type type;
         public String user;

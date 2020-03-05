@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import javax.swing.JFrame;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import tools.gitclient.config.CredentialsConfigManager;
+import tools.gitclient.config.CredentialsConfigManager.Credentials;
 import tools.gitclient.config.OpeningRepositoryConfigManager;
 import tools.gitclient.config.RecentRepositoryConfigManager;
 import tools.gitclient.ui.MainFrame;
@@ -112,6 +114,29 @@ public class App implements OperationMessage {
     @Override
     public Frame getMainFrame() {
         return mainFrame;
+    }
+
+    @Override
+    public List<Credentials> getCredentialsConfig() {
+        CredentialsConfigManager config = new CredentialsConfigManager();
+        List<String> list = config.readConfig();
+
+        if (list==null) {
+            return null;
+        }
+
+        return list.stream()
+                .map(s -> config.deserialize(s))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void setCredentialsConfig(List<Credentials> list) {
+        CredentialsConfigManager config = new CredentialsConfigManager();
+        List<String> outputList = list.stream()
+                .map(s -> config.serialize(s))
+                .collect(Collectors.toList());
+        config.writeConfig(outputList);
     }
 
 }
