@@ -62,6 +62,7 @@ public class CredentialManagerDialog extends JDialog {
 
         credentialTable = new JTable();
         credentialTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        credentialTable.setDefaultEditor(Object.class, null);
         tableModel = new DefaultTableModel(new String[] {"Name", "Type", "User"}, 0);
         credentialTable.setModel(tableModel);
 
@@ -71,6 +72,10 @@ public class CredentialManagerDialog extends JDialog {
                 onCredentialTableClicked(e);
             }
         });
+
+        credentialList.stream()
+            .forEach(c -> tableModel.addRow(new String[] {c.name, c.type.name(), c.user}));
+
 
         panel.add(new JScrollPane(credentialTable), BorderLayout.CENTER);
         panel.add(createCredentialEditArea(), BorderLayout.SOUTH);
@@ -168,6 +173,7 @@ public class CredentialManagerDialog extends JDialog {
         credentials.user = userField.getText();
         credentials.password = new String(passwordField.getPassword());
         credentialList.add(credentials);
+        tableModel.addRow(new String[] {credentials.name, credentials.type.name(), credentials.user});
 
         operationMessage.setCredentialsConfig(credentialList);
         clearSelectedCredentials();
@@ -184,6 +190,14 @@ public class CredentialManagerDialog extends JDialog {
         selectedCredentials.user = userField.getText();
         selectedCredentials.password = new String(passwordField.getPassword());
 
+        for (int i=0; i<credentialList.size(); i++) {
+            if (selectedCredentials.no == credentialList.get(i).no) {
+                tableModel.removeRow(i);
+                tableModel.insertRow(i, new String[] {selectedCredentials.name, selectedCredentials.type.name(), selectedCredentials.user});
+                break;
+            }
+        }
+
         operationMessage.setCredentialsConfig(credentialList);
         clearSelectedCredentials();
     }
@@ -192,6 +206,13 @@ public class CredentialManagerDialog extends JDialog {
         if (selectedCredentials==null) {
             clearSelectedCredentials();
             return;
+        }
+
+        for (int i=0; i<credentialList.size(); i++) {
+            if (selectedCredentials.no == credentialList.get(i).no) {
+                tableModel.removeRow(i);
+                break;
+            }
         }
 
         credentialList.remove(selectedCredentials);
@@ -212,5 +233,8 @@ public class CredentialManagerDialog extends JDialog {
 
         int row = credentialTable.convertRowIndexToModel(index);
         selectedCredentials = credentialList.get(row);
+        nameField.setText(selectedCredentials.name);
+        userField.setText(selectedCredentials.user);
+        passwordField.setText(selectedCredentials.password);
     }
 }

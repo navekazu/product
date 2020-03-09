@@ -43,7 +43,7 @@ public class CredentialsConfigManager extends ConfigManagerBase {
     public static Credentials base64ToCredentials(String value) {
         Credentials credentials = new Credentials();
         String values[] = split(value, ',');
-        credentials.no = Integer.parseInt(values[0]);
+        credentials.no = Long.parseLong(values[0]);
         credentials.name = base64Decode(values[1]);
         credentials.type = Credentials.Type.valueOf(values[2]);
         credentials.user = base64Decode(values[3]);
