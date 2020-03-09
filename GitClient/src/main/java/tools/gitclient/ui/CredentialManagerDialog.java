@@ -4,8 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,6 +64,13 @@ public class CredentialManagerDialog extends JDialog {
         credentialTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tableModel = new DefaultTableModel(new String[] {"Name", "Type", "User"}, 0);
         credentialTable.setModel(tableModel);
+
+        credentialTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                onCredentialTableClicked(e);
+            }
+        });
 
         panel.add(new JScrollPane(credentialTable), BorderLayout.CENTER);
         panel.add(createCredentialEditArea(), BorderLayout.SOUTH);
@@ -164,13 +174,43 @@ public class CredentialManagerDialog extends JDialog {
     }
 
     private void onUpdateButton() {
+        if (selectedCredentials==null) {
+            onAddButton();
+            return;
+        }
+
+        selectedCredentials.name = nameField.getText();
+        selectedCredentials.type = Credentials.Type.USER_PASSWORD;
+        selectedCredentials.user = userField.getText();
+        selectedCredentials.password = new String(passwordField.getPassword());
+
         operationMessage.setCredentialsConfig(credentialList);
         clearSelectedCredentials();
     }
 
     private void onDeleteButton() {
+        if (selectedCredentials==null) {
+            clearSelectedCredentials();
+            return;
+        }
+
+        credentialList.remove(selectedCredentials);
         operationMessage.setCredentialsConfig(credentialList);
         clearSelectedCredentials();
     }
 
+    private void onCredentialTableClicked(MouseEvent e) {
+        if (e.getClickCount() != 2) {
+            return;
+        }
+
+        Point point = e.getPoint();
+        int index = credentialTable.rowAtPoint(point);
+        if (index < 0) {
+            return;
+        }
+
+        int row = credentialTable.convertRowIndexToModel(index);
+        selectedCredentials = credentialList.get(row);
+    }
 }
