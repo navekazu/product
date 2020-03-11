@@ -1,6 +1,7 @@
 package tools.gitclient.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -88,6 +89,16 @@ public class MainFrame extends JFrame {
         dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         dialog.pack();
         dialog.setVisible(true);
+    }
+
+    public void updateCredencialsConfig() {
+        for (int index=0; index<tab.getTabCount(); index++) {
+            Component c = tab.getTabComponentAt(index);
+            if (c instanceof RepositoryTab) {
+                RepositoryTab r = (RepositoryTab)c;
+                r.updateCredencialsConfig();
+            }
+        }
     }
 
 }

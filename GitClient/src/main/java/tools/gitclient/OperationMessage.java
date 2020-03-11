@@ -21,6 +21,7 @@ public interface OperationMessage {
 
     public List<CredentialsConfigManager.Credentials> getCredentialsConfig();
     public void setCredentialsConfig(List<CredentialsConfigManager.Credentials> list);
+    public void updateCredencialsConfig();
 
     public Frame getMainFrame();
 }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -37,6 +38,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 
 import tools.gitclient.OperationMessage;
+import tools.gitclient.config.CredentialsConfigManager.Credentials;
 
 public class RepositoryTab extends Container {
     private OperationMessage operationMessage;
@@ -48,6 +50,8 @@ public class RepositoryTab extends Container {
     private DefaultMutableTreeNode localBranchNode;
     private DefaultMutableTreeNode remoteBranchNode;
     private CredentialsProvider credentialsProvider;
+
+    private JComboBox<String> credentialsComboBox;
 
     // stage
     private JButton addAllButton;
@@ -139,6 +143,10 @@ public class RepositoryTab extends Container {
                 onConfigButton();
             }
         });
+
+        credentialsComboBox = new JComboBox<>();
+        updateCredencialsConfig();
+        toolBar.add(credentialsComboBox);
 
         return panel;
     }
@@ -403,5 +411,17 @@ public class RepositoryTab extends Container {
         if (dialog.getConfigResult().isOK) {
             credentialsProvider = dialog.getConfigResult().credentialsProvider;
         }
+    }
+
+    public void updateCredencialsConfig() {
+        credentialsComboBox.removeAllItems();
+        credentialsComboBox.addItem("None credentials");
+
+        List<Credentials> credentialsList = operationMessage.getCredentialsConfig();
+        if (credentialsList!=null) {
+            credentialsList.stream()
+                .forEach(c -> credentialsComboBox.addItem(c.name));
+        }
+
     }
 }

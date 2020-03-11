@@ -139,4 +139,8 @@ public class App implements OperationMessage {
         config.writeConfig(outputList);
     }
 
+    @Override
+    public void updateCredencialsConfig() {
+        mainFrame.updateCredencialsConfig();
+    }
 }
