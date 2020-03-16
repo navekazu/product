@@ -6,8 +6,11 @@ import java.net.URL;
 import java.util.List;
 
 import tools.gitclient.config.CredentialsConfigManager;
+import tools.gitclient.config.RepositoryCredentialsConfigManager.RepositoryCredentials;
 
 public interface OperationMessage {
+    public Frame getMainFrame();
+
     public void openRepository(File local);
     public void cloneRepository(URL remote);
     public void startLocalRepository(File local);
@@ -23,5 +26,7 @@ public interface OperationMessage {
     public void setCredentialsConfig(List<CredentialsConfigManager.Credentials> list);
     public void updateCredencialsConfig();
 
-    public Frame getMainFrame();
+    public RepositoryCredentials getRepositoryCredentials(String repository);
+    public void setRepositoryCredentials(RepositoryCredentials repositoryCredentials);
+    public void clearRepositoryCredentials(String repository);
 }

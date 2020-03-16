@@ -39,6 +39,7 @@ import org.eclipse.jgit.transport.CredentialsProvider;
 
 import tools.gitclient.OperationMessage;
 import tools.gitclient.config.CredentialsConfigManager.Credentials;
+import tools.gitclient.config.RepositoryCredentialsConfigManager.RepositoryCredentials;
 
 public class RepositoryTab extends Container {
     private OperationMessage operationMessage;
@@ -422,6 +423,21 @@ public class RepositoryTab extends Container {
             credentialsList.stream()
                 .forEach(c -> credentialsComboBox.addItem(c.name));
         }
+
+        RepositoryCredentials rc = operationMessage.getRepositoryCredentials(repositoryPath.getPath());
+        if (rc==null) {
+            return ;
+        }
+
+        for (int index=0; index<credentialsList.size(); index++) {
+            Credentials c = credentialsList.get(index);
+            if (rc.credentials==c.no) {
+                credentialsComboBox.setSelectedIndex(index);
+            }
+        }
+    }
+
+    private void onSelectCredencialsConfig() {
 
     }
 }

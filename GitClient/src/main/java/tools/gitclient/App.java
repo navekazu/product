@@ -3,7 +3,9 @@ package tools.gitclient;
 import java.awt.Frame;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
@@ -13,6 +15,8 @@ import tools.gitclient.config.CredentialsConfigManager;
 import tools.gitclient.config.CredentialsConfigManager.Credentials;
 import tools.gitclient.config.OpeningRepositoryConfigManager;
 import tools.gitclient.config.RecentRepositoryConfigManager;
+import tools.gitclient.config.RepositoryCredentialsConfigManager;
+import tools.gitclient.config.RepositoryCredentialsConfigManager.RepositoryCredentials;
 import tools.gitclient.ui.MainFrame;
 import tools.gitclient.ui.theme.DefaultTheme;
 
@@ -142,5 +146,87 @@ public class App implements OperationMessage {
     @Override
     public void updateCredencialsConfig() {
         mainFrame.updateCredencialsConfig();
+    }
+
+    @Override
+    public RepositoryCredentials getRepositoryCredentials(String repository) {
+        RepositoryCredentialsConfigManager config = new RepositoryCredentialsConfigManager();
+        List<String> list = config.readConfig();
+
+        if (list==null) {
+            return null;
+        }
+
+        List<RepositoryCredentials> configList = list.stream()
+                .map(s -> config.deserialize(s))
+                .filter(c -> repository.equals(c.repository))
+                .collect(Collectors.toList());
+
+        if (configList.size()==0) {
+            return null;
+        }
+        return configList.get(0);
+    }
+
+    @Override
+    public void setRepositoryCredentials(RepositoryCredentials repositoryCredentials) {
+        RepositoryCredentialsConfigManager config = new RepositoryCredentialsConfigManager();
+        List<String> list = config.readConfig();
+
+        List<RepositoryCredentials> configList;
+        if (list==null) {
+            configList = new ArrayList<>();
+        } else {
+            configList = list.stream()
+                .map(s -> config.deserialize(s))
+                .collect(Collectors.toList());
+        }
+
+        Optional<RepositoryCredentials> opt = configList.stream()
+                .filter(c -> repositoryCredentials.repository.equals(c.repository))
+                .findFirst();
+        RepositoryCredentials rc = opt.orElse(new RepositoryCredentials());
+        rc.repository = repositoryCredentials.repository;
+        rc.credentials = repositoryCredentials.credentials;
+
+        if (opt.isPresent()) {
+            configList.add(rc);
+        }
+
+        list = configList.stream()
+            .map(c -> config.serialize(c))
+            .collect(Collectors.toList());
+        config.writeConfig(list);
+    }
+
+    @Override
+    public void clearRepositoryCredentials(String repository) {
+        RepositoryCredentialsConfigManager config = new RepositoryCredentialsConfigManager();
+        List<String> list = config.readConfig();
+
+        if (list==null) {
+            return ;
+        }
+
+        Optional<RepositoryCredentials> opt = list.stream()
+                .map(s -> config.deserialize(s))
+                .filter(c -> repository.equals(c.repository))
+                .findFirst();
+
+        if (opt.isPresent()) {
+            return ;
+        }
+
+        List<RepositoryCredentials> configList = list.stream()
+                .map(s -> config.deserialize(s))
+                .collect(Collectors.toList());
+
+        RepositoryCredentials rc = opt.get();
+        configList.remove(rc);
+
+        list = configList.stream()
+                .map(c -> config.serialize(c))
+                .collect(Collectors.toList());
+            config.writeConfig(list);
     }
 }
