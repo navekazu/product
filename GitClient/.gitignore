@@ -1,2 +1,7 @@
+.classpath
+.project
+.settings
+.gradle
+
 test_repository
 jar

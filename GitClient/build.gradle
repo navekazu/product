@@ -54,7 +54,7 @@ jar {
   from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
-
+/*
 // ファイルのコピー先(カレントからの相対PATH)
 def dependJarCopyTo = 'jar'
 // コピー先にあるファイルをいったん削除
@@ -74,5 +74,6 @@ task getDependJar(dependsOn: delDependJar) {
         println "----- 以下のjarファイルを取得しました -----"
         FileCollection copyFiles = files { file(dependJarCopyTo).listFiles() }
         copyFiles.each {File file -> println file.name}
-    } 
+    }
 }
+*/
