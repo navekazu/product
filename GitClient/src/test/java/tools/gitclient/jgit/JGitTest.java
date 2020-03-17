@@ -123,6 +123,7 @@ public class JGitTest {
             }
         }
 
+        config.setString("user", null, "name", "user.name.is.xxx");
         String name = config.getString("user", null, "name");
         String name2 = config.get(UserConfig.KEY).getAuthorName();
         String name3 = config.get(UserConfig.KEY).getCommitterName();

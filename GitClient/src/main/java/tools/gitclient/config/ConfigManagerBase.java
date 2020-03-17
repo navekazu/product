@@ -2,6 +2,8 @@ package tools.gitclient.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,6 +17,7 @@ public abstract class ConfigManagerBase {
 
     private static String APP_HOME_DIR = ".GitClient";
     private static String CONFIG_DELIMITER = "=";
+    private static Charset BASE64_CHARSET = StandardCharsets.UTF_8;
 
     private File getAppHomeDir() {
         String home = System.getProperty("user.home");
@@ -96,15 +99,43 @@ public abstract class ConfigManagerBase {
     public static String base64Decode(String value) {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] b = decoder.decode(value);
-        return new String(b);
+        return new String(b, BASE64_CHARSET);
     }
 
     public static String base64Encode(String value) {
         Base64.Encoder encoder = Base64.getEncoder();
-        return encoder.encodeToString(value.getBytes());
+        return encoder.encodeToString(value.getBytes(BASE64_CHARSET));
     }
 
     public static String[] split(String value, char delimiter) {
+        if (value.length()==0) {
+            return new String[0];
+        }
+
+        int from = 0;
+        int to = 1;
+        int index = 0;
+        List<String> list = new ArrayList<>();
+
+        for (index=0; index<value.length(); index++) {
+            if (value.charAt(index)==delimiter) {
+                String substring = value.substring(from, index);
+                list.add(substring);
+                from = index+1;
+            } else {
+
+            }
+        }
+
+        if (value.charAt(value.length()-1)==delimiter) {
+            list.add("");
+        } else {
+            String substring = value.substring(from);
+            list.add(substring);
+        }
+
+        return list.toArray(new String[list.size()]);
+/*
         if (value.length()==0) {
             return new String[0];
         }
@@ -132,6 +163,6 @@ public abstract class ConfigManagerBase {
         }
 
         return list.toArray(new String[list.size()]);
-    }
+*/    }
 
 }
