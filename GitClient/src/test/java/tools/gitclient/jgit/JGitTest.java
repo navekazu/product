@@ -189,9 +189,9 @@ public class JGitTest {
             newFile.createNewFile();
 
             status = git.status().call();
-            added = status.getAdded();
-//            assertThat(added.size(), is(1));
-//            assertThat(added.iterator(), is("test01"));
+            Set<String> untracked = status.getUntracked();
+            assertThat(untracked.size(), is(1));
+            assertThat(untracked.iterator().next(), is("test01"));
 
             // 変更
             Set<String> changed = status.getChanged();
