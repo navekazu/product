@@ -1,5 +1,8 @@
 package tools.gitclient.config;
 
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+
 public class CredentialsConfigManager extends ConfigManagerBase {
 
     @Override
@@ -45,5 +48,17 @@ public class CredentialsConfigManager extends ConfigManagerBase {
         credentials.password = base64Decode(values[4]);
 
         return credentials;
+    }
+
+    public static CredentialsProvider createCredentialsProvider(Credentials c) {
+        switch(c.type) {
+        case NONE:
+            return null;
+
+        case USER_PASSWORD:
+            return  new UsernamePasswordCredentialsProvider(c.user, c.password);
+        }
+
+        return null;
     }
 }

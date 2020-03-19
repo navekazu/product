@@ -38,6 +38,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 
 import tools.gitclient.OperationMessage;
+import tools.gitclient.config.CredentialsConfigManager;
 import tools.gitclient.config.CredentialsConfigManager.Credentials;
 import tools.gitclient.config.RepositoryCredentialsConfigManager.RepositoryCredentials;
 
@@ -146,7 +147,6 @@ public class RepositoryTab extends Container {
         });
 
         credentialsComboBox = new JComboBox<>();
-        updateCredencialsConfig();
         toolBar.add(credentialsComboBox);
 
         return panel;
@@ -233,6 +233,7 @@ public class RepositoryTab extends Container {
 
             updateLocalBranchList();
             updateRemoteBranchList();
+            updateCredencialsConfig();
 
             operationMessage.addRecentOpenRepository(local);
 
@@ -415,6 +416,10 @@ public class RepositoryTab extends Container {
     }
 
     public void updateCredencialsConfig() {
+        for (ActionListener actionListener: credentialsComboBox.getActionListeners()) {
+            credentialsComboBox.removeActionListener(actionListener);
+        }
+
         credentialsComboBox.removeAllItems();
         credentialsComboBox.addItem("None credentials");
 
@@ -424,20 +429,56 @@ public class RepositoryTab extends Container {
                 .forEach(c -> credentialsComboBox.addItem(c.name));
         }
 
+        credentialsComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                onCredentialsComboBoxStateChanged();
+            }
+        });
+
+        credentialsProvider = null;
+        if (repositoryPath==null) {
+            return;
+        }
+
         RepositoryCredentials rc = operationMessage.getRepositoryCredentials(repositoryPath.getPath());
         if (rc==null) {
             return ;
         }
 
+        if (credentialsList!=null) {
+            for (Credentials c: credentialsList) {
+                if (rc.credentials==c.no) {
+                    credentialsProvider = CredentialsConfigManager.createCredentialsProvider(c);
+                }
+            }
+        }
+
         for (int index=0; index<credentialsList.size(); index++) {
             Credentials c = credentialsList.get(index);
             if (rc.credentials==c.no) {
-                credentialsComboBox.setSelectedIndex(index);
+                credentialsComboBox.setSelectedIndex(index+1);
             }
         }
     }
 
-    private void onSelectCredencialsConfig() {
+    private void onCredentialsComboBoxStateChanged() {
+        if (repositoryPath==null) {
+            return;
+        }
 
+        if (credentialsComboBox.getSelectedIndex()==0) {
+            operationMessage.clearRepositoryCredentials(repositoryPath.getPath());
+            return;
+        }
+
+        RepositoryCredentials rc = operationMessage.getRepositoryCredentials(repositoryPath.getPath());
+        if (rc==null) {
+            rc = new RepositoryCredentials();
+            rc.repository = repositoryPath.getPath();
+        }
+
+        List<Credentials> credentialsList = operationMessage.getCredentialsConfig();
+        rc.credentials = credentialsList.get(credentialsComboBox.getSelectedIndex()-1).no;
+        operationMessage.setRepositoryCredentials(rc);
     }
 }

@@ -189,7 +189,7 @@ public class App implements OperationMessage {
         rc.repository = repositoryCredentials.repository;
         rc.credentials = repositoryCredentials.credentials;
 
-        if (opt.isPresent()) {
+        if (!opt.isPresent()) {
             configList.add(rc);
         }
 
@@ -213,7 +213,7 @@ public class App implements OperationMessage {
                 .filter(c -> repository.equals(c.repository))
                 .findFirst();
 
-        if (opt.isPresent()) {
+        if (!opt.isPresent()) {
             return ;
         }
 
@@ -222,11 +222,15 @@ public class App implements OperationMessage {
                 .collect(Collectors.toList());
 
         RepositoryCredentials rc = opt.get();
-        configList.remove(rc);
+        for (int index=0; index<configList.size(); index++) {
+            if (configList.get(index).repository.equals(rc.repository)) {
+                configList.remove(index);
+            }
+        }
 
         list = configList.stream()
                 .map(c -> config.serialize(c))
                 .collect(Collectors.toList());
-            config.writeConfig(list);
+        config.writeConfig(list);
     }
 }
