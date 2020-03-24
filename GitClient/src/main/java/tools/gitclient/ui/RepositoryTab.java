@@ -21,6 +21,8 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
@@ -36,6 +38,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.UserConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.FetchResult;
+import org.eclipse.jgit.transport.RefSpec;
 
 import tools.gitclient.OperationMessage;
 import tools.gitclient.config.CredentialsConfigManager;
@@ -233,6 +237,8 @@ public class RepositoryTab extends Container {
 
             updateLocalBranchList();
             updateRemoteBranchList();
+            expandBranchTree();
+
             updateCredencialsConfig();
 
             operationMessage.addRecentOpenRepository(local);
@@ -277,6 +283,12 @@ public class RepositoryTab extends Container {
                 remoteBranchNode.add(node);
             }
         }
+    }
+
+    private void expandBranchTree() {
+        DefaultTreeModel model = (DefaultTreeModel) branchTree.getModel();
+        branchTree.expandPath(new TreePath(model.getPathToRoot(localBranchNode)));
+        branchTree.expandPath(new TreePath(model.getPathToRoot(remoteBranchNode)));
     }
 
     private void removeAllClidNode(DefaultMutableTreeNode node) {
@@ -366,7 +378,11 @@ public class RepositoryTab extends Container {
     private void onFetchButton() {
         try (Git git = Git.open(repositoryPath)) {
             FetchCommand fetch = git.fetch();
-            fetch.setCredentialsProvider(credentialsProvider).call();
+            FetchResult result = fetch.setCredentialsProvider(credentialsProvider).call();
+            List<RefSpec> l = fetch.getRefSpecs();
+            for (RefSpec s: l) {
+                String ss = s.getSource();
+            }
 
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
