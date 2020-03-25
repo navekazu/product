@@ -19,16 +19,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
-import org.eclipse.jgit.api.AddCommand;
-import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.UserConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.FetchResult;
@@ -39,13 +35,14 @@ import tools.gitclient.config.CredentialsConfigManager;
 import tools.gitclient.config.CredentialsConfigManager.Credentials;
 import tools.gitclient.config.RepositoryCredentialsConfigManager.RepositoryCredentials;
 
-public class RepositoryTab extends Container {
+public class RepositoryTab extends Container implements RepositoryTabOperationMessage {
     private OperationMessage operationMessage;
     private Repository repository;
     private File repositoryPath;
     private JLabel repositoryNameLabel;
     private JLabel repositoryPathLabel;
     private BranchPanel branchPanel;
+    private CommitPanel commitPanel;
     private CredentialsProvider credentialsProvider;
 
     private JComboBox<String> credentialsComboBox;
@@ -148,47 +145,13 @@ public class RepositoryTab extends Container {
     }
 
     private Container createBranchPanel() {
-        branchPanel = new BranchPanel(operationMessage);
+        branchPanel = new BranchPanel(operationMessage, this);
         return branchPanel;
     }
 
     private Container createMainPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-        addAllButton = new JButton("Add all");
-        addAllButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event){
-                onAddAllButton();
-            }
-        });
-        panel.add(addAllButton, BorderLayout.NORTH);
-
-        panel.add(createCommitPanel(), BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    private Container createCommitPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-        summaryField = new JTextField();
-        panel.add(summaryField, BorderLayout.NORTH);
-
-        descriptionField = new JTextArea();
-        descriptionField.setRows(5);
-        panel.add(descriptionField, BorderLayout.CENTER);
-
-        commitButton = new JButton("Commit");
-        commitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event){
-                onCommitButton();
-            }
-        });
-        panel.add(commitButton, BorderLayout.SOUTH);
-
-        return panel;
+        commitPanel = new CommitPanel(operationMessage, this);
+        return commitPanel;
     }
 
     public void reopenRepository(File local) {
@@ -256,58 +219,6 @@ public class RepositoryTab extends Container {
         }
 
         return repositoryPath.getName();
-    }
-
-    private void onAddAllButton() {
-/*
-        Git git = new Git(repository);
-        AddCommand add = git.add();
-        add.addFilepattern("*");
-
-        try {
-            add.call();
-        } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        }
-*/
-        try (Git git = Git.open(repositoryPath)) {
-            AddCommand add = git.add();
-            add.addFilepattern(".").call();
-
-        } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        }
-    }
-
-    private void onCommitButton() {
-        String message = summaryField.getText();
-
-
-        if (descriptionField.getText().length()!=0) {
-            message += "\n\n";
-            message += descriptionField.getText();
-        }
-
-        try (Git git = Git.open(repositoryPath)) {
-            Config config = git.getRepository().getConfig();
-            String authorName = config.get(UserConfig.KEY).getAuthorName();
-            String authorEmail = config.get(UserConfig.KEY).getAuthorEmail();
-
-            CommitCommand commit = git.commit();
-            commit.setMessage(message).setAuthor(authorName, authorEmail).call();
-        } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        } catch (IOException e1) {
-            // TODO 自動生成された catch ブロック
-            e1.printStackTrace();
-        }
-
     }
 
     private void onFetchButton() {
@@ -431,5 +342,10 @@ public class RepositoryTab extends Container {
         List<Credentials> credentialsList = operationMessage.getCredentialsConfig();
         rc.credentials = credentialsList.get(credentialsComboBox.getSelectedIndex()-1).no;
         operationMessage.setRepositoryCredentials(rc);
+    }
+
+    @Override
+    public File getRepository() {
+        return repositoryPath;
     }
 }

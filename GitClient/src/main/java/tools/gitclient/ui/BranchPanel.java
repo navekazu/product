@@ -25,12 +25,14 @@ import tools.gitclient.OperationMessage;
 
 public class BranchPanel extends JPanel {
     private OperationMessage operationMessage;
+    private RepositoryTabOperationMessage repositoryTabOperationMessage;
     private JTree branchTree;
     private DefaultMutableTreeNode localBranchNode;
     private DefaultMutableTreeNode remoteBranchNode;
 
-    public BranchPanel(OperationMessage operationMessage) {
+    public BranchPanel(OperationMessage operationMessage, RepositoryTabOperationMessage repositoryTabOperationMessage) {
         this.operationMessage = operationMessage;
+        this.repositoryTabOperationMessage = repositoryTabOperationMessage;
         createContents();
     }
 
