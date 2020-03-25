@@ -24,7 +24,10 @@ dependencies {
     compile 'com.google.guava:guava:23.0'
 
     // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
-    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.6.0.201912101111-r'
+    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.7.0.202003110725-r'
+
+    // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.pgm
+    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit.pgm', version: '5.7.0.202003110725-r'
 
     compile 'org.slf4j:slf4j-log4j12:1.7.30'
 

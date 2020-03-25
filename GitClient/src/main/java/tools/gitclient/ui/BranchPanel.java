@@ -18,6 +18,8 @@ import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryBuilder;
 
 import tools.gitclient.OperationMessage;
 
@@ -105,8 +107,20 @@ public class BranchPanel extends JPanel {
             Set<String> untracked = status.getUntracked();
             Set<String> untrackedFolders = status.getUntrackedFolders();
 
+            Repository r = new RepositoryBuilder()
+                    .setGitDir(repositoryPath)
+                    .readEnvironment() // scan environment GIT_* variables
+                    .findGitDir() // scan up the file system tree
+                    .build();
+
+            //CLIGitCommand
+
             // Log log = git.log().call();
-            String a = "";
+            String a = status.toString();
+            String s = a;
+        } catch (Exception e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
         }
     }
 }
