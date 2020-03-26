@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -64,11 +65,23 @@ public class CommitPanel extends JPanel {
         });
         panel.add(addAllButton, BorderLayout.NORTH);
 
-        // JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        //      createStagedFileList(), createLog());
-        // splitPane.setOneTouchExpandable(true);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+             createStagedFileList(), createLog());
+        splitPane.setOneTouchExpandable(true);
+        panel.add(splitPane, BorderLayout.CENTER);
 
         panel.add(createCommitPanel(), BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private Container createStagedFileList() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        stagedList = new JList();
+        JScrollPane scroll = new JScrollPane(stagedList);
+        panel.add(scroll, BorderLayout.CENTER);
 
         return panel;
     }
@@ -76,6 +89,10 @@ public class CommitPanel extends JPanel {
     private Container createLog() {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
+
+        notStageList = new JList();
+        JScrollPane scroll = new JScrollPane(notStageList);
+        panel.add(scroll, BorderLayout.CENTER);
 
         return panel;
     }
