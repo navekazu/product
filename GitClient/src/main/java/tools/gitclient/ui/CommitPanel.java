@@ -7,7 +7,9 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JButton;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -26,6 +28,8 @@ public class CommitPanel extends JPanel {
 
     // stage
     private JButton addAllButton;
+    private JList stagedList;
+    private JList notStageList;
 
     // commit
     private JTextField summaryField;
@@ -41,15 +45,39 @@ public class CommitPanel extends JPanel {
     private void createContents() {
         setLayout(new BorderLayout());
 
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                createStage(), createLog());
+        splitPane.setOneTouchExpandable(true);
+
+        add(splitPane, BorderLayout.CENTER);
+    }
+
+    private Container createStage() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
         addAllButton = new JButton("Add all");
         addAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 onAddAllButton();
             }
         });
-        add(addAllButton, BorderLayout.NORTH);
+        panel.add(addAllButton, BorderLayout.NORTH);
 
-        add(createCommitPanel(), BorderLayout.SOUTH);
+        // JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        //      createStagedFileList(), createLog());
+        // splitPane.setOneTouchExpandable(true);
+
+        panel.add(createCommitPanel(), BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private Container createLog() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        return panel;
     }
 
     private Container createCommitPanel() {
