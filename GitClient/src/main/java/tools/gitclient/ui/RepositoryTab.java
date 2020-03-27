@@ -15,8 +15,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
 import org.eclipse.jgit.api.FetchCommand;
@@ -46,14 +44,6 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     private CredentialsProvider credentialsProvider;
 
     private JComboBox<String> credentialsComboBox;
-
-    // stage
-    private JButton addAllButton;
-
-    // commit
-    private JTextField summaryField;
-    private JTextArea descriptionField;
-    private JButton commitButton;
 
     static final String GIT_CONF_DIR = ".git";
     static final String LOCAL_BRANCH_PREFIX = "refs/heads/";
@@ -130,14 +120,6 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
 
         toolBar.addSeparator();
 
-        JButton configButton = new JButton("CONF");
-        toolBar.add(configButton);
-        configButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event){
-                onConfigButton();
-            }
-        });
-
         credentialsComboBox = new JComboBox<>();
         toolBar.add(credentialsComboBox);
 
@@ -177,6 +159,7 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
             branchPanel.updateLocalBranchList(repositoryPath);
             branchPanel.updateRemoteBranchList(repositoryPath);
             branchPanel.expandBranchTree();
+            commitPanel.updateStage();
 
             updateCredencialsConfig();
 
@@ -264,16 +247,6 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
         } catch (GitAPIException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
-        }
-    }
-
-    private void onConfigButton() {
-        ConfigDialog dialog = new ConfigDialog(operationMessage);
-        dialog.pack();
-        dialog.setVisible(true);
-
-        if (dialog.getConfigResult().isOK) {
-            credentialsProvider = dialog.getConfigResult().credentialsProvider;
         }
     }
 
