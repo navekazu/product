@@ -36,7 +36,6 @@ public class CommitPanel extends JPanel {
     private RepositoryTabOperationMessage repositoryTabOperationMessage;
 
     // stage
-    private JButton addAllButton;
     private JList<String> stagedList;
     private DefaultListModel<String> stagedListModel;
     private JList<String> notStageList;
@@ -70,14 +69,6 @@ public class CommitPanel extends JPanel {
     private Container createStage() {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
-
-        addAllButton = new JButton("Add all");
-        addAllButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event){
-                onAddAllButton();
-            }
-        });
-        panel.add(addAllButton, BorderLayout.NORTH);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
              createStagedFileList(), createNotStageFileList());
@@ -243,14 +234,18 @@ public class CommitPanel extends JPanel {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BorderLayout());
         summaryField = new JTextField();
-        panel.add(summaryField, BorderLayout.NORTH);
+        northPanel.add(new JLabel("Commit"), BorderLayout.NORTH);
+        northPanel.add(summaryField, BorderLayout.SOUTH);
+        panel.add(northPanel, BorderLayout.NORTH);
 
         descriptionField = new JTextArea();
         descriptionField.setRows(5);
         panel.add(descriptionField, BorderLayout.CENTER);
 
-        commitButton = new JButton("Commit");
+        commitButton = new JButton("Commit Message");
         commitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 onCommitButton();
@@ -350,32 +345,6 @@ public class CommitPanel extends JPanel {
         stagedList.setSelectedIndices(new int[] {});
         changeStageComponent();
 
-    }
-
-    private void onAddAllButton() {
-/*
-        Git git = new Git(repository);
-        AddCommand add = git.add();
-        add.addFilepattern("*");
-
-        try {
-            add.call();
-        } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        }
-*/
-        try (Git git = Git.open(repositoryTabOperationMessage.getRepository())) {
-            AddCommand add = git.add();
-            add.addFilepattern(".").call();
-
-        } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        }
     }
 
     private void onCommitButton() {
