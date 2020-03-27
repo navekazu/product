@@ -394,6 +394,8 @@ public class CommitPanel extends JPanel {
 
             CommitCommand commit = git.commit();
             commit.setMessage(message).setAuthor(authorName, authorEmail).call();
+            updateStage();
+
         } catch (GitAPIException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
