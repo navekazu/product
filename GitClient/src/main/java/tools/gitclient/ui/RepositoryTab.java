@@ -26,7 +26,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.FetchResult;
-import org.eclipse.jgit.transport.RefLeaseSpec;
 import org.eclipse.jgit.transport.RefSpec;
 
 import tools.gitclient.OperationMessage;
@@ -240,17 +239,14 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     private void onPushButton() {
         try (Git git = Git.open(repositoryPath)) {
             PushCommand push = git.push();
-            List<RefLeaseSpec> l1 = push.getRefLeaseSpecs();
-            List<RefSpec> l2 = push.getRefSpecs();
-            int s = l1.size();
-            //push.setCredentialsProvider(credentialsProvider).call();
+            push.setCredentialsProvider(credentialsProvider).call();
 
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
-        //} catch (GitAPIException e) {
+        } catch (GitAPIException e) {
             // TODO 自動生成された catch ブロック
-        //    e.printStackTrace();
+            e.printStackTrace();
         }
     }
 

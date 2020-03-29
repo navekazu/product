@@ -23,11 +23,13 @@ import javax.swing.event.ListSelectionListener;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.UserConfig;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import tools.gitclient.OperationMessage;
 
@@ -340,10 +342,30 @@ public class CommitPanel extends JPanel {
     private void onStagedListValueChanged() {
         notStageList.setSelectedIndices(new int[] {});
         changeStageComponent();
+        showLog();
     }
     private void onNotStagedListValueChanged() {
         stagedList.setSelectedIndices(new int[] {});
         changeStageComponent();
+        showLog();
+    }
+    private void showLog() {
+        try (Git git = Git.open(repositoryTabOperationMessage.getRepository())) {
+            LogCommand log = git.log();
+            Iterable<RevCommit> ite = log.call();
+            for (RevCommit rev: ite) {
+                String s = rev.getFullMessage();
+                int a = 1;
+
+            }
+
+        } catch (IOException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
 
     }
 
