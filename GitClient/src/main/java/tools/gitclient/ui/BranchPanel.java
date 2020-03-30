@@ -120,6 +120,9 @@ public class BranchPanel extends JPanel {
             // Log log = git.log().call();
             String a = status.toString();
             String s = a;
+
+            Repository re = git.getRepository();
+            // https://qiita.com/esplo/items/7bdb736eb0b8ad3b382a
         } catch (Exception e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
