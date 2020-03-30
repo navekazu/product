@@ -372,7 +372,6 @@ public class CommitPanel extends JPanel {
     private void onCommitButton() {
         String message = summaryField.getText();
 
-
         if (descriptionField.getText().length()!=0) {
             message += "\n\n";
             message += descriptionField.getText();
