@@ -17,9 +17,15 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
+import org.eclipse.jgit.revplot.PlotCommit;
+import org.eclipse.jgit.revplot.PlotCommitList;
+import org.eclipse.jgit.revplot.PlotLane;
+import org.eclipse.jgit.revplot.PlotWalk;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import tools.gitclient.OperationMessage;
 
@@ -121,8 +127,19 @@ public class BranchPanel extends JPanel {
             String a = status.toString();
             String s = a;
 
-            Repository re = git.getRepository();
             // https://qiita.com/esplo/items/7bdb736eb0b8ad3b382a
+            Repository repository = git.getRepository();
+            PlotWalk revWalk = new PlotWalk(repository);
+            ObjectId rootId = repository.resolve("refs/heads/master");
+            RevCommit root = revWalk.parseCommit(rootId);
+            PlotCommitList<PlotLane> plotCommitList = new PlotCommitList<PlotLane>();
+            plotCommitList.source(revWalk);
+            plotCommitList.fillTo(Integer.MAX_VALUE);
+            for( PlotCommit<PlotLane> c: plotCommitList ) {
+                String message = c.getFullMessage();
+                String sa = message;
+            }
+
         } catch (Exception e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
