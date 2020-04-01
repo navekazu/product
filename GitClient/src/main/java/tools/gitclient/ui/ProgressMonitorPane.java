@@ -14,7 +14,7 @@ public class ProgressMonitorPane implements ProgressMonitor {
         this.title = title;
         this.operationMessage = operationMessage;
         progressMonitor = new javax.swing.ProgressMonitor(
-                operationMessage.getMainFrame(), title, "", 0, 0);
+                operationMessage.getMainFrame(), title, "", 0, 100);
         progressMonitor.setMillisToPopup(0);
     }
 
