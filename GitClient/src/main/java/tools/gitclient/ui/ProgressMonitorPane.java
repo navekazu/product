@@ -1,6 +1,7 @@
 package tools.gitclient.ui;
 
 import org.eclipse.jgit.lib.ProgressMonitor;
+import org.eclipse.jgit.lib.TextProgressMonitor;
 
 import tools.gitclient.OperationMessage;
 
@@ -16,6 +17,7 @@ public class ProgressMonitorPane implements ProgressMonitor {
         progressMonitor = new javax.swing.ProgressMonitor(
                 operationMessage.getMainFrame(), title, "", 0, 100);
         progressMonitor.setMillisToPopup(0);
+        TextProgressMonitor tpm;
     }
 
     @Override
