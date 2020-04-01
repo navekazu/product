@@ -6,27 +6,30 @@ import tools.gitclient.OperationMessage;
 
 public class ProgressMonitorPane implements ProgressMonitor {
     private OperationMessage operationMessage;
+    private String title;
     private javax.swing.ProgressMonitor progressMonitor;
     private boolean cancelled = false;
 
-    public ProgressMonitorPane(OperationMessage operationMessage) {
+    public ProgressMonitorPane(String title, OperationMessage operationMessage) {
+        this.title = title;
         this.operationMessage = operationMessage;
     }
 
     @Override
     public void start(int totalTasks) {
+        progressMonitor = new javax.swing.ProgressMonitor(
+                operationMessage.getMainFrame(), title, "", 0, totalTasks);
     }
 
     @Override
     public void beginTask(String title, int totalWork) {
-        progressMonitor = new javax.swing.ProgressMonitor(
-                operationMessage.getMainFrame(), title, "", 0, totalWork);
+        progressMonitor.setNote(title);
     }
 
     @Override
     public void update(int completed) {
         if (progressMonitor!=null) {
-            progressMonitor.setProgress(completed);
+//            progressMonitor.setProgress(completed);
         }
     }
 

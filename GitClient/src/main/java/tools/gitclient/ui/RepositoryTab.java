@@ -207,7 +207,7 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     private void onFetchButton() {
         try (Git git = Git.open(repositoryPath)) {
             FetchCommand fetch = git.fetch();
-            FetchResult result = fetch.setProgressMonitor(new ProgressMonitorPane(operationMessage))
+            FetchResult result = fetch.setProgressMonitor(new ProgressMonitorPane("FETCH", operationMessage))
                                     .setCredentialsProvider(credentialsProvider).call();
             List<RefSpec> l = fetch.getRefSpecs();
             for (RefSpec s: l) {
@@ -226,7 +226,7 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     private void onPullButton() {
         try (Git git = Git.open(repositoryPath)) {
             PullCommand pull = git.pull();
-            pull.setProgressMonitor(new ProgressMonitorPane(operationMessage))
+            pull.setProgressMonitor(new ProgressMonitorPane("PULL", operationMessage))
                 .setCredentialsProvider(credentialsProvider).call();
 
         } catch (IOException e) {
@@ -241,7 +241,7 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     private void onPushButton() {
         try (Git git = Git.open(repositoryPath)) {
             PushCommand push = git.push();
-            push.setProgressMonitor(new ProgressMonitorPane(operationMessage))
+            push.setProgressMonitor(new ProgressMonitorPane("PUSH", operationMessage))
                 .setCredentialsProvider(credentialsProvider).call();
 
         } catch (IOException e) {
