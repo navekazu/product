@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.FetchResult;
@@ -206,8 +208,10 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
 
     private void onFetchButton() {
         try (Git git = Git.open(repositoryPath)) {
+            FileWriter fw = new FileWriter("aaa");
             FetchCommand fetch = git.fetch();
-            FetchResult result = fetch.setCredentialsProvider(credentialsProvider).call();
+            FetchResult result = fetch.setProgressMonitor(new TextProgressMonitor(fw))
+                                    .setCredentialsProvider(credentialsProvider).call();
             List<RefSpec> l = fetch.getRefSpecs();
             for (RefSpec s: l) {
                 String ss = s.getSource();
@@ -225,7 +229,8 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     private void onPullButton() {
         try (Git git = Git.open(repositoryPath)) {
             PullCommand pull = git.pull();
-            pull.setCredentialsProvider(credentialsProvider).call();
+            pull.setProgressMonitor(new ProgressMonitorPane(operationMessage))
+                .setCredentialsProvider(credentialsProvider).call();
 
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
@@ -239,7 +244,8 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     private void onPushButton() {
         try (Git git = Git.open(repositoryPath)) {
             PushCommand push = git.push();
-            push.setCredentialsProvider(credentialsProvider).call();
+            push.setProgressMonitor(new ProgressMonitorPane(operationMessage))
+                .setCredentialsProvider(credentialsProvider).call();
 
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック
