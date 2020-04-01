@@ -13,23 +13,28 @@ public class ProgressMonitorPane implements ProgressMonitor {
     public ProgressMonitorPane(String title, OperationMessage operationMessage) {
         this.title = title;
         this.operationMessage = operationMessage;
+        progressMonitor = new javax.swing.ProgressMonitor(
+                operationMessage.getMainFrame(), title, "", 0, 0);
     }
 
     @Override
     public void start(int totalTasks) {
-        progressMonitor = new javax.swing.ProgressMonitor(
-                operationMessage.getMainFrame(), title, "", 0, totalTasks);
+        if (progressMonitor!=null) {
+            progressMonitor.setMaximum(totalTasks);
+        }
     }
 
     @Override
     public void beginTask(String title, int totalWork) {
-        progressMonitor.setNote(title);
+        if (progressMonitor!=null) {
+            progressMonitor.setNote(title);
+        }
     }
 
     @Override
     public void update(int completed) {
         if (progressMonitor!=null) {
-//            progressMonitor.setProgress(completed);
+            progressMonitor.setProgress(completed);
         }
     }
 
