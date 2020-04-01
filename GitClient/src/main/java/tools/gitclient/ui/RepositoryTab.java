@@ -7,7 +7,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -24,7 +23,6 @@ import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.FetchResult;
@@ -208,9 +206,8 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
 
     private void onFetchButton() {
         try (Git git = Git.open(repositoryPath)) {
-            FileWriter fw = new FileWriter("aaa");
             FetchCommand fetch = git.fetch();
-            FetchResult result = fetch.setProgressMonitor(new TextProgressMonitor(fw))
+            FetchResult result = fetch.setProgressMonitor(new ProgressMonitorPane(operationMessage))
                                     .setCredentialsProvider(credentialsProvider).call();
             List<RefSpec> l = fetch.getRefSpecs();
             for (RefSpec s: l) {
