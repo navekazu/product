@@ -12,8 +12,7 @@ import tools.gitclient.OperationMessage;
 public class ProgressMonitorPane extends BatchingProgressMonitor implements AutoCloseable {
     private OperationMessage operationMessage;
     private String title;
-    private JDialog dialog;
-    private JLabel label;
+    private Dialog dialog;
     private boolean cancelled = false;
 
     public ProgressMonitorPane(String title, OperationMessage operationMessage) {
@@ -23,14 +22,9 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
     }
 
     private void createDialog() {
-        dialog = new JDialog(operationMessage.getMainFrame(), title, false);
-        dialog.setLayout(new BorderLayout());
-
-        label = new JLabel("                         ");
-        dialog.add(label, BorderLayout.CENTER);
-
-        dialog.pack();
-        dialog.setVisible(true);
+        dialog = new Dialog(title, operationMessage);
+        Thread thread = new Thread(dialog);
+        thread.start();
     }
 
     public void cancel() {
@@ -39,19 +33,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
 
     @Override
     protected void onUpdate(String taskName, int workCurr) {
-        if (taskName.equals(label.getText())) {
-            return;
-        }
-
-        label.setText(taskName);
-        dialog.pack();
-        dialog.repaint();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        }
+        dialog.setText(taskName);
     }
 
     @Override
@@ -60,19 +42,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
 
     @Override
     protected void onUpdate(String taskName, int workCurr, int workTotal, int percentDone) {
-        if (taskName.equals(label.getText())) {
-            return;
-        }
-
-        label.setText(taskName);
-        dialog.pack();
-        dialog.repaint();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        }
+        dialog.setText(taskName);
     }
 
     @Override
@@ -82,9 +52,55 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
 
     @Override
     public void close() throws Exception {
-        // TODO 自動生成されたメソッド・スタブ
-        dialog.setVisible(false);
-        dialog.dispose();
+        dialog.close();
+    }
+
+    private static class Dialog implements Runnable {
+        private OperationMessage operationMessage;
+        private String title;
+        private JDialog dialog;
+        private JLabel label;
+
+        public Dialog(String title, OperationMessage operationMessage) {
+            this.title = title;
+            this.operationMessage = operationMessage;
+        }
+
+        @Override
+        public void run() {
+            createDialog();
+        }
+
+        private void createDialog() {
+            dialog = new JDialog(operationMessage.getMainFrame(), title, false);
+            dialog.setLayout(new BorderLayout());
+
+            label = new JLabel("                         ");
+            dialog.add(label, BorderLayout.CENTER);
+
+            dialog.pack();
+            dialog.setVisible(true);
+        }
+
+        public void setText(String text) {
+            if (text.equals(label.getText())) {
+                return;
+            }
+            label.setText(text);
+            dialog.pack();
+            dialog.repaint();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // TODO 自動生成された catch ブロック
+                e.printStackTrace();
+            }
+        }
+
+        public void close() {
+            dialog.setVisible(false);
+            dialog.dispose();
+        }
     }
 }
 
