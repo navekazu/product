@@ -75,7 +75,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
             dialog = new JDialog(operationMessage.getMainFrame(), title, false);
             dialog.setLayout(new BorderLayout());
 
-            label = new JLabel("                         ");
+            label = new JLabel("             ooo            ");
             dialog.add(label, BorderLayout.CENTER);
 
             dialog.pack();
