@@ -29,6 +29,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
         label = new JLabel();
         dialog.add(label, BorderLayout.CENTER);
 
+        dialog.pack();
         dialog.setVisible(true);
     }
 
@@ -39,6 +40,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
     @Override
     protected void onUpdate(String taskName, int workCurr) {
         label.setText(taskName);
+        dialog.pack();
     }
 
     @Override
@@ -48,6 +50,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
     @Override
     protected void onUpdate(String taskName, int workCurr, int workTotal, int percentDone) {
         label.setText(taskName);
+        dialog.pack();
     }
 
     @Override
