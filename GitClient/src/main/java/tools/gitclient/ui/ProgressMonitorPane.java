@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JRootPane;
 
 import org.eclipse.jgit.lib.BatchingProgressMonitor;
 
@@ -79,10 +80,11 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
 
         private void createDialog() {
             dialog = new JDialog(operationMessage.getMainFrame(), title, false);
-            dialog.setLayout(new BorderLayout());
+            JRootPane root = dialog.getRootPane();
+            root.setLayout(new BorderLayout());
 
             label = new JLabel("--------**-----ooo-------------");
-            dialog.add(label, BorderLayout.CENTER);
+            root.add(label, BorderLayout.CENTER);
 
             dialog.pack();
             dialog.setVisible(true);
