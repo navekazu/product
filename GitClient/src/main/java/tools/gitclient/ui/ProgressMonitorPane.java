@@ -25,6 +25,12 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
         dialog = new Dialog(title, operationMessage);
         Thread thread = new Thread(dialog);
         thread.start();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
     }
 
     public void cancel() {
