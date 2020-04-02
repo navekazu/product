@@ -1,7 +1,9 @@
 package tools.gitclient.ui;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+import javax.swing.JLabel;
 
 import org.eclipse.jgit.lib.BatchingProgressMonitor;
 
@@ -10,16 +12,23 @@ import tools.gitclient.OperationMessage;
 public class ProgressMonitorPane extends BatchingProgressMonitor implements AutoCloseable {
     private OperationMessage operationMessage;
     private String title;
-    private JOptionPane optionPane;
     private JDialog dialog;
+    private JLabel label;
     private boolean cancelled = false;
 
     public ProgressMonitorPane(String title, OperationMessage operationMessage) {
         this.title = title;
         this.operationMessage = operationMessage;
-        this.optionPane = new JOptionPane();
-        dialog = optionPane.createDialog(title);
-        dialog.setModal(false);
+        createDialog();
+    }
+
+    private void createDialog() {
+        dialog = new JDialog(operationMessage.getMainFrame(), title, false);
+        dialog.setLayout(new BorderLayout());
+
+        label = new JLabel();
+        dialog.add(label, BorderLayout.CENTER);
+
         dialog.setVisible(true);
     }
 
@@ -29,7 +38,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
 
     @Override
     protected void onUpdate(String taskName, int workCurr) {
-        optionPane.setMessage(taskName);
+        label.setText(taskName);
     }
 
     @Override
@@ -38,7 +47,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
 
     @Override
     protected void onUpdate(String taskName, int workCurr, int workTotal, int percentDone) {
-        optionPane.setMessage(taskName);
+        label.setText(taskName);
     }
 
     @Override
