@@ -240,11 +240,12 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     }
 
     private void onPushButton() {
-        try (Git git = Git.open(repositoryPath)) {
+        try (Git git = Git.open(repositoryPath);
+                ProgressMonitorPane pm = new ProgressMonitorPane("PUSH", operationMessage)) {
             FileWriter fw = new FileWriter("Push.log");
             PushCommand push = git.push();
 //            push.setProgressMonitor(new TextProgressMonitor(fw))
-            push.setProgressMonitor(new ProgressMonitorPane("PUSH", operationMessage))
+            push.setProgressMonitor(pm)
                 .setCredentialsProvider(credentialsProvider).call();
 
         } catch (IOException e) {
@@ -253,6 +254,9 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
         } catch (GitAPIException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
+        } catch (Exception e1) {
+            // TODO 自動生成された catch ブロック
+            e1.printStackTrace();
         }
     }
 
