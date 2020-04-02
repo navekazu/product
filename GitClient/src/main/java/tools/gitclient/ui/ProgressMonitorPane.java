@@ -39,6 +39,10 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
 
     @Override
     protected void onUpdate(String taskName, int workCurr) {
+        if (taskName.equals(label.getText())) {
+            return;
+        }
+
         label.setText(taskName);
         dialog.pack();
         dialog.repaint();
@@ -50,6 +54,10 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
 
     @Override
     protected void onUpdate(String taskName, int workCurr, int workTotal, int percentDone) {
+        if (taskName.equals(label.getText())) {
+            return;
+        }
+
         label.setText(taskName);
         dialog.pack();
         dialog.repaint();
