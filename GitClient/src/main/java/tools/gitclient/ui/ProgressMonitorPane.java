@@ -57,6 +57,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
 
     @Override
     protected void onEndTask(String taskName, int workCurr, int workTotal, int percentDone) {
+
     }
 
     @Override
