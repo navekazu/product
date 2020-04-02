@@ -89,18 +89,18 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
         }
 
         public void setText(String text) {
-            if (text.equals(label.getText())) {
-                return;
-            }
-            label.setText(text);
-            dialog.pack();
-            dialog.repaint();
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 // TODO 自動生成された catch ブロック
                 e.printStackTrace();
             }
+            if (text.equals(label.getText())) {
+                return;
+            }
+            label.setText(text);
+            dialog.pack();
+            dialog.repaint();
         }
 
         public void close() {
