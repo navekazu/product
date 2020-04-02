@@ -77,23 +77,27 @@ public class ProgressMonitorPane extends BatchingProgressMonitor {
     protected void onUpdate(String taskName, int workCurr) {
         // TODO 自動生成されたメソッド・スタブ
         pw.println("onUpdate(\""+taskName+"\", "+workCurr+");");
+        pw.flush();
     }
 
     @Override
     protected void onEndTask(String taskName, int workCurr) {
         // TODO 自動生成されたメソッド・スタブ
         pw.println("onEndTask(\""+taskName+"\", "+workCurr+");");
+        pw.flush();
     }
 
     @Override
     protected void onUpdate(String taskName, int workCurr, int workTotal, int percentDone) {
         // TODO 自動生成されたメソッド・スタブ
         pw.println("onUpdate(\""+taskName+"\", "+workCurr+", "+workTotal+", "+percentDone+");");
+        pw.flush();
     }
 
     @Override
     protected void onEndTask(String taskName, int workCurr, int workTotal, int percentDone) {
         // TODO 自動生成されたメソッド・スタブ
         pw.println("onEndTask(\""+taskName+"\", "+workCurr+", "+workTotal+", "+percentDone+");");
+        pw.flush();
     }
 }
