@@ -32,7 +32,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor {
             e.printStackTrace();
         }
     }
-
+/*
     @Override
     public void start(int totalTasks) {
         if (progressMonitor!=null) {
@@ -65,7 +65,7 @@ public class ProgressMonitorPane extends BatchingProgressMonitor {
     public boolean isCancelled() {
         return cancelled;
     }
-
+*/
     public void cancel() {
         cancelled = true;
         if (progressMonitor!=null) {
