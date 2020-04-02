@@ -46,6 +46,12 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
         label.setText(taskName);
         dialog.pack();
         dialog.repaint();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -61,6 +67,12 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
         label.setText(taskName);
         dialog.pack();
         dialog.repaint();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -75,3 +87,4 @@ public class ProgressMonitorPane extends BatchingProgressMonitor implements Auto
         dialog.dispose();
     }
 }
+
