@@ -206,22 +206,32 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     }
 
     private void onFetchButton() {
-        try (Git git = Git.open(repositoryPath)) {
-            FetchCommand fetch = git.fetch();
-            FetchResult result = fetch.setProgressMonitor(new ProgressMonitorPane("FETCH", operationMessage))
-                                    .setCredentialsProvider(credentialsProvider).call();
-            List<RefSpec> l = fetch.getRefSpecs();
-            for (RefSpec s: l) {
-                String ss = s.getSource();
+        Thread t = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                // TODO 自動生成されたメソッド・スタブ
+                try (Git git = Git.open(repositoryPath)) {
+                    FetchCommand fetch = git.fetch();
+                    FetchResult result = fetch.setProgressMonitor(new ProgressMonitorPane("FETCH", operationMessage))
+                                            .setCredentialsProvider(credentialsProvider).call();
+                    List<RefSpec> l = fetch.getRefSpecs();
+                    for (RefSpec s: l) {
+                        String ss = s.getSource();
+                    }
+
+                } catch (IOException e) {
+                    // TODO 自動生成された catch ブロック
+                    e.printStackTrace();
+                } catch (GitAPIException e) {
+                    // TODO 自動生成された catch ブロック
+                    e.printStackTrace();
+                }
             }
 
-        } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        }
+        });
+
+        t.start();
     }
 
     private void onPullButton() {
@@ -240,24 +250,33 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     }
 
     private void onPushButton() {
-        try (Git git = Git.open(repositoryPath);
-                ProgressMonitorPane pm = new ProgressMonitorPane("PUSH", operationMessage)) {
-            FileWriter fw = new FileWriter("Push.log");
-            PushCommand push = git.push();
-//            push.setProgressMonitor(new TextProgressMonitor(fw))
-            push.setProgressMonitor(pm)
-                .setCredentialsProvider(credentialsProvider).call();
+        Thread t = new Thread(new Runnable() {
 
-        } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
-            e.printStackTrace();
-        } catch (Exception e1) {
-            // TODO 自動生成された catch ブロック
-            e1.printStackTrace();
-        }
+            @Override
+            public void run() {
+                try (Git git = Git.open(repositoryPath);
+                        ProgressMonitorPane pm = new ProgressMonitorPane("PUSH", operationMessage)) {
+                    FileWriter fw = new FileWriter("Push.log");
+                    PushCommand push = git.push();
+        //            push.setProgressMonitor(new TextProgressMonitor(fw))
+                    push.setProgressMonitor(pm)
+                        .setCredentialsProvider(credentialsProvider).call();
+
+                } catch (IOException e) {
+                    // TODO 自動生成された catch ブロック
+                    e.printStackTrace();
+                } catch (GitAPIException e) {
+                    // TODO 自動生成された catch ブロック
+                    e.printStackTrace();
+                } catch (Exception e1) {
+                    // TODO 自動生成された catch ブロック
+                    e1.printStackTrace();
+                }
+            }
+
+        });
+
+        t.start();
     }
 
     public void updateCredencialsConfig() {
