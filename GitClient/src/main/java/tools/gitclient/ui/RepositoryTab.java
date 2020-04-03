@@ -251,7 +251,6 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
 
     private void onPushButton() {
         Thread t = new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try (Git git = Git.open(repositoryPath);
@@ -273,7 +272,6 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
                     e1.printStackTrace();
                 }
             }
-
         });
 
         t.start();
