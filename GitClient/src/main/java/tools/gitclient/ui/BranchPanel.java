@@ -141,7 +141,7 @@ public class BranchPanel extends JPanel {
             }
 
         } catch (Exception e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         }
     }

@@ -219,12 +219,13 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
                     for (RefSpec s: l) {
                         String ss = s.getSource();
                     }
+                    MessageUtil.message(operationMessage.getMainFrame(), "Fetch succeed.");
 
                 } catch (IOException e) {
-                    // TODO 自動生成された catch ブロック
+                    MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
                     e.printStackTrace();
                 } catch (GitAPIException e) {
-                    // TODO 自動生成された catch ブロック
+                    MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
                     e.printStackTrace();
                 }
             }
@@ -240,11 +241,13 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
             pull.setProgressMonitor(new ProgressMonitorPane("PULL", operationMessage))
                 .setCredentialsProvider(credentialsProvider).call();
 
+            MessageUtil.message(operationMessage.getMainFrame(), "Pull succeed.");
+
         } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         }
     }
@@ -261,15 +264,17 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
                     push.setProgressMonitor(pm)
                         .setCredentialsProvider(credentialsProvider).call();
 
+                    MessageUtil.message(operationMessage.getMainFrame(), "Push succeed.");
+
                 } catch (IOException e) {
-                    // TODO 自動生成された catch ブロック
+                    MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
                     e.printStackTrace();
                 } catch (GitAPIException e) {
-                    // TODO 自動生成された catch ブロック
+                    MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
                     e.printStackTrace();
-                } catch (Exception e1) {
-                    // TODO 自動生成された catch ブロック
-                    e1.printStackTrace();
+                } catch (Exception e) {
+                    MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
+                    e.printStackTrace();
                 }
             }
         });

@@ -109,7 +109,7 @@ public class CommitPanel extends JPanel {
             untracked.stream().forEach(s -> notStageListModel.addElement(s));
 
         } catch (Exception e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         }
 
@@ -272,10 +272,10 @@ public class CommitPanel extends JPanel {
             updateStage();
 
         } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         }
     }
@@ -293,10 +293,10 @@ public class CommitPanel extends JPanel {
             updateStage();
 
         } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         }
     }
@@ -314,10 +314,10 @@ public class CommitPanel extends JPanel {
             updateStage();
 
         } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         }
     }
@@ -332,10 +332,10 @@ public class CommitPanel extends JPanel {
             updateStage();
 
         } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         }
     }
@@ -360,10 +360,10 @@ public class CommitPanel extends JPanel {
             }
 
         } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
         }
 
@@ -387,11 +387,11 @@ public class CommitPanel extends JPanel {
             updateStage();
 
         } catch (GitAPIException e) {
-            // TODO 自動生成された catch ブロック
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
-        } catch (IOException e1) {
-            // TODO 自動生成された catch ブロック
-            e1.printStackTrace();
+        } catch (IOException e) {
+            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
+            e.printStackTrace();
         }
 
     }
