@@ -8,7 +8,7 @@ public class MessageUtil {
     public static void exceptionMessage(Component parentComponent, Exception e) {
         JOptionPane.showMessageDialog(
                 parentComponent,
-                e.getMessage(),
+                e.getLocalizedMessage(),
                 "Exception",
                 JOptionPane.ERROR_MESSAGE);
     }

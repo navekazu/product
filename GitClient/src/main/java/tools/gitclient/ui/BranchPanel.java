@@ -17,15 +17,9 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
-import org.eclipse.jgit.revplot.PlotCommit;
-import org.eclipse.jgit.revplot.PlotCommitList;
-import org.eclipse.jgit.revplot.PlotLane;
-import org.eclipse.jgit.revplot.PlotWalk;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import tools.gitclient.OperationMessage;
 
@@ -128,6 +122,7 @@ public class BranchPanel extends JPanel {
             String s = a;
 
             // https://qiita.com/esplo/items/7bdb736eb0b8ad3b382a
+/*
             Repository repository = git.getRepository();
             PlotWalk revWalk = new PlotWalk(repository);
             ObjectId rootId = repository.resolve("refs/heads/master");
@@ -139,7 +134,7 @@ public class BranchPanel extends JPanel {
                 String message = c.getFullMessage();
                 String sa = message;
             }
-
+*/
         } catch (Exception e) {
             MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
             e.printStackTrace();
