@@ -211,9 +211,10 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
             @Override
             public void run() {
                 // TODO 自動生成されたメソッド・スタブ
-                try (Git git = Git.open(repositoryPath)) {
+                try (Git git = Git.open(repositoryPath);
+                        ProgressMonitorPane pm = new ProgressMonitorPane("FETCH", operationMessage)) {
                     FetchCommand fetch = git.fetch();
-                    FetchResult result = fetch.setProgressMonitor(new ProgressMonitorPane("FETCH", operationMessage))
+                    FetchResult result = fetch.setProgressMonitor(pm)
                                             .setCredentialsProvider(credentialsProvider).call();
                     List<RefSpec> l = fetch.getRefSpecs();
                     for (RefSpec s: l) {
@@ -227,6 +228,9 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
                 } catch (GitAPIException e) {
                     MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
                     e.printStackTrace();
+                } catch (Exception e) {
+                    MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
+                    e.printStackTrace();
                 }
             }
 
@@ -236,20 +240,32 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     }
 
     private void onPullButton() {
-        try (Git git = Git.open(repositoryPath)) {
-            PullCommand pull = git.pull();
-            pull.setProgressMonitor(new ProgressMonitorPane("PULL", operationMessage))
-                .setCredentialsProvider(credentialsProvider).call();
+        Thread t = new Thread(new Runnable() {
 
-            MessageUtil.message(operationMessage.getMainFrame(), "Pull succeed.");
+            @Override
+            public void run() {
+                try (Git git = Git.open(repositoryPath);
+                        ProgressMonitorPane pm = new ProgressMonitorPane("PULL", operationMessage)) {
+                    PullCommand pull = git.pull();
+                    pull.setProgressMonitor(pm)
+                        .setCredentialsProvider(credentialsProvider).call();
 
-        } catch (IOException e) {
-            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
-            e.printStackTrace();
-        } catch (GitAPIException e) {
-            MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
-            e.printStackTrace();
-        }
+                    MessageUtil.message(operationMessage.getMainFrame(), "Pull succeed.");
+
+                } catch (IOException e) {
+                    MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
+                    e.printStackTrace();
+                } catch (GitAPIException e) {
+                    MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    MessageUtil.exceptionMessage(operationMessage.getMainFrame(), e);
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        t.start();
     }
 
     private void onPushButton() {
