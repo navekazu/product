@@ -121,6 +121,15 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
 
         toolBar.addSeparator();
 
+        JButton refreshButton = new JButton("REFRESH");
+        toolBar.add(refreshButton);
+        refreshButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                refreshRepository();
+            }
+        });
+
+        toolBar.addSeparator();
         credentialsComboBox = new JComboBox<>();
         toolBar.add(credentialsComboBox);
 
@@ -182,6 +191,10 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     private void setRepositoryLabel(File local) {
         repositoryNameLabel.setText(local.getName());
         repositoryPathLabel.setText(local.getPath());
+    }
+
+    private void refreshRepository() {
+        MessageUtil.message(operationMessage.getMainFrame(), "Refresh succeed.");
     }
 
     public String getRepositoryName() {
