@@ -1,6 +1,8 @@
 package tools.gitclient.ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -29,6 +31,8 @@ public class BranchPanel extends JPanel {
     private JTree branchTree;
     private DefaultMutableTreeNode localBranchNode;
     private DefaultMutableTreeNode remoteBranchNode;
+    private static final String LOCAL_BRANCH_NAME = "Local branch";
+    private static final String REMOTE_BRANCH_NAME = "Remote branch";
 
     public BranchPanel(OperationMessage operationMessage, RepositoryTabOperationMessage repositoryTabOperationMessage) {
         this.operationMessage = operationMessage;
@@ -41,15 +45,48 @@ public class BranchPanel extends JPanel {
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("root");
         branchTree = new JTree(rootNode);
+        branchTree.addMouseListener(new MouseAdapter() {
 
-        localBranchNode = new DefaultMutableTreeNode("Local branch");
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount()>=2 &&
+                        e.getButton() == MouseEvent.BUTTON1) {
+                    changeBranch();
+                }
+            }
+        });
+
+        localBranchNode = new DefaultMutableTreeNode(LOCAL_BRANCH_NAME);
         rootNode.add(localBranchNode);
 
-        remoteBranchNode = new DefaultMutableTreeNode("Remote branch");
+        remoteBranchNode = new DefaultMutableTreeNode(REMOTE_BRANCH_NAME);
         rootNode.add(remoteBranchNode);
 
         JScrollPane scroll = new JScrollPane(branchTree);
         add(scroll, BorderLayout.CENTER);
+    }
+
+    private void changeBranch() {
+        TreePath path = branchTree.getSelectionPath();
+        TreePath parent = path.getParentPath();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)parent.getLastPathComponent();
+        String name = node.toString();
+
+        switch (name) {
+        case LOCAL_BRANCH_NAME:
+            checkoutLocal();
+            break;
+        case REMOTE_BRANCH_NAME:
+            checkoutRemote();
+            break;
+        }
+
+    }
+
+    private void checkoutLocal() {
+    }
+
+    private void checkoutRemote() {
     }
 
     public void updateLocalBranchList(File repositoryPath) throws IOException, GitAPIException {
@@ -58,10 +95,14 @@ public class BranchPanel extends JPanel {
 
             removeAllClidNode(localBranchNode);
 
+            String current = git.getRepository().getBranch();
+
             for (Ref ref: list) {
                 String name = ref.getName();
                 name = name.substring(RepositoryTab.LOCAL_BRANCH_PREFIX.length());
-                DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
+                String mark = name.equals(current)? " *": "";
+
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(name + mark);
                 localBranchNode.add(node);
             }
         }
