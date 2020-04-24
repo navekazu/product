@@ -194,7 +194,7 @@ public class RepositoryTab extends Container implements RepositoryTabOperationMe
     }
 
     private void refreshRepository() {
-        MessageUtil.message(operationMessage.getMainFrame(), "Refresh succeed.");
+        reopenRepository(repositoryPath);
     }
 
     public String getRepositoryName() {

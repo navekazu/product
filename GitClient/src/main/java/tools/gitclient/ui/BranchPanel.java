@@ -18,7 +18,11 @@ import javax.swing.tree.TreePath;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
@@ -68,25 +72,56 @@ public class BranchPanel extends JPanel {
 
     private void changeBranch() {
         TreePath path = branchTree.getSelectionPath();
-        TreePath parent = path.getParentPath();
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode)parent.getLastPathComponent();
-        String name = node.toString();
+        if (path==null) {
+            return;
+        }
 
-        switch (name) {
+        TreePath parent = path.getParentPath();
+        if (parent==null) {
+            return;
+        }
+
+        String parentName = ((DefaultMutableTreeNode)parent.getLastPathComponent()).toString();
+        String branchName = ((DefaultMutableTreeNode)path.getLastPathComponent()).toString();
+
+        switch (parentName) {
         case LOCAL_BRANCH_NAME:
-            checkoutLocal();
+            checkoutLocal(branchName);
             break;
         case REMOTE_BRANCH_NAME:
-            checkoutRemote();
+            checkoutRemote(branchName);
             break;
         }
 
     }
 
-    private void checkoutLocal() {
+    private void checkoutLocal(String name) {
+        try (Git git = Git.open(repositoryTabOperationMessage.getRepository())) {
+            git.checkout().setName(name).call();
+            updateLocalBranchList(repositoryTabOperationMessage.getRepository());
+
+        } catch (IOException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (RefAlreadyExistsException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (RefNotFoundException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (InvalidRefNameException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (CheckoutConflictException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
     }
 
-    private void checkoutRemote() {
+    private void checkoutRemote(String name) {
     }
 
     public void updateLocalBranchList(File repositoryPath) throws IOException, GitAPIException {

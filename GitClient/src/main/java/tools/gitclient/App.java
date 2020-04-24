@@ -63,24 +63,6 @@ public class App implements OperationMessage {
 
     public static void main(String[] args) throws Exception {
         new App().openMainFrame();
-/*
-        Repository repo = new FileRepositoryBuilder()
-            .setGitDir(new File("C:\\repositories\\repositories-github\\omotenashi\\.git"))
-            .build();
-
-        // 参照を取得する
-        Ref master = repo.getRefDatabase().findRef("master");
-
-        // 参照の指すオブジェクトを取得する
-        ObjectId masterTip = master.getObjectId();
-
-        // Rev-parse文法を使う
-        ObjectId obj = repo.resolve("HEAD^{tree}");
-
-        // オブジェクトの生の内容をロードする
-        ObjectLoader loader = repo.open(masterTip);
-        loader.copyTo(System.out);
-*/
     }
 
     @Override
