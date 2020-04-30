@@ -122,6 +122,29 @@ public class BranchPanel extends JPanel {
     }
 
     private void checkoutRemote(String name) {
+        try (Git git = Git.open(repositoryTabOperationMessage.getRepository())) {
+            git.checkout().setName("origin/"+name).call();
+            updateLocalBranchList(repositoryTabOperationMessage.getRepository());
+
+        } catch (IOException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (RefAlreadyExistsException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (RefNotFoundException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (InvalidRefNameException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (CheckoutConflictException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        } catch (GitAPIException e) {
+            // TODO 自動生成された catch ブロック
+            e.printStackTrace();
+        }
     }
 
     public void updateLocalBranchList(File repositoryPath) throws IOException, GitAPIException {
@@ -140,6 +163,7 @@ public class BranchPanel extends JPanel {
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode(name + mark);
                 localBranchNode.add(node);
             }
+            branchTree.updateUI();
         }
         updatePullTarget(repositoryPath);
     }
