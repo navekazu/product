@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JacksonTest {
     @Test
-    public void serializeTest() {
+    public void leafSerializeTest() {
         List<Item> items = new ArrayList<>();
 
         Item item = new Item();
@@ -34,10 +34,12 @@ public class JacksonTest {
             assertThat(json, containsString("{\"key\":\"password\",\"value\":\"test-password\"}"));
             assertThat(json, containsString("{\"key\":\"secret\",\"value\":\"test-secret\"}"));
 
+            List<Item> items2 = mapper.readValue(json, List.class);
         } catch (JsonProcessingException e) {
             // TODO 自動生成された catch ブロック
             e.printStackTrace();
             fail();
         }
     }
+
 }
