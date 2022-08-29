@@ -21,4 +21,4 @@ target
 */*.jar
 
 # Eclipse
-.classpath
+*/.classpath
