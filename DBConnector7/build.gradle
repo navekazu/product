@@ -15,7 +15,7 @@ plugins {
 }
 
 // Define the main class for the application
-mainClassName = 'App'
+mainClassName = 'tools.dbconnector7.App'
 
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
@@ -23,6 +23,9 @@ dependencies {
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 }
 
 // In this section you declare where to find the dependencies of your project
