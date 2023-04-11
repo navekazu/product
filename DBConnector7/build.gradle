@@ -11,11 +11,20 @@ plugins {
     id 'java'
 
     // Apply the application plugin to add support for building an application
-    id 'application'
+    // id 'application'
 }
 
 // Define the main class for the application
-mainClassName = 'tools.dbconnector7.App'
+//mainClassName = 'tools.dbconnector7.App'
+
+group = 'tools.dbconnector7'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -26,10 +35,10 @@ repositories {
 
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
-    compile 'com.google.guava:guava:23.0'
+    // compile 'com.google.guava:guava:23.0'
 
     // Test
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testImplementation "junit:junit:4.13.1"
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.24'
@@ -38,5 +47,16 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
     testImplementation 'org.projectlombok:lombok:1.18.24'
 
+	// Json
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
+
 }
 
+task copyDependencies(type:Copy) {
+    new File('build/libs').mkdirs()
+    copy {
+        from configurations.runtimeClasspath
+        into 'build/libs'
+    }
+}
