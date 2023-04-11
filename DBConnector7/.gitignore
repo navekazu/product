@@ -2,3 +2,7 @@
 .settings/
 bin/
 build/
+
+
+.classpath
+.project
