@@ -1,5 +1,5 @@
 package tools.dbconnector7;
 
 public interface NoticeInterface {
-    public void notice();
+    public void notice(String command);
 }

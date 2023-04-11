@@ -7,21 +7,24 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
+import tools.dbconnector7.AppHandle;
 import tools.dbconnector7.NoticeInterface;
+import tools.dbconnector7.menuhandler.AppClose;
+import tools.dbconnector7.menuhandler.CancelQuery;
+import tools.dbconnector7.menuhandler.Commit;
+import tools.dbconnector7.menuhandler.Connect;
+import tools.dbconnector7.menuhandler.Disconnect;
+import tools.dbconnector7.menuhandler.ExecuteQuery;
+import tools.dbconnector7.menuhandler.NewConnection;
+import tools.dbconnector7.menuhandler.Rollback;
+import tools.dbconnector7.menuhandler.SwingUiChanger;
 
 public class MainMenu extends JMenuBar {
-    private NoticeInterface uiUpdateNotice;
-    private NoticeInterface connectNotice;
-    private NoticeInterface disconnectNotice;
+	private final AppHandle appHandle;
 
-    public MainMenu(NoticeInterface uiUpdateNotice
-            , NoticeInterface connectNotice
-            , NoticeInterface disconnectNotice) {
-        this.uiUpdateNotice = uiUpdateNotice;
-        this.connectNotice = connectNotice;
-        this.disconnectNotice = disconnectNotice;
+    public MainMenu(AppHandle appHandle) {
+    	this.appHandle = appHandle;
 
         this.add(createFileMenu());
         this.add(createEditMenu());
@@ -31,7 +34,7 @@ public class MainMenu extends JMenuBar {
 
     private JMenu createFileMenu() {
         JMenu menu = new JMenu("File");
-        menu.add(new JMenuItem("Exit"));
+        menu.add(createMenuItem("Close", new AppClose(appHandle)));
         return menu;
     }
 
@@ -44,15 +47,16 @@ public class MainMenu extends JMenuBar {
         JMenu menu = new JMenu("Database");
         JMenuItem item;
 
-        menu.add(createMenuItem("Connect", connectNotice));
-        menu.add(createMenuItem("Disconnect", disconnectNotice));
+        menu.add(createMenuItem("New connection", new NewConnection(appHandle)));
+        menu.add(createMenuItem("Connect", new Connect(appHandle)));
+        menu.add(createMenuItem("Disconnect", new Disconnect(appHandle)));
         menu.addSeparator();
-        menu.add(createMenuItem("Execute query", null));
-        menu.add(createMenuItem("Cancel query", null));
-        menu.add(createMenuItem("Query script", null));
+        menu.add(createMenuItem("Execute query", new ExecuteQuery(appHandle)));
+        menu.add(createMenuItem("Cancel query", new CancelQuery(appHandle)));
+//        menu.add(createMenuItem("Query script", null));
         menu.addSeparator();
-        menu.add(createMenuItem("Commit", null));
-        menu.add(createMenuItem("Rollback", null));
+        menu.add(createMenuItem("Commit", new Commit(appHandle)));
+        menu.add(createMenuItem("Rollback", new Rollback(appHandle)));
         menu.addSeparator();
         menu.add(createIsolationMenu());
 
@@ -84,7 +88,7 @@ public class MainMenu extends JMenuBar {
         if (notice!=null) {
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
-                    notice.notice();
+                    notice.notice(label);
                 }
             });
         }
@@ -94,31 +98,14 @@ public class MainMenu extends JMenuBar {
 
     private JMenu createLookAndFeelMenu() {
         JMenu menu = new JMenu("Look & Feel");
+        SwingUiChanger changer = new SwingUiChanger(appHandle);
 
         UIManager.LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
         for (UIManager.LookAndFeelInfo info: infos) {
-            JMenuItem item = new JMenuItem(info.getName());
-            final String className = info.getClassName();
-
-            item.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event) {
-                    try {
-                        UIManager.setLookAndFeel(className);
-                        uiUpdateNotice.notice();
-                    } catch(ClassNotFoundException exception) {
-                        exception.printStackTrace();
-                    } catch(InstantiationException exception) {
-                        exception.printStackTrace();
-                    } catch(IllegalAccessException exception) {
-                        exception.printStackTrace();
-                    } catch(UnsupportedLookAndFeelException exception) {
-                        exception.printStackTrace();
-                    }
-                }
-            });
-            menu.add(item);
+            menu.add(createMenuItem(info.getName(), changer));
         }
 
         return menu;
     }
+
 }
