@@ -61,8 +61,8 @@ namespace ClassicalLauncer
 
 			string[] cmds = System.Environment.GetCommandLineArgs();
 
-			if (cmds.Length >= 1 && Directory.Exists(cmds[0])) {
-				CreateTreeMenu(menu.Items, cmds[0]);
+			if (cmds.Length >= 2 && Directory.Exists(cmds[1])) {
+				CreateTreeMenu(menu.Items, cmds[1]);
 			} else {
 #if DEBUG
 				CreateTreeMenu(menu.Items, "C:\\User\\k-watanabe\\Documents\\@");
@@ -74,10 +74,10 @@ namespace ClassicalLauncer
 				Application.Exit();
 			});
 
-			menu.DefaultDropDownDirection = ToolStripDropDownDirection.AboveLeft;
-			menu.DefaultDropDownDirection = ToolStripDropDownDirection.BelowLeft;
-			menu.DefaultDropDownDirection = ToolStripDropDownDirection.Left;
-			menu.DefaultDropDownDirection = ToolStripDropDownDirection.Right;
+//			menu.DefaultDropDownDirection = ToolStripDropDownDirection.AboveLeft;
+//			menu.DefaultDropDownDirection = ToolStripDropDownDirection.BelowLeft;
+//			menu.DefaultDropDownDirection = ToolStripDropDownDirection.Left;
+//			menu.DefaultDropDownDirection = ToolStripDropDownDirection.Right;
 
 			return menu;
 		}
@@ -91,7 +91,7 @@ namespace ClassicalLauncer
 			foreach (string path in paths) {
 				string file = Path.GetFileName(path);
 
-				ToolStripMenuItem item = new ToolStripMenuItem(file);
+				MyToolStripMenuItem item = new MyToolStripMenuItem(path, file);
 				item.Image = new Icon("folderyellow_92963.ico").ToBitmap();
 
 				CreateTreeMenu(item.DropDownItems, path);
@@ -103,10 +103,11 @@ namespace ClassicalLauncer
 			foreach (string path in paths) {
 				string file = Path.GetFileName(path);
 
-				ToolStripMenuItem item = new MyToolStripMenuItem(HideLinkAndUrlExtention(file), null, (s, e) => {
+				MyToolStripMenuItem item = new MyToolStripMenuItem(path, HideLinkAndUrlExtention(file), null, (s, e) => {
 					Execute(path);
 				});
 				item.AllowDrop = true;
+				item.DoubleClickEnabled = true;
 
 				// ファイルアイコン
 				Icon iconForFile = GetFileIcon(path);
@@ -165,6 +166,12 @@ namespace ClassicalLauncer
 						(IWshRuntimeLibrary.IWshShortcut)wshShell.CreateShortcut(filePath);
 
 					string targetPath = shortcut.TargetPath.ToString();
+					// Debug.WriteLine("===========================");
+					// Debug.WriteLine(filePath);
+					// Debug.WriteLine(shortcut.FullName);
+					// Debug.WriteLine(shortcut.ToString());
+					// Debug.WriteLine(shortcut.WorkingDirectory);
+					// Debug.WriteLine(targetPath);
 
 					if (!File.Exists(targetPath)) {
 						return SystemIcons.WinLogo;
@@ -183,12 +190,6 @@ namespace ClassicalLauncer
 		{
 			switch (GetFileTypes(filePath)) {
 				case FileTypes.SHORTCUT:
-					IWshRuntimeLibrary.IWshShortcut shortcut =
-						(IWshRuntimeLibrary.IWshShortcut)wshShell.CreateShortcut(filePath);
-
-					Execute(shortcut.TargetPath.ToString());
-					break;
-
 				case FileTypes.NORMAL_FILE:
 				case FileTypes.EXE_FILE:
 				case FileTypes.URL_LINK:
@@ -204,22 +205,22 @@ namespace ClassicalLauncer
 
 	class MyContextMenuStrip : ContextMenuStrip
 	{
-		protected virtual void OnDragDrop(System.Windows.Forms.DragEventArgs drgevent)
+		protected override void OnDragDrop(System.Windows.Forms.DragEventArgs drgevent)
 		{
 			string a = "";
 		}
 
-		protected void OnDragEnter(System.Windows.Forms.DragEventArgs drgevent)
+		protected override void OnDragEnter(System.Windows.Forms.DragEventArgs drgevent)
 		{
 			string a = "";
 		}
 
-		protected virtual void OnDragLeave(EventArgs e)
+		protected override void OnDragLeave(EventArgs e)
 		{
 			string a = "";
 		}
 
-		protected virtual void OnDragOver(System.Windows.Forms.DragEventArgs drgevent)
+		protected override void OnDragOver(System.Windows.Forms.DragEventArgs drgevent)
 		{
 			string a = "";
 		}
@@ -227,30 +228,70 @@ namespace ClassicalLauncer
 
 	class MyToolStripMenuItem : ToolStripMenuItem
 	{
+		public MouseButtons LastMouseButtons { get; private set; }
+		public int LastX { get; private set; }
+		public int LastY { get; private set; }
+		public string path { get; private set; }
 
-		public MyToolStripMenuItem(string text, Image image, EventHandler onClick):
+
+		public MyToolStripMenuItem(string path, string text) :
+			base(text)
+		{
+			this.path = path;
+		}
+
+		public MyToolStripMenuItem(string path, string text, Image image, EventHandler onClick) :
 			base(text, image, onClick)
 		{
-
+			this.path = path;
 		}
-		protected virtual void OnDragDrop(System.Windows.Forms.DragEventArgs drgevent)
+
+		protected override void OnDragDrop(System.Windows.Forms.DragEventArgs drgevent)
 		{
 			string a = "";
 		}
 
-		protected void OnDragEnter(System.Windows.Forms.DragEventArgs drgevent)
+		protected override void OnDragEnter(System.Windows.Forms.DragEventArgs drgevent)
 		{
 			string a = "";
 		}
 
-		protected virtual void OnDragLeave(EventArgs e)
+		protected override void OnDragLeave(EventArgs e)
 		{
 			string a = "";
 		}
 
-		protected virtual void OnDragOver(System.Windows.Forms.DragEventArgs drgevent)
+		protected override void OnDragOver(System.Windows.Forms.DragEventArgs drgevent)
 		{
 			string a = "";
+		}
+		
+		protected override void OnDoubleClick(EventArgs e)
+		{
+			string a = "";
+		}
+		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
+		{
+			string a = "";
+
+		}
+		protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
+		{
+			this.LastMouseButtons = e.Button;
+			this.LastX = e.X;
+			this.LastY = e.Y;
+
+			if (this.LastMouseButtons == MouseButtons.Right) {
+				System.Diagnostics.Process.Start(
+					new System.Diagnostics.ProcessStartInfo {
+						FileName = "explorer", //フルパスで指定せず「explorer」とだけ書く
+						Arguments = @"/select," + path, //引数に「/select,」を付ける
+						UseShellExecute = true,
+						Verb = "open"
+					}
+				);
+			}
+
 		}
 	}
 }
