@@ -1,0 +1,17 @@
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\ClassicalLauncer.exe.config
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\ClassicalLauncer.exe
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\ClassicalLauncer.pdb
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\ClassicalLauncer.Properties.Resources.resources
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\ClassicalLauncer.csproj.GenerateResource.cache
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\ClassicalLauncer.csproj.CoreCompileInputs.cache
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\ClassicalLauncer.exe
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\ClassicalLauncer.pdb
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\Icon.ico
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\Interop.IWshRuntimeLibrary.dll
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\ClassicalLauncer.csproj.ResolveComReference.cache
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\Microsoft.WindowsAPICodePack.dll
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\Microsoft.WindowsAPICodePack.xml
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\ClassicalLauncer.csproj.CopyComplete
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\folderyellow_92963.ico

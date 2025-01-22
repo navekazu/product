@@ -1,0 +1,17 @@
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Release\folderyellow_92963.ico
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Release\Icon.ico
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Release\ClassicalLauncer.exe.config
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Release\ClassicalLauncer.exe
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Release\ClassicalLauncer.pdb
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Release\Microsoft.WindowsAPICodePack.dll
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Release\Microsoft.WindowsAPICodePack.Shell.dll
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Release\Microsoft.WindowsAPICodePack.xml
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Release\Microsoft.WindowsAPICodePack.Shell.xml
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Release\Interop.IWshRuntimeLibrary.dll
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Release\ClassicalLauncer.csproj.ResolveComReference.cache
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Release\ClassicalLauncer.Properties.Resources.resources
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Release\ClassicalLauncer.csproj.GenerateResource.cache
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Release\ClassicalLauncer.csproj.CoreCompileInputs.cache
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Release\ClassicalLauncer.csproj.CopyComplete
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Release\ClassicalLauncer.exe
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Release\ClassicalLauncer.pdb

@@ -62,4 +62,8 @@ public class PersistenceManager {
 		
 		return configFile;
 	}
+
+	public void foo() {
+		System.out.println("foo");
+	}
 }
