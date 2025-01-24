@@ -3,6 +3,7 @@
  */
 package tools.dbconnector8;
 
+import tools.dbconnector8.ui.ConnectDialog;
 import tools.dbconnector8.ui.MainFrame;
 
 public class App {
@@ -16,7 +17,9 @@ public class App {
 		AppHandle.getAppHandle().setApp(this);
 
 		mainFrame = new MainFrame();
-		mainFrame.setVisible(true);	
+		mainFrame.setVisible(true);
+		new ConnectDialog().setVisible(true);
+
 	}
     
     public void close() {

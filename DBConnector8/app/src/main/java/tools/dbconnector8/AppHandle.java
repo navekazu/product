@@ -1,7 +1,14 @@
 package tools.dbconnector8;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Data;
+import tools.dbconnector8.model.ConnectionModel;
+import tools.dbconnector8.ui.DatabaseView;
 import tools.dbconnector8.ui.MainFrame;
+import tools.dbconnector8.ui.ResultView;
+import tools.dbconnector8.ui.StatusBar;
 
 @Data
 public class AppHandle {
@@ -17,7 +24,19 @@ public class AppHandle {
 
 		return appHandle;
 	}
+
+	public void addConnectionModel(ConnectionModel model) {
+		connectionModels.add(model);
+		currentConnectionModel = model;
+		databaseView.addDatabase(model);
+	}
 	
 	private MainFrame mainFrame;
+	private DatabaseView databaseView;
+	private ResultView resultView;
+	private StatusBar statusBar;
 	private App app;
+	private List<ConnectionModel> connectionModels = new ArrayList<>();
+	private ConnectionModel currentConnectionModel;
+
 }
