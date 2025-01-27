@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
@@ -24,6 +25,7 @@ import tools.dbconnector8.model.QueryResultModel;
 
 public class ResultView extends JTabbedPane implements UiBase {
 	private List<JScrollPane> resultTables;
+	private JTextArea messageArea;
 
 	public ResultView() {
 		AppHandle.getAppHandle().setResultView(this);
@@ -33,6 +35,9 @@ public class ResultView extends JTabbedPane implements UiBase {
 	@Override
 	public void initContents() {
 		resultTables = new ArrayList<>();
+		messageArea = new JTextArea();
+
+		addTab("Message", new JScrollPane(messageArea));
 	}
 
 	public void executeQuery(String query) {
@@ -86,11 +91,13 @@ public class ResultView extends JTabbedPane implements UiBase {
                 			columnModels = new ArrayList<>();
 
                 			for (int i = 1; i <= columnCount; i++) {
+                				String value = resultSet.getString(i);
+                				boolean wasNull = resultSet.wasNull();
                 				columnModels.add(
                 						QueryResultColumnModel.builder()
-                							.value(resultSet.getString(i))
+                							.value(wasNull? "(NULL)": value)
                 							.type(resultSetMetaData.getColumnType(i))
-                							.wasNull(resultSet.wasNull())
+                							.wasNull(wasNull)
                 							.build()
                							);
                 				
@@ -107,6 +114,10 @@ public class ResultView extends JTabbedPane implements UiBase {
                 				.executeEnd(LocalDateTime.now())
                 				.build();
 	            	}
+
+            	} catch (Exception e) {
+            		messageArea.setText(e.getMessage());
+	        		throw e;
 	        	}
             }
 
@@ -128,6 +139,7 @@ public class ResultView extends JTabbedPane implements UiBase {
             		}
             	}
 
+            	// データ部分
         		DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
 
         		for (List<QueryResultColumnModel> columnModels : chunks) {
@@ -148,7 +160,7 @@ public class ResultView extends JTabbedPane implements UiBase {
 	            	QueryResultModel queryResultModel = get();
 	            	Duration duration = Duration.between(queryResultModel.getExecuteStart(), queryResultModel.getExecuteEnd());
 	            	String message = String.format(
-	            			"%d件、%sしました。 所要時間 %02d:%02d:%02d.%03d"
+	            			"%,d件、%sしました。 所要時間 %02d:%02d:%02d.%03d"
 	        				, queryResultModel.getCount()
 	        				, queryResultModel.isWithResultSet()? "取得": "更新"
 	        				, duration.toHours()
@@ -177,11 +189,16 @@ public class ResultView extends JTabbedPane implements UiBase {
 				}
 			}
 		});
+		
+		messageArea.setText("");
 	}
 
 	private JTable createResultTable() {
 		
 		JTable table = new JTable(new DefaultTableModel());
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+		
 		JScrollPane scrollPane = new JScrollPane(table);
 		resultTables.add(scrollPane);
 		

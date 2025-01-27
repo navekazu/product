@@ -3,6 +3,10 @@
  */
 package tools.dbconnector8;
 
+import java.awt.Font;
+
+import javax.swing.UIManager;
+
 import tools.dbconnector8.ui.ConnectDialog;
 import tools.dbconnector8.ui.MainFrame;
 
@@ -16,11 +20,30 @@ public class App {
 	public App() {
 		AppHandle.getAppHandle().setApp(this);
 
+		setUIFont(new Font("Meiryo", Font.PLAIN, 12));
+
 		mainFrame = new MainFrame();
 		mainFrame.setVisible(true);
 		new ConnectDialog().setVisible(true);
 
 	}
+
+	// すべての UI コンポーネントの既定のフォントを設定するメソッド
+    public void setUIFont(Font font) {
+        UIManager.put("Label.font", font);
+        UIManager.put("Button.font", font);
+        UIManager.put("TextField.font", font);
+        UIManager.put("CheckBox.font", font);
+        UIManager.put("RadioButton.font", font);
+        UIManager.put("ComboBox.font", font);
+        UIManager.put("TabbedPane.font", font);
+        UIManager.put("Menu.font", font);
+        UIManager.put("MenuItem.font", font);
+        UIManager.put("Table.font", font);
+        UIManager.put("List.font", font);
+        UIManager.put("Tree.font", font);
+        // 必要に応じて他のコンポーネントも追加
+    }
     
     public void close() {
     	mainFrame.dispose();

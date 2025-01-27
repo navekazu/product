@@ -28,7 +28,7 @@ public class DatabaseOperation extends JPanel implements UiBase {
         QueryExecutor qe = new QueryExecutor();
         ResultView rv = new ResultView();
 
-        JSplitPane verticalSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(qe), new JScrollPane(rv));
+        JSplitPane verticalSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(qe), rv);
         
         add(verticalSplit, BorderLayout.CENTER);
 
