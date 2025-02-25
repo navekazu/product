@@ -4,28 +4,66 @@
 package tools.dbconnector8;
 
 import java.awt.Font;
+import java.io.IOException;
+import java.util.Objects;
 
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import tools.dbconnector8.persistence.PersistenceManager;
 import tools.dbconnector8.ui.ConnectDialog;
 import tools.dbconnector8.ui.MainFrame;
 
 public class App {
 	private MainFrame mainFrame;
+	private String bootPassword;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		new App();
     }
 	
-	public App() {
+	public App() throws IOException {
 		AppHandle.getAppHandle().setApp(this);
 
 		setUIFont(new Font("Meiryo", Font.PLAIN, 12));
 
+		if (!checkBootPassword()) {
+			return;
+		}
+		
 		mainFrame = new MainFrame();
 		mainFrame.setVisible(true);
 		new ConnectDialog().setVisible(true);
 
+	}
+	
+	private boolean checkBootPassword() throws IOException {
+		boolean result = false;
+
+		for (int i = 0; i < 3; i++) {
+			
+
+			PersistenceManager pm = new PersistenceManager();
+			if (!pm.existsBootPassword()) {
+				// 新規
+				String inputValue = JOptionPane.showInputDialog(null, "Input the new boot password.", "");
+				if (Objects.nonNull(inputValue) && !Objects.equals(inputValue, "")) {
+					pm.updateBootPassword(inputValue);
+				}
+			} else {
+				// 認証
+				String inputValue = JOptionPane.showInputDialog(null, "Input the boot password.", "");
+				if (Objects.nonNull(inputValue) && !Objects.equals(inputValue, "")) {
+					if (pm.checkBootPassword(inputValue)) {
+						bootPassword = inputValue;
+						result = true;
+						break;
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 
 	// すべての UI コンポーネントの既定のフォントを設定するメソッド
@@ -33,6 +71,7 @@ public class App {
         UIManager.put("Label.font", font);
         UIManager.put("Button.font", font);
         UIManager.put("TextField.font", font);
+        UIManager.put("TextArea.font", font);
         UIManager.put("CheckBox.font", font);
         UIManager.put("RadioButton.font", font);
         UIManager.put("ComboBox.font", font);

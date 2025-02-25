@@ -40,6 +40,9 @@ dependencies {
 	// Json
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+
+	// https://mvnrepository.com/artifact/org.springframework.security/spring-security-web
+	implementation group: 'org.springframework.security', name: 'spring-security-web', version: '5.8.16'
 }
 
 application {

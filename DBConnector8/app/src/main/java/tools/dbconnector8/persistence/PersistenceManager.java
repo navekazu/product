@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
@@ -14,6 +16,7 @@ public class PersistenceManager {
 	private Config config;
 
 	private String CONFIG_FILE_NAME = "config.json";
+	private String PASSWORD_FILE_NAME = "password";
 
 	public Config getConfig() throws IOException {
 		if (!Objects.isNull(config)) {
@@ -51,18 +54,49 @@ public class PersistenceManager {
 	}
 	
 	private Path getConfigFile() throws IOException {
+		return getAppFile(CONFIG_FILE_NAME);
+	}
+
+	private Path getPasswordFile() throws IOException {
+		return getAppFile(PASSWORD_FILE_NAME);
+	}
+	
+	private Path getAppFile(String file) throws IOException {
 		Path appDir = baseDirectory();
 		Files.createDirectories(appDir);
 		
-		Path configFile = Paths.get(appDir.toString(), CONFIG_FILE_NAME);
+		Path appFile = Paths.get(appDir.toString(), file);
 
-		if (!Files.exists(configFile)) {
-			Files.createFile(configFile);
+		if (!Files.exists(appFile)) {
+			Files.createFile(appFile);
 		}
 		
-		return configFile;
+		return appFile;
 	}
 
+	public boolean existsBootPassword() throws IOException {
+		Path path = getPasswordFile();
+		String hashValue = Files.readString(path);
+		
+		return hashValue.length()!=0;
+	}
+	
+	public boolean checkBootPassword(String password) throws IOException {
+		Path path = getPasswordFile();
+		String hashValue = Files.readString(path);
+
+		BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+		
+		return bcrypt.matches(password, hashValue);
+	}
+	
+	public void updateBootPassword(String password) throws IOException {
+		Path path = getPasswordFile();
+		BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+		String hashValue = bcrypt.encode(password);
+		Files.writeString(path, hashValue);
+	}
+	
 	public void foo() {
 		System.out.println("foo");
 	}

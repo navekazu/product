@@ -14,6 +14,8 @@ public class QueryExecutor extends JTextArea implements UiBase {
 
 	@Override
 	public void initContents() {
+		setTabSize(4);
+
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
