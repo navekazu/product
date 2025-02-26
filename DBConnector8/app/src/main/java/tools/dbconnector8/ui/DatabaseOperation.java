@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
+import tools.dbconnector8.AppHandle;
 import tools.dbconnector8.persistence.Config;
 import tools.dbconnector8.persistence.PersistenceManager;
 import tools.dbconnector8.persistence.config.UiConfig;
@@ -44,6 +45,8 @@ public class DatabaseOperation extends JPanel implements UiBase {
                 persistDividerSize(newLocation);
             }
         });
+        
+        AppHandle.getAppHandle().setQueryExecutor(qe);
 	}
 
 	private void persistDividerSize(int newLocation) {

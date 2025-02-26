@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +19,7 @@ public class PersistenceManager {
 
 	private String CONFIG_FILE_NAME = "config.json";
 	private String PASSWORD_FILE_NAME = "password";
+	private String PERSISTENCE_QUERY_FILE_NAME = "query_%s.sql";
 
 	public Config getConfig() throws IOException {
 		if (!Objects.isNull(config)) {
@@ -49,6 +52,20 @@ public class PersistenceManager {
         mapper.writeValue(path.toFile(), config);
 	}
 
+	public String getPersistenceQuery() throws IOException {
+
+		Path path = getPersistenceQueryFile();
+
+		return Files.readString(path);
+	}
+	
+	public void writePersistenceQuery(String contents) throws IOException {
+
+		Path path = getPersistenceQueryFile();
+
+		Files.writeString(path, contents);
+	}
+	
 	private Path baseDirectory() {
 		return Paths.get(System.getProperty("user.home"), ".dbc8");
 	}
@@ -59,6 +76,13 @@ public class PersistenceManager {
 
 	private Path getPasswordFile() throws IOException {
 		return getAppFile(PASSWORD_FILE_NAME);
+	}
+	
+	private Path getPersistenceQueryFile() throws IOException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
+        String formattedDate = LocalDate.now().format(formatter);
+        String fileName = String.format(PERSISTENCE_QUERY_FILE_NAME, formattedDate);
+		return getAppFile(fileName);
 	}
 	
 	private Path getAppFile(String file) throws IOException {
