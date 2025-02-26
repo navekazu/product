@@ -50,6 +50,7 @@ public class ConnectionLogic extends LogicBase<ConnectionConfig, ConnectionModel
         		.connection(conn)
         		.connectionConfig(i)
         		.tables(new HashMap<>())
+        		.columns(new HashMap<>())
         		.functions(new ArrayList<>())
         		.build();
 	}
