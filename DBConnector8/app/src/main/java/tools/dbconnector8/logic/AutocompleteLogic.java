@@ -2,6 +2,7 @@ package tools.dbconnector8.logic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import tools.dbconnector8.AppHandle;
@@ -11,6 +12,11 @@ public class AutocompleteLogic extends LogicBase<String, List<String>> {
 
 	@Override
 	public List<String> execute(String i) throws Exception {
+
+		if (Objects.isNull(i) || Objects.equals(i, "")) {
+			return new ArrayList<>();
+		}
+		
 		ConnectionModel model = AppHandle.getAppHandle().getCurrentConnectionModel();
 
 		// 一回、Listにまとめる

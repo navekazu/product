@@ -28,6 +28,7 @@ public class AutocompleteLogicTest {
 
 		ConnectionModel currentConnectionModel = ConnectionModel.builder()
 				.tables(tables)
+				.columns(new HashMap<>())
 				.build();
 		
 		AppHandle.getAppHandle().setCurrentConnectionModel(currentConnectionModel);
@@ -90,6 +91,12 @@ public class AutocompleteLogicTest {
 
 		// 0ヒット
 		list = logic.execute("Z");
+		assertEquals(0, list.size());
+
+		
+		
+		// 0ヒット
+		list = logic.execute("");
 		assertEquals(0, list.size());
 	}
 

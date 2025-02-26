@@ -2,14 +2,30 @@ package tools.dbconnector8.ui;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
 
 import tools.dbconnector8.AppHandle;
+import tools.dbconnector8.logic.AutocompleteLogic;
 import tools.dbconnector8.persistence.PersistenceManager;
 
 public class QueryExecutor extends JTextArea implements UiBase {
+
+	private JPopupMenu popupMenu;
+	private JList<String> autoCompleteList;
+	private DefaultListModel<String> autoCompleteModel;
+	
 	public QueryExecutor() {
 		initContents();
 	}
@@ -38,6 +54,13 @@ public class QueryExecutor extends JTextArea implements UiBase {
 				keyTypedHandler(e);
 			}
 		});
+
+		// 入力補完用ポップアップメニュー
+		popupMenu = new JPopupMenu();
+		autoCompleteModel = new DefaultListModel<>();
+		autoCompleteList = new JList<>(autoCompleteModel);
+		popupMenu.add(new JScrollPane(autoCompleteList));
+
 	}
 	
 	private void keyTypedHandler(KeyEvent e) {
@@ -45,6 +68,12 @@ public class QueryExecutor extends JTextArea implements UiBase {
 		// クエリ実行？
 		if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
 			executeQuery();
+			return ;
+		}
+
+		// KeyRelease時に補完を表示
+		if (e.getID() == KeyEvent.KEY_RELEASED) {
+			autoComplete();
 		}
 	}
 
@@ -69,5 +98,67 @@ public class QueryExecutor extends JTextArea implements UiBase {
 		}
 	}
 	
+	private void autoComplete() {
+		// キャレットの前の単語を取得
+		String word = getCurrentWord();
+		
+		if (Objects.equals(word, "")) {
+			return ;
+		}
+
+		AutocompleteLogic logic = new AutocompleteLogic();
+		List<String> list = null;
+
+		try {
+			list = logic.execute(word);
+			
+			if (list.size() == 0) {
+				return ;
+			}
+			
+			
+		} catch (Exception e1) {
+			// TODO 自動生成された catch ブロック
+			e1.printStackTrace();
+		}
+	
+		if (list == null) {
+			return ;
+		}
+
+		// 入力補完を表示
+        try {
+            // キャレットの位置を取得
+        	Rectangle2D rect = modelToView2D(getCaretPosition());
+            if (rect != null) {
+            	autoCompleteModel.removeAllElements();
+
+            	autoCompleteModel.addAll(list);
+
+            	popupMenu.show(this, (int)rect.getX(), (int)(rect.getY() + rect.getHeight()));
+            	this.requestFocusInWindow(); // ← フォーカスを元に戻す
+            }
+        } catch (BadLocationException ex) {
+            ex.printStackTrace();
+        }
+	}
+
+	private String getCurrentWord() {
+        try {
+            int caretPos = getCaretPosition();
+            String textBeforeCaret = getText(0, caretPos);
+
+            // 単語を抽出（英単語の場合: \b\w+$ で最後の単語を取得）
+            Pattern pattern = Pattern.compile("\\b\\w+$");
+            Matcher matcher = pattern.matcher(textBeforeCaret);
+
+            if (matcher.find()) {
+                return matcher.group(); // 最後の単語を返す
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+	}
 	
 }
