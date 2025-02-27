@@ -1,7 +1,10 @@
 package tools.dbconnector8.ui;
 
+import java.awt.Insets;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.List;
@@ -33,6 +36,7 @@ public class QueryExecutor extends JTextArea implements UiBase {
 	@Override
 	public void initContents() {
 		setTabSize(4);
+		setMargin(new Insets(5, 5, 5, 5));
 
 		PersistenceManager pm = new PersistenceManager();
 		try {
@@ -53,6 +57,10 @@ public class QueryExecutor extends JTextArea implements UiBase {
 			public void keyReleased(KeyEvent e) {
 				keyTypedHandler(e);
 			}
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyTypedHandler(e);
+			}
 		});
 
 		// 入力補完用ポップアップメニュー
@@ -61,20 +69,54 @@ public class QueryExecutor extends JTextArea implements UiBase {
 		autoCompleteList = new JList<>(autoCompleteModel);
 		popupMenu.add(new JScrollPane(autoCompleteList));
 
+		
+
+        // Enterキーで選択されたアイテムを取得
+		autoCompleteList.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    String selectedItem = autoCompleteList.getSelectedValue();
+                    if (selectedItem != null) {
+                    	autoComplete(selectedItem);
+                    }
+                }
+            }
+        });
+
+        // ダブルクリックで選択されたアイテムを取得
+		autoCompleteList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) { // ダブルクリック判定
+                    int index = autoCompleteList.locationToIndex(e.getPoint()); // クリックされた位置のアイテム
+                    if (index >= 0) {
+                        String selectedItem = autoCompleteList.getModel().getElementAt(index);
+                    	autoComplete(selectedItem);
+                    }
+                }
+            }
+        });		
 	}
 	
 	private void keyTypedHandler(KeyEvent e) {
 		
 		// クエリ実行？
-		if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+		if (e.getID() == KeyEvent.KEY_PRESSED && e.isControlDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
 			executeQuery();
 			return ;
 		}
 
 		// KeyRelease時に補完を表示
 		if (e.getID() == KeyEvent.KEY_RELEASED) {
-			autoComplete();
+			showAutoComplete();
 		}
+		
+		// 入力補完が表示されていたらフォーカス移動
+		if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_TAB) {
+            e.consume(); // タブキーの通常の動作をキャンセル
+            autoCompleteList.requestFocusInWindow(); // 次のコンポーネントにフォーカス移動
+        }
 	}
 
 	private void executeQuery() {
@@ -98,11 +140,12 @@ public class QueryExecutor extends JTextArea implements UiBase {
 		}
 	}
 	
-	private void autoComplete() {
+	private void showAutoComplete() {
 		// キャレットの前の単語を取得
 		String word = getCurrentWord();
 		
 		if (Objects.equals(word, "")) {
+			popupMenu.setVisible(false);
 			return ;
 		}
 
@@ -113,6 +156,7 @@ public class QueryExecutor extends JTextArea implements UiBase {
 			list = logic.execute(word);
 			
 			if (list.size() == 0) {
+				popupMenu.setVisible(false);
 				return ;
 			}
 			
@@ -123,6 +167,7 @@ public class QueryExecutor extends JTextArea implements UiBase {
 		}
 	
 		if (list == null) {
+			popupMenu.setVisible(false);
 			return ;
 		}
 
@@ -132,10 +177,11 @@ public class QueryExecutor extends JTextArea implements UiBase {
         	Rectangle2D rect = modelToView2D(getCaretPosition());
             if (rect != null) {
             	autoCompleteModel.removeAllElements();
-
             	autoCompleteModel.addAll(list);
+            	autoCompleteList.setSelectedIndex(0);
 
-            	popupMenu.show(this, (int)rect.getX(), (int)(rect.getY() + rect.getHeight()));
+          		popupMenu.show(this, (int)rect.getX(), (int)(rect.getY() + rect.getHeight()));
+
             	this.requestFocusInWindow(); // ← フォーカスを元に戻す
             }
         } catch (BadLocationException ex) {
@@ -148,6 +194,11 @@ public class QueryExecutor extends JTextArea implements UiBase {
             int caretPos = getCaretPosition();
             String textBeforeCaret = getText(0, caretPos);
 
+            // キャレット手前が改行なら終了
+            if (caretPos == 0 || textBeforeCaret.charAt(caretPos - 1) == '\n') {
+            	return "";
+            }
+            
             // 単語を抽出（英単語の場合: \b\w+$ で最後の単語を取得）
             Pattern pattern = Pattern.compile("\\b\\w+$");
             Matcher matcher = pattern.matcher(textBeforeCaret);
@@ -161,4 +212,27 @@ public class QueryExecutor extends JTextArea implements UiBase {
         return "";
 	}
 	
+	private void autoComplete(String word) {
+		String inputWord = getCurrentWord();
+		
+		// 現在のキャレット位置から入力文字分削除
+        int caretPos = getCaretPosition(); // 現在のキャレット位置
+        int deleteLength = inputWord.length(); // 削除する文字数
+
+        if (caretPos > 0) {
+            int start = Math.max(caretPos - deleteLength, 0); // 負の値を防ぐ
+            try {
+                getDocument().remove(start, caretPos - start);
+                getDocument().insertString(start, word, null);
+
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        
+		popupMenu.setVisible(false);
+        requestFocusInWindow();
+	}
+
 }

@@ -27,6 +27,7 @@ public class AutocompleteLogic extends LogicBase<String, List<String>> {
 
 		return list.stream()
 			.filter(v -> v.toUpperCase().startsWith(i.toUpperCase()))
+			.filter(v -> v.length() != i.length())
 			.collect(Collectors.toList());
 	}
 

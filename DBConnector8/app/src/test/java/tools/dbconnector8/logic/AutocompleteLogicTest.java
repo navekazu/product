@@ -24,7 +24,7 @@ public class AutocompleteLogicTest {
 
 		Map<String, List<String>> tables = new HashMap<>();
 		
-		tables.put("TABLES", Arrays.asList("abc", "abcd", "abcde"));
+		tables.put("TABLES", Arrays.asList("abc", "abcd", "abcdef"));
 
 		ConnectionModel currentConnectionModel = ConnectionModel.builder()
 				.tables(tables)
@@ -43,20 +43,24 @@ public class AutocompleteLogicTest {
 		list = logic.execute("ab");
 		assertEquals(3, list.size());
 
-		// ３つヒット
+		// ２つヒット
 		list = logic.execute("abc");
-		assertEquals(3, list.size());
-
-		// 2つヒット
-		list = logic.execute("abcd");
 		assertEquals(2, list.size());
+
+		// 1つヒット
+		list = logic.execute("abcd");
+		assertEquals(1, list.size());
 
 		// 1つヒット
 		list = logic.execute("abcde");
 		assertEquals(1, list.size());
 
-		// 0ヒット
+		// 0ヒット（全文字入れていて補完が必要ない場合）
 		list = logic.execute("abcdef");
+		assertEquals(0, list.size());
+
+		// 0ヒット
+		list = logic.execute("abcdefg");
 		assertEquals(0, list.size());
 
 		// 0ヒット
@@ -73,20 +77,24 @@ public class AutocompleteLogicTest {
 		list = logic.execute("AB");
 		assertEquals(3, list.size());
 
-		// ３つヒット
-		list = logic.execute("ABC");
-		assertEquals(3, list.size());
-
 		// 2つヒット
-		list = logic.execute("ABCD");
+		list = logic.execute("ABC");
 		assertEquals(2, list.size());
+
+		// 1つヒット
+		list = logic.execute("ABCD");
+		assertEquals(1, list.size());
 
 		// 1つヒット
 		list = logic.execute("ABCDE");
 		assertEquals(1, list.size());
 
-		// 0ヒット
+		// 0ヒット（全文字入れていて補完が必要ない場合）→
 		list = logic.execute("ABCDEF");
+		assertEquals(0, list.size());
+
+		// 0ヒット
+		list = logic.execute("ABCDEFG");
 		assertEquals(0, list.size());
 
 		// 0ヒット

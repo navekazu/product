@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import tools.dbconnector8.persistence.PersistenceManager;
@@ -41,24 +43,43 @@ public class App {
 		boolean result = false;
 
 		for (int i = 0; i < 3; i++) {
-			
+			JPasswordField passwordField = new JPasswordField();
 
 			PersistenceManager pm = new PersistenceManager();
 			if (!pm.existsBootPassword()) {
 				// 新規
-				String inputValue = JOptionPane.showInputDialog(null, "Input the new boot password.", "");
-				if (Objects.nonNull(inputValue) && !Objects.equals(inputValue, "")) {
-					pm.updateBootPassword(inputValue);
+		        int option = JOptionPane.showConfirmDialog(null, passwordField, "Input the new boot password.", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if (option == JOptionPane.OK_OPTION) {
+					char[] password = passwordField.getPassword();
+					String inputValue = new String(password);
+
+					if (Objects.nonNull(inputValue) && !Objects.equals(inputValue, "")) {
+						pm.updateBootPassword(inputValue);
+					}
+				} else {
+					break;
 				}
 			} else {
 				// 認証
-				String inputValue = JOptionPane.showInputDialog(null, "Input the boot password.", "");
-				if (Objects.nonNull(inputValue) && !Objects.equals(inputValue, "")) {
-					if (pm.checkBootPassword(inputValue)) {
-						bootPassword = inputValue;
-						result = true;
-						break;
+
+				// ダイアログが表示された後にパスワードフィールドへフォーカスを移す
+				passwordField.setFocusable(true);
+		        SwingUtilities.invokeLater(() -> passwordField.requestFocusInWindow());
+
+		        int option = JOptionPane.showConfirmDialog(null, passwordField, "Input the boot password.", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if (option == JOptionPane.OK_OPTION) {
+					char[] password = passwordField.getPassword();
+					String inputValue = new String(password);
+
+					if (Objects.nonNull(inputValue) && !Objects.equals(inputValue, "")) {
+						if (pm.checkBootPassword(inputValue)) {
+							bootPassword = inputValue;
+							result = true;
+							break;
+						}
 					}
+				} else {
+					break;
 				}
 			}
 		}
