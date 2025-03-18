@@ -203,6 +203,8 @@ public class ResultView extends JTabbedPane implements UiBase {
 		resultTables.add(scrollPane);
 		
 		addTab("Result", scrollPane);
+		setSelectedComponent(scrollPane);
+
 		return table;
 	}
 }

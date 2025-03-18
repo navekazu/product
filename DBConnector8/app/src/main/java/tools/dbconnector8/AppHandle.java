@@ -7,6 +7,7 @@ import lombok.Data;
 import tools.dbconnector8.model.ConnectionModel;
 import tools.dbconnector8.ui.DatabaseView;
 import tools.dbconnector8.ui.MainFrame;
+import tools.dbconnector8.ui.QueryExecutor;
 import tools.dbconnector8.ui.ResultView;
 import tools.dbconnector8.ui.StatusBar;
 
@@ -33,6 +34,7 @@ public class AppHandle {
 	
 	private MainFrame mainFrame;
 	private DatabaseView databaseView;
+	private QueryExecutor queryExecutor;
 	private ResultView resultView;
 	private StatusBar statusBar;
 	private App app;

@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
+import tools.dbconnector8.AppHandle;
 import tools.dbconnector8.persistence.Config;
 import tools.dbconnector8.persistence.PersistenceManager;
 import tools.dbconnector8.persistence.config.UiConfig;
@@ -63,6 +66,13 @@ public class MainFrame extends JFrame implements UiBase {
 				persistWindowSize();
 			}
 		});
+        
+        addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+		        AppHandle.getAppHandle().getQueryExecutor().persistenceQuery();
+			}
+        });
 
 		horizontalSplit.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
             @Override

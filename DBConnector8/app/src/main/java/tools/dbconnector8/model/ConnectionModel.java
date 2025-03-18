@@ -18,5 +18,6 @@ public class ConnectionModel {
 	private Connection connection;
 	private ConnectionConfig connectionConfig;
 	private Map<String, List<String>> tables;
+	private Map<String, List<String>> columns;
 	private List<String> functions;
 }
