@@ -13,12 +13,20 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 public class PersistenceManager {
+	private static PersistenceManager persistenceManager = new PersistenceManager();
 	private Config config;
 
 	private String CONFIG_FILE_NAME = "config.json";
 	private String PASSWORD_FILE_NAME = "password";
 
-	public Config getConfig() throws IOException {
+	private PersistenceManager() {
+	}
+	
+	public static PersistenceManager getPersistenceManager() {
+		return persistenceManager;
+	}
+	
+	public synchronized Config getConfig() throws IOException {
 		if (!Objects.isNull(config)) {
 			return config;
 		}
@@ -37,7 +45,7 @@ public class PersistenceManager {
         return config;
 	}
 
-	public void writeConfig() throws IOException {
+	public synchronized void writeConfig() throws IOException {
 		if (Objects.isNull(config)) {
 			return ;
 		}

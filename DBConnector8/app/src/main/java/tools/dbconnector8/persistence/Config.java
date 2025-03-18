@@ -12,6 +12,7 @@ import tools.dbconnector8.persistence.config.UiConfig;
 @Data
 public class Config {
 	private List<ConnectionConfig> connections = new ArrayList<>();
+	private List<ConnectionConfig> connectionHistories = new ArrayList<>();
 	private List<UiConfig> uiConfigs = new ArrayList<>();
 
 	public UiConfig getUiConfig(String label) {

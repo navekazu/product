@@ -43,7 +43,7 @@ public class App {
 		for (int i = 0; i < 3; i++) {
 			
 
-			PersistenceManager pm = new PersistenceManager();
+			PersistenceManager pm = PersistenceManager.getPersistenceManager();
 			if (!pm.existsBootPassword()) {
 				// 新規
 				String inputValue = JOptionPane.showInputDialog(null, "Input the new boot password.", "");

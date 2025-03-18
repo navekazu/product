@@ -47,7 +47,7 @@ public class DatabaseOperation extends JPanel implements UiBase {
 	}
 
 	private void persistDividerSize(int newLocation) {
-		PersistenceManager pm = new PersistenceManager();
+		PersistenceManager pm = PersistenceManager.getPersistenceManager();
 		try {
 			Config config = pm.getConfig();
 			UiConfig uiConfig = config.getUiConfig("DatabaseOperationVerticalSplit");
@@ -67,7 +67,7 @@ public class DatabaseOperation extends JPanel implements UiBase {
 	}
 
 	private boolean changeLocation(JSplitPane verticalSplit) {
-		PersistenceManager pm = new PersistenceManager();
+		PersistenceManager pm = PersistenceManager.getPersistenceManager();
 		boolean isChanged = false;
 
 		try {

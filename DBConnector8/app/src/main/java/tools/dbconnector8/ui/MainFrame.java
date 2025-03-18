@@ -75,7 +75,7 @@ public class MainFrame extends JFrame implements UiBase {
 	}
 
 	private void persistWindowSize() {
-		PersistenceManager pm = new PersistenceManager();
+		PersistenceManager pm = PersistenceManager.getPersistenceManager();
 		try {
 			Config config = pm.getConfig();
 			UiConfig uiConfig = config.getUiConfig("MainFrame");
@@ -97,7 +97,7 @@ public class MainFrame extends JFrame implements UiBase {
 	}
 
 	private void persistDividerSize(int newLocation) {
-		PersistenceManager pm = new PersistenceManager();
+		PersistenceManager pm = PersistenceManager.getPersistenceManager();
 		try {
 			Config config = pm.getConfig();
 			UiConfig uiConfig = config.getUiConfig("MainFrameHorizontalSplit");
@@ -117,7 +117,7 @@ public class MainFrame extends JFrame implements UiBase {
 	}
 
 	private boolean changeLocation(JSplitPane horizontalSplit) {
-		PersistenceManager pm = new PersistenceManager();
+		PersistenceManager pm = PersistenceManager.getPersistenceManager();
 		boolean isChanged = false;
 
 		try {

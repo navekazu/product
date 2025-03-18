@@ -12,6 +12,8 @@ import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.swing.JButton;
@@ -20,7 +22,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import tools.dbconnector8.AppHandle;
 import tools.dbconnector8.logic.ConnectionLogic;
@@ -32,6 +38,8 @@ import tools.dbconnector8.persistence.config.ConnectionConfig;
 import tools.dbconnector8.persistence.config.UiConfig;
 
 public class ConnectDialog extends JDialog implements UiBase {
+	private DefaultTableModel tableModel;
+
 	private JTextField labelField;
 	private JTextField libraryField;
 	private JTextField driverField;
@@ -49,6 +57,7 @@ public class ConnectDialog extends JDialog implements UiBase {
 
 		setLayout(new BorderLayout());
 
+		add(createConnectionsPanel(), BorderLayout.CENTER);
 		add(createInputPanel(), BorderLayout.SOUTH);
 	
         setModal(true);
@@ -68,6 +77,50 @@ public class ConnectDialog extends JDialog implements UiBase {
 				persistWindowSize();
 			}
 		});
+	}
+
+	private JScrollPane createConnectionsPanel() {
+		tableModel = new DefaultTableModel();
+		JTable table = new JTable(tableModel);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+		tableModel.addColumn("Label");
+		tableModel.addColumn("Library");
+		tableModel.addColumn("Driver");
+		tableModel.addColumn("URL");
+		tableModel.addColumn("User");
+		tableModel.addColumn("Password");
+
+		// パスワードを削除（モデルには残るから値の取得は可能
+		TableColumn hiddenColumn = table.getColumnModel().getColumn(5);
+		table.removeColumn(hiddenColumn);
+
+		try {
+			PersistenceManager pm = PersistenceManager.getPersistenceManager();
+			Config config = pm.getConfig();
+			List<ConnectionConfig> connections = config.getConnections();
+			
+			connections.stream()
+				.forEach(c -> {
+        			List<String> row = new ArrayList<>();
+
+    				row.add(c.getLabel());
+    				row.add(c.getLibraryPath());
+    				row.add(c.getDriver());
+    				row.add(c.getUrl());
+    				row.add(c.getUser());
+    				row.add(c.getPassword());
+
+        			tableModel.addRow(row.toArray());
+					
+				});
+
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+
+		return new JScrollPane(table);
 	}
 	
 	private JPanel createInputPanel() {
@@ -112,8 +165,12 @@ public class ConnectDialog extends JDialog implements UiBase {
 		JPanel buttonPanel = new JPanel();
 		JButton connectionButton = new JButton("Connect");
 		JButton cancelButton = new JButton("Cancel");
+		JButton testButton = new JButton("Test");
+		JButton addButton = new JButton("Add");
 		buttonPanel.add(connectionButton);
 		buttonPanel.add(cancelButton);
+		buttonPanel.add(testButton);
+		buttonPanel.add(addButton);
 		panel.add(buttonPanel, BorderLayout.SOUTH);
 		Component parent = this;
 
@@ -155,11 +212,69 @@ public class ConnectDialog extends JDialog implements UiBase {
 			}
 		});
 
+		testButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ConnectionLogic logic = new ConnectionLogic();
+				char[] password = passwordField.getPassword();
+				ReadDbMetaDataLogic metaDataLogic = new ReadDbMetaDataLogic();
+
+				try {
+					ConnectionModel model = logic.execute(ConnectionConfig.builder()
+							.label(labelField.getText())
+							.libraryPath(libraryField.getText())
+							.driver(driverField.getText())
+							.url(urlField.getText())
+							.user(userField.getText())
+							.password(new String(password))
+							.build());
+
+					JOptionPane.showMessageDialog(parent, "Connection successful.", "OK", JOptionPane.INFORMATION_MESSAGE);
+
+					model.getConnection().close();
+
+				} catch (MalformedURLException | ClassNotFoundException | InstantiationException
+						| IllegalAccessException | SQLException e1) {
+					// TODO 自動生成された catch ブロック
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(parent, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+
+		addButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PersistenceManager pm = PersistenceManager.getPersistenceManager();
+				Config config;
+				char[] password = passwordField.getPassword();
+
+				try {
+					config = pm.getConfig();
+					List<ConnectionConfig> connections = config.getConnections();
+					connections.add(ConnectionConfig.builder()
+							.label(labelField.getText())
+							.libraryPath(libraryField.getText())
+							.driver(driverField.getText())
+							.url(urlField.getText())
+							.user(userField.getText())
+							.password(new String(password))
+							.build());
+
+					pm.writeConfig();
+							
+				} catch (IOException e1) {
+					// TODO 自動生成された catch ブロック
+					e1.printStackTrace();
+				}
+			}
+		});
+
 		return panel;
 	}
 
 	private void persistWindowSize() {
-		PersistenceManager pm = new PersistenceManager();
+		PersistenceManager pm = PersistenceManager.getPersistenceManager();
 		try {
 			Config config = pm.getConfig();
 			UiConfig uiConfig = config.getUiConfig("ConnectDialog");
@@ -181,7 +296,7 @@ public class ConnectDialog extends JDialog implements UiBase {
 	}
 
 	private boolean changeLocation() {
-		PersistenceManager pm = new PersistenceManager();
+		PersistenceManager pm = PersistenceManager.getPersistenceManager();
 		boolean isChanged = false;
 
 		try {
