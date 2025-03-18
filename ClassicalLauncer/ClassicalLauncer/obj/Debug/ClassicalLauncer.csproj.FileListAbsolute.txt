@@ -15,3 +15,4 @@ C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLa
 C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml
 C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\ClassicalLauncer.csproj.CopyComplete
 C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\bin\Debug\folderyellow_92963.ico
+C:\repositories\repositories-private-github\product\ClassicalLauncer\ClassicalLauncer\obj\Debug\ClassicalLauncer.csprojAssemblyReference.cache
