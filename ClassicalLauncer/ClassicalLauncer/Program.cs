@@ -5,8 +5,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace ClassicalLauncer
 {
@@ -188,17 +191,26 @@ namespace ClassicalLauncer
 
 		private static void Execute(string filePath)
 		{
+			if (!File.Exists(filePath))
+			{
+				MessageBox.Show("ファイルがありません。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
 			switch (GetFileTypes(filePath)) {
-				case FileTypes.SHORTCUT:
-				case FileTypes.NORMAL_FILE:
-				case FileTypes.EXE_FILE:
-				case FileTypes.URL_LINK:
-					if(File.Exists(filePath)) {
-						Process.Start(filePath);
-					} else {
-						MessageBox.Show("ファイルがありません。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					}
-					break;
+			case FileTypes.SHORTCUT:
+			case FileTypes.NORMAL_FILE:
+			case FileTypes.EXE_FILE:
+			case FileTypes.URL_LINK:
+				ProcessStartInfo psi2 = new ProcessStartInfo
+				{
+					FileName = filePath,
+//					Verb = "runas",  // 管理者権限で実行
+					UseShellExecute = true
+				};
+
+				Process.Start(psi2);
+				break;
 			}
 		}
 	}
@@ -240,7 +252,7 @@ namespace ClassicalLauncer
 			this.path = path;
 		}
 
-		public MyToolStripMenuItem(string path, string text, Image image, EventHandler onClick) :
+		public MyToolStripMenuItem(string path, string text, System.Drawing.Image image, EventHandler onClick) :
 			base(text, image, onClick)
 		{
 			this.path = path;
@@ -293,5 +305,6 @@ namespace ClassicalLauncer
 			}
 
 		}
+
 	}
 }

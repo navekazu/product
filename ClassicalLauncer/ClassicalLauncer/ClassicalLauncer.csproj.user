@@ -3,4 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartArguments>C:\User\k-watanabe\Documents\%40</StartArguments>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <StartArguments>C:\User\k-watanabe\Documents\%40</StartArguments>
+  </PropertyGroup>
 </Project>
