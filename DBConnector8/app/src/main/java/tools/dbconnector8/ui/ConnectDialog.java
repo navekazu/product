@@ -9,13 +9,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.List;
 import java.util.Objects;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -79,11 +83,39 @@ public class ConnectDialog extends JDialog implements UiBase {
 		});
 	}
 
-	private JScrollPane createConnectionsPanel() {
+	private JPanel createConnectionsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+
 		tableModel = new DefaultTableModel();
 		JTable table = new JTable(tableModel);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        // TableCellEditorを設定して編集不可にする
+        table.setDefaultEditor(Object.class, new DefaultCellEditor(new JTextField()) {
+            public boolean isCellEditable(EventObject anEvent) {
+                return false; // 編集不可にする
+            }
+        });
+        
+        // MouseListenerを追加してダブルクリックイベントを処理
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                // ダブルクリックの判定
+                if (e.getClickCount() != 2) {
+                	return;
+                }
 
+                int row = table.getSelectedRow();
+
+            	labelField.setText((String) tableModel.getValueAt(row, 0));
+            	libraryField.setText((String) tableModel.getValueAt(row, 1));
+            	driverField.setText((String) tableModel.getValueAt(row, 2));
+            	urlField.setText((String) tableModel.getValueAt(row, 3));
+            	userField.setText((String) tableModel.getValueAt(row, 4));
+            	passwordField.setText((String) tableModel.getValueAt(row, 5));
+            }
+        });
+        
 		tableModel.addColumn("Label");
 		tableModel.addColumn("Library");
 		tableModel.addColumn("Driver");
@@ -120,7 +152,128 @@ public class ConnectDialog extends JDialog implements UiBase {
 			e.printStackTrace();
 		}
 
-		return new JScrollPane(table);
+		JPanel buttonPanel = new JPanel();
+
+		JButton addButton = new JButton("Add");
+		JButton updateButton = new JButton("Update");
+		JButton deleteButton = new JButton("Delete");
+		
+		buttonPanel.add(addButton);
+		buttonPanel.add(updateButton);
+		buttonPanel.add(deleteButton);
+		
+		addButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PersistenceManager pm = PersistenceManager.getPersistenceManager();
+				Config config;
+				char[] password = passwordField.getPassword();
+
+				try {
+					config = pm.getConfig();
+					List<ConnectionConfig> connections = config.getConnections();
+					connections.add(ConnectionConfig.builder()
+							.label(labelField.getText())
+							.libraryPath(libraryField.getText())
+							.driver(driverField.getText())
+							.url(urlField.getText())
+							.user(userField.getText())
+							.password(new String(password))
+							.build());
+
+					pm.writeConfig();
+					
+					tableModel.addRow(new String[] {
+							labelField.getText(),
+							libraryField.getText(),
+							driverField.getText(),
+							urlField.getText(),
+							userField.getText(),
+							new String(password)
+					});
+
+				} catch (IOException e1) {
+					// TODO 自動生成された catch ブロック
+					e1.printStackTrace();
+				}
+			}
+		});
+
+		updateButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                int row = table.getSelectedRow();
+                if (row == -1) {
+					return;
+				}
+
+				PersistenceManager pm = PersistenceManager.getPersistenceManager();
+				Config config;
+				char[] password = passwordField.getPassword();
+
+				try {
+					config = pm.getConfig();
+					List<ConnectionConfig> connections = config.getConnections();
+					connections.add(row,
+							ConnectionConfig.builder()
+							.label(labelField.getText())
+							.libraryPath(libraryField.getText())
+							.driver(driverField.getText())
+							.url(urlField.getText())
+							.user(userField.getText())
+							.password(new String(password))
+							.build());
+					connections.remove(row+1);
+
+					pm.writeConfig();
+
+					tableModel.setValueAt(labelField.getText(), row, 0);
+					tableModel.setValueAt(libraryField.getText(), row, 1);
+					tableModel.setValueAt(driverField.getText(), row, 2);
+					tableModel.setValueAt(urlField.getText(), row, 3);
+					tableModel.setValueAt(userField.getText(), row, 4);
+					tableModel.setValueAt(new String(password), row, 5);
+					
+							
+				} catch (IOException e1) {
+					// TODO 自動生成された catch ブロック
+					e1.printStackTrace();
+				}
+			}
+		});
+
+		deleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                int row = table.getSelectedRow();
+                if (row == -1) {
+					return;
+				}
+
+				PersistenceManager pm = PersistenceManager.getPersistenceManager();
+				Config config;
+				char[] password = passwordField.getPassword();
+
+				try {
+					config = pm.getConfig();
+					List<ConnectionConfig> connections = config.getConnections();
+					connections.remove(row);
+
+					pm.writeConfig();
+
+					tableModel.removeRow(row);
+							
+				} catch (IOException e1) {
+					// TODO 自動生成された catch ブロック
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		panel.add(new JScrollPane(table), BorderLayout.CENTER);
+		panel.add(buttonPanel, BorderLayout.SOUTH);
+		
+		return panel;
 	}
 	
 	private JPanel createInputPanel() {
@@ -166,11 +319,9 @@ public class ConnectDialog extends JDialog implements UiBase {
 		JButton connectionButton = new JButton("Connect");
 		JButton cancelButton = new JButton("Cancel");
 		JButton testButton = new JButton("Test");
-		JButton addButton = new JButton("Add");
 		buttonPanel.add(connectionButton);
 		buttonPanel.add(cancelButton);
 		buttonPanel.add(testButton);
-		buttonPanel.add(addButton);
 		panel.add(buttonPanel, BorderLayout.SOUTH);
 		Component parent = this;
 
@@ -238,34 +389,6 @@ public class ConnectDialog extends JDialog implements UiBase {
 					// TODO 自動生成された catch ブロック
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(parent, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-
-		addButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				PersistenceManager pm = PersistenceManager.getPersistenceManager();
-				Config config;
-				char[] password = passwordField.getPassword();
-
-				try {
-					config = pm.getConfig();
-					List<ConnectionConfig> connections = config.getConnections();
-					connections.add(ConnectionConfig.builder()
-							.label(labelField.getText())
-							.libraryPath(libraryField.getText())
-							.driver(driverField.getText())
-							.url(urlField.getText())
-							.user(userField.getText())
-							.password(new String(password))
-							.build());
-
-					pm.writeConfig();
-							
-				} catch (IOException e1) {
-					// TODO 自動生成された catch ブロック
-					e1.printStackTrace();
 				}
 			}
 		});
