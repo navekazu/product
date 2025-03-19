@@ -5,6 +5,9 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import tools.dbconnector8.model.ConnectionModel;
 
@@ -36,6 +39,26 @@ public class ReadDbMetaDataLogic extends LogicBase<ConnectionModel, ConnectionMo
 		}
 		resultSet.close();
 
+        CompletableFuture<Void> asyncTask = CompletableFuture.runAsync(() -> {
+        	try (ResultSet columns = meta.getColumns(catalog, schema, null, null)) {
+	    		
+	    		DefaultMutableTreeNode node = new DefaultMutableTreeNode("Columns");
+	    		
+	            while (columns.next()) {
+	                String tableName = columns.getString("TABLE_NAME");
+	                String columnName = columns.getString("COLUMN_NAME");
+	
+	                if (!i.getColumns().containsKey(tableName)) {
+	                	i.getColumns().put(tableName, new ArrayList<>());
+	                }
+	                i.getColumns().get(tableName).add(columnName);
+	            }
+	            
+        	} catch (SQLException e) {
+        		e.printStackTrace();
+        	}
+        });
+        
 		return i;
 	}
 

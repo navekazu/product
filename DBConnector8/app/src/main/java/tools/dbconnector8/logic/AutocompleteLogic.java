@@ -26,6 +26,7 @@ public class AutocompleteLogic extends LogicBase<String, List<String>> {
 		model.getColumns().values().stream().forEach(v -> list.addAll(v));
 
 		return list.stream()
+			.distinct()
 			.filter(v -> v.toUpperCase().startsWith(i.toUpperCase()))
 			.filter(v -> v.length() != i.length())
 			.collect(Collectors.toList());
