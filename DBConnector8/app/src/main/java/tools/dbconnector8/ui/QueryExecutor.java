@@ -38,7 +38,7 @@ public class QueryExecutor extends JTextArea implements UiBase {
 		setTabSize(4);
 		setMargin(new Insets(5, 5, 5, 5));
 
-		PersistenceManager pm = new PersistenceManager();
+		PersistenceManager pm = PersistenceManager.getPersistenceManager();
 		try {
 			String query = pm.getPersistenceQuery();
 			setText(query);
@@ -129,7 +129,7 @@ public class QueryExecutor extends JTextArea implements UiBase {
 	}
 	
 	public void persistenceQuery() {
-		PersistenceManager pm = new PersistenceManager();
+		PersistenceManager pm = PersistenceManager.getPersistenceManager();
 		try {
 			String allQuery = getText();
 			pm.writePersistenceQuery(allQuery);
