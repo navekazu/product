@@ -21,6 +21,7 @@ import javax.swing.text.BadLocationException;
 
 import tools.dbconnector8.AppHandle;
 import tools.dbconnector8.logic.AutocompleteLogic;
+import tools.dbconnector8.logic.PrevSqlLogic;
 import tools.dbconnector8.persistence.PersistenceManager;
 
 public class QueryExecutor extends JTextArea implements UiBase {
@@ -117,6 +118,12 @@ public class QueryExecutor extends JTextArea implements UiBase {
             e.consume(); // タブキーの通常の動作をキャンセル
             autoCompleteList.requestFocusInWindow(); // 次のコンポーネントにフォーカス移動
         }
+
+		// SQL選択
+		if (e.getID() == KeyEvent.KEY_PRESSED && e.isShiftDown() && e.isControlDown() && e.getKeyCode() == KeyEvent.VK_UP) {
+			selectSql();
+		}
+
 	}
 
 	private void executeQuery() {
@@ -233,6 +240,21 @@ public class QueryExecutor extends JTextArea implements UiBase {
         
 		popupMenu.setVisible(false);
         requestFocusInWindow();
+	}
+
+	private void selectSql() {
+        int caretPos = getCaretPosition(); // 現在のキャレット位置
+        String prevInputText = getText().substring(0, caretPos);
+        PrevSqlLogic logic = new PrevSqlLogic();
+
+        try {
+			int prevSqlCaret = logic.execute(prevInputText);
+			moveCaretPosition(prevSqlCaret);
+
+        } catch (Exception e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
 	}
 
 }
