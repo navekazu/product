@@ -2,6 +2,7 @@ package tools.dbconnector8.ui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FontMetrics;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,6 +22,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import tools.dbconnector8.AppHandle;
 import tools.dbconnector8.model.ConnectionModel;
@@ -141,42 +143,53 @@ public class ResultView extends JTabbedPane implements UiBase {
                 		chunks.remove(0);
                 		break;
             		}
-            	}
 
-                DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
-                    @Override
-                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                        QueryResultColumnModel columnModel = (QueryResultColumnModel)value;
+            		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+                        @Override
+                        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                            QueryResultColumnModel columnModel = (QueryResultColumnModel)value;
 
-                        if (columnModel.isWasNull()) {
-                        	setHorizontalAlignment(SwingConstants.CENTER);
-                        	c.setForeground(Color.BLUE);
+                            if (columnModel.isWasNull()) {
+                            	setHorizontalAlignment(SwingConstants.CENTER);
+                            	c.setForeground(Color.BLUE);
 
-                        } else if(columnModel.isNumberValue()) {
-                        	setHorizontalAlignment(SwingConstants.RIGHT);
-                        	c.setForeground(Color.BLACK);
-                        
-                        } else {
-                        	setHorizontalAlignment(SwingConstants.LEFT);
-                        	c.setForeground(Color.BLACK);
+                            } else if(columnModel.isNumberValue()) {
+                            	setHorizontalAlignment(SwingConstants.RIGHT);
+                            	c.setForeground(Color.BLACK);
+                            
+                            } else {
+                            	setHorizontalAlignment(SwingConstants.LEFT);
+                            	c.setForeground(Color.BLACK);
+                            }
+                            
+                            return c;
                         }
-                        
-                        return c;
+                    };
+                    for (int i = 0; i < resultTable.getColumnModel().getColumnCount(); i++) {
+                    	resultTable.getColumnModel().getColumn(i).setCellRenderer(renderer);
                     }
-                };
-                for (int i = 0; i < resultTable.getColumnModel().getColumnCount(); i++) {
-                	resultTable.getColumnModel().getColumn(i).setCellRenderer(renderer);
-                }
+            	}
                 
                 // データ部分
         		DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
+        		FontMetrics metrics = resultTable.getFontMetrics(resultTable.getFont());
+        		int minWidth = 10; // 最小幅
+        		int maxWidth = 300; // 最大幅
+
         		for (List<QueryResultColumnModel> columnModels : chunks) {
         			List<QueryResultColumnModel> row = new ArrayList<>();
 
-        			for (QueryResultColumnModel columnModel : columnModels) {
+        			for (int i = 0; i < columnModels.size(); i++ ) {
+        				QueryResultColumnModel columnModel = columnModels.get(i);
+
         				row.add(columnModel);
-            		}
+
+        				int width = metrics.stringWidth(columnModel.getValue()) + 10; // 余白を追加
+                        width = Math.max(minWidth, width);
+                        TableColumn column = resultTable.getColumnModel().getColumn(i);
+                        column.setPreferredWidth(Math.min(Math.max(column.getPreferredWidth(), width), maxWidth));
+                    }
 
         			tableModel.addRow(row.toArray());
         		}
