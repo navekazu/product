@@ -1,5 +1,7 @@
 package tools.dbconnector8.ui;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,7 +17,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import tools.dbconnector8.AppHandle;
@@ -128,7 +132,7 @@ public class ResultView extends JTabbedPane implements UiBase {
             		// chunksの1行目を列情報として処理する
             		resultTable = createResultTable();
             		DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
-            		
+                    
             		for (List<QueryResultColumnModel> columnModels : chunks) {
                 		for (QueryResultColumnModel columnModel : columnModels) {
                     		tableModel.addColumn(columnModel.getValue());
@@ -139,14 +143,39 @@ public class ResultView extends JTabbedPane implements UiBase {
             		}
             	}
 
-            	// データ部分
-        		DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
+                DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+                    @Override
+                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                        QueryResultColumnModel columnModel = (QueryResultColumnModel)value;
 
+                        if (columnModel.isWasNull()) {
+                        	setHorizontalAlignment(SwingConstants.CENTER);
+                        	c.setForeground(Color.BLUE);
+
+                        } else if(columnModel.isNumberValue()) {
+                        	setHorizontalAlignment(SwingConstants.RIGHT);
+                        	c.setForeground(Color.BLACK);
+                        
+                        } else {
+                        	setHorizontalAlignment(SwingConstants.LEFT);
+                        	c.setForeground(Color.BLACK);
+                        }
+                        
+                        return c;
+                    }
+                };
+                for (int i = 0; i < resultTable.getColumnModel().getColumnCount(); i++) {
+                	resultTable.getColumnModel().getColumn(i).setCellRenderer(renderer);
+                }
+                
+                // データ部分
+        		DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
         		for (List<QueryResultColumnModel> columnModels : chunks) {
-        			List<String> row = new ArrayList<>();
+        			List<QueryResultColumnModel> row = new ArrayList<>();
 
         			for (QueryResultColumnModel columnModel : columnModels) {
-        				row.add(columnModel.getValue());
+        				row.add(columnModel);
             		}
 
         			tableModel.addRow(row.toArray());
