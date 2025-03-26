@@ -29,9 +29,9 @@ public class App {
 
 		setUIFont(new Font("Meiryo", Font.PLAIN, 12));
 
-		if (!checkBootPassword()) {
-			return;
-		}
+//		if (!checkBootPassword()) {
+//			return;
+//		}
 		
 		mainFrame = new MainFrame();
 		mainFrame.setVisible(true);
